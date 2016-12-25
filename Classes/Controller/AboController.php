@@ -80,21 +80,32 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $mail->send();
     }
 
+    public function removeFormAction()
+    {
+        $args = $this->request->getArguments();
+        $secret = $args['secret'];
+        $email = $args['email'];
+        $this->view->assign('secret', $secret);
+        $this->view->assign('email', $email);
+    }
+
     /**
-     * action delete
+     * action remove
      *
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo
+     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
      * @return void
      */
-    public function deleteAction(\FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo)
+    public function removeAction($aboRemoveDemand)
     {
-        $uid = $abo->getUid();
-        $originalAbo = $this->aboRepository->findByUid($uid);
-        if ($abo->getSecret() === $originalAbo->getSecret()) {
+        $originalAbo = $this->aboRepository->findOneBySecret($aboRemoveDemand->getSecret());
+        if (!empty($originalAbo) AND $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
             $this->addFlashMessage('The object was deleted.', '', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
-            $this->aboRepository->remove($abo);
+            $this->aboRepository->remove($originalAbo);
+            $this->view->assign('removed', true);
         }
-        #$this->redirect('list');
+        else {
+            $this->view->assign('removed', false);
+        }
     }
 
     /**
