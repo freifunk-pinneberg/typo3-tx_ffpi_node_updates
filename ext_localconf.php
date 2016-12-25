@@ -8,12 +8,12 @@ call_user_func(
             'FFPI.FfpiNodeUpdates',
             'Nodeabo',
             [
-                'Abo' => 'new, create, delete, confirm',
+                'Abo' => 'new, create, removeForm, confirm, remove',
                 'Node' => 'list, show'
             ],
             // non-cacheable actions
             [
-                'Abo' => 'create, delete, confirm',
+                'Abo' => 'create, remove, confirm',
                 'Node' => ''
             ]
         );
@@ -26,5 +26,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\FFPI\FfpiNodeUp
     'extension' => $_EXTKEY,
     'title' => 'Node Status updates',
     'description' => 'Sends notifications',
+    'additionalFields' => ''
+);
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\FFPI\FfpiNodeUpdates\Task\ImportTask::class] = array(
+    'extension' => $_EXTKEY,
+    'title' => 'Node Import',
+    'description' => 'Imports all Nodes',
     'additionalFields' => ''
 );
