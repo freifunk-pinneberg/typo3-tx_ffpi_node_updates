@@ -1,0 +1,14 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:layout name="Default"/>
+
+<f:section name="main">
+
+    <f:if condition="{removed}">
+        <f:then>
+            <p>Abo wurde Gelöscht.</p>
+        </f:then>
+        <f:else>
+            <p>Abo konnte nicht gelöscht werden.</p>
+        </f:else>
+    </f:if>
+</f:section>

@@ -116,70 +116,70 @@ return [
             ],
         ],
 
-	    'email' => [
-	        'exclude' => 1,
-	        'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.email',
-	        'config' => [
-			    'type' => 'input',
-			    'size' => 30,
-			    'eval' => 'trim'
-			],
-	        
-	    ],
-	    'confirmed' => [
-	        'exclude' => 1,
-	        'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.confirmed',
-	        'config' => [
-			    'type' => 'check',
-			    'items' => [
-			        '1' => [
-			            '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
-			        ]
-			    ],
-			    'default' => 0
-			]
-	        
-	    ],
-	    'last_notification' => [
-	        'exclude' => 1,
-	        'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.last_notification',
-	        'config' => [
-			    'type' => 'input',
-			    'size' => 10,
-			    'eval' => 'datetime',
-			    'checkbox' => 1,
-			    'default' => time()
-			],
-	        
-	    ],
-	    'secret' => [
-	        'exclude' => 1,
-	        'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.secret',
-	        'config' => [
-			    'type' => 'input',
-			    'size' => 30,
-			    'eval' => 'trim'
-			],
-	        
-	    ],
-	    'node' => [
-	        'exclude' => 1,
-	        'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.node',
-	        'config' => [
-			    'type' => 'inline',
-			    'foreign_table' => 'tx_ffpinodeupdates_domain_model_node',
-			    'minitems' => 0,
-			    'maxitems' => 1,
-			    'appearance' => [
-			        'collapseAll' => 0,
-			        'levelLinksPosition' => 'top',
-			        'showSynchronizationLink' => 1,
-			        'showPossibleLocalizationRecords' => 1,
-			        'showAllLocalizationLink' => 1
-			    ],
-			],
-	        
-	    ],
-        
+        'email' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.email',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+
+        ],
+        'confirmed' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.confirmed',
+            'config' => [
+                'type' => 'check',
+                'items' => [
+                    '1' => [
+                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                    ]
+                ],
+                'default' => 0
+            ]
+
+        ],
+        'last_notification' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.last_notification',
+            'config' => [
+                'type' => 'input',
+                'size' => 10,
+                'eval' => 'datetime',
+                'checkbox' => 1,
+                'default' => time()
+            ],
+
+        ],
+        'secret' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.secret',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+
+        ],
+        'node' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.node',
+            'config' => [
+                'type' => 'inline',
+                'foreign_table' => 'tx_ffpinodeupdates_domain_model_node',
+                'minitems' => 0,
+                'maxitems' => 1,
+                'appearance' => [
+                    'collapseAll' => 0,
+                    'levelLinksPosition' => 'top',
+                    'showSynchronizationLink' => 1,
+                    'showPossibleLocalizationRecords' => 1,
+                    'showAllLocalizationLink' => 1
+                ],
+            ],
+
+        ],
+
     ],
 ];

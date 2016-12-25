@@ -3,9 +3,9 @@
 
 <f:section name="main">
     <f:debug>{_all}</f:debug>
-    <f:form controller="Abo" action="delete" name="deleteAbo" object="{demand}" objectName="aboDeleteDemand">
-        <f:form.textfield property="email"/>
-        <f:form.textfield property="secret"/>
+    <f:form controller="Abo" action="remove" name="removeAbo" object="{demand}" objectName="aboRemoveDemand">
+        <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/> <f:form.textfield property="email" value="{email}"/><br>
+        <f:translate key="tx_ffpinodeupdates_domain_model_abo.secret"/> <f:form.textfield property="secret" value="{secret}"/><br>
         <f:form.submit value="Eintrag löschen" />
     </f:form>
 </f:section>
