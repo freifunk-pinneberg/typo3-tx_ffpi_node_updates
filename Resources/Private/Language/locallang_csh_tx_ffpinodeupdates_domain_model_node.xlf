@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
+		<header/>
+		<body>
+			<trans-unit id="node_id.description">
+				<source>nodeId</source>
+			</trans-unit>
+			<trans-unit id="online.description">
+				<source>online</source>
+			</trans-unit>
+			<trans-unit id="last_change.description">
+				<source>lastChange</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

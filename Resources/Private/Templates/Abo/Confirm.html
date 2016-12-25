@@ -1,0 +1,16 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:layout name="Default"/>
+
+<f:section name="main">
+    <f:debug>{_all}</f:debug>
+    <f:if condition="confirmed">
+        <f:then>
+            <p>Dein Abo wurde bestätigt. Du erhälst nun jedes mal eine Benachrichtigung wenn dein Knoten offline geht.</p>
+            <p>E-Mail: {abo.email}<br>
+            Knoten: {abo.node.nodeId}</p>
+        </f:then>
+        <f:else>
+            <p>Aktivierung fehlgeschlagen. Bitte prüfe den Link. Solltest du weiterhin Probleme haben wende dich an <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a></p>
+        </f:else>
+    </f:if>
+</f:section>

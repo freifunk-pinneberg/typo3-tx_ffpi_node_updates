@@ -1,0 +1,21 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:layout name="Default"/>
+
+<f:section name="main">
+<f:debug>{_all}</f:debug>
+    <f:flashMessages/>
+
+    <f:form controller="Abo" action="create" name="newAbo" object="{demand}" objectName="aboNewDemand">
+        <label for="email">
+            <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/>
+        </label>
+        <f:form.textfield property="email"/>
+        <br>
+        <label for="node">
+            <f:translate key="tx_ffpinodeupdates_domain_model_abo.node"/>
+        </label>
+        <f:form.textfield property="nodeId"/>
+        <br>
+        <f:form.submit value="abonieren" />
+    </f:form>
+</f:section>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
+		<header/>
+		<body>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node">
+				<source>Node</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_id">
+				<source>Node Id</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.online">
+				<source>Online</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.last_change">
+				<source>Last Change</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo">
+				<source>Abo</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.email">
+				<source>Email</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirmed">
+				<source>Confirmed</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.last_notification">
+				<source>Last Notification</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.secret">
+				<source>Secret</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.node">
+				<source>Node</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
+		<header/>
+		<body>
+			<trans-unit id="email.description">
+				<source>email</source>
+			</trans-unit>
+			<trans-unit id="confirmed.description">
+				<source>confirmed</source>
+			</trans-unit>
+			<trans-unit id="last_notification.description">
+				<source>lastNotification</source>
+			</trans-unit>
+			<trans-unit id="secret.description">
+				<source>secret</source>
+			</trans-unit>
+			<trans-unit id="node.description">
+				<source>node</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

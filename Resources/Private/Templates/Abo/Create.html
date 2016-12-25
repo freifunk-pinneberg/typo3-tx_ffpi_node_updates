@@ -1,0 +1,8 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:layout name="Default"/>
+
+<f:section name="main">
+    <f:debug>{_all}</f:debug>
+    <p>Dein Abo wurde eingetragen, ist aber noch inaktiv. Wir haben dir eine Bestätigungs E-Mail geschickt. Klicke auf den enthaltenen  Link um dein Abo zu bestätigen.</p>
+    <f:link.action action="confirm" arguments="{email: 'kevin_qu@web.de', secret: '04fbf3d870'}">Confirm</f:link.action>
+</f:section>
