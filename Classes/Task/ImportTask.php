@@ -24,6 +24,13 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      */
     protected $internalNodeRepository;
 
+    /**
+     * pid for the storage
+     *
+     * @var int $pid
+     */
+    public $pid;
+
 
     /**
      * Execute the Task
@@ -62,7 +69,7 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
                 $node->setNodeId($nodeId);
                 $node->setLastChange(new \DateTime());
                 $node->setOnline($externalNode['status']['online']);
-                $node->setPid(111);
+                $node->setPid($this->pid);
                 $this->internalNodeRepository->add($node);
 
             }
