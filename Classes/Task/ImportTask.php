@@ -1,7 +1,9 @@
 <?php
 namespace FFPI\FfpiNodeUpdates\Task;
 
-use FFPI\FfpiNodeUpdates\Domain\Repository;
+use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 {
@@ -19,9 +21,8 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 
     /**
      * @var \FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository
-     * @inject
      */
-    protected $internalNodeRepository = '';
+    protected $internalNodeRepository;
 
 
     /**
@@ -31,34 +32,44 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      */
     public function execute()
     {
+        /**
+         * @var boolean $hasError
+         */
         $hasError = false;
+        /**
+         * @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
+         */
+        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        /**
+         * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager
+         */
+        $persistenceManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager');
+
+        $this->internalNodeRepository = $objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository');
         $externalNodes = $this->getExternalNodes();
-        $this->scheduler->log('External Nodes: '.$externalNodes, 0);
+
         if (empty($externalNodes)) {
+            $this->scheduler->log('Keine externen Nodes gefunden.', 1);
             return false;
         }
 
-        foreach ($externalNodes as $externalNode) {
+        foreach ($externalNodes['nodes'] as $externalNode) {
             $nodeId = $externalNode['id'];
             if (!$this->internalNodeRepository->findOneByNodeId($nodeId)) {
                 //Node exisitert noch nicht
-                $node = new \FFPI\FfpiNodeUpdates\Domain\Model\Node();
+                $this->scheduler->log('Node ' . $nodeId . ' Existiert noch nicht. Starte Import', 0);
+                $node = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Model\Node'); # new \FFPI\FfpiNodeUpdates\Domain\Model\Node();
                 $node->setNodeId($nodeId);
-                $node->setLastChange(time());
+                $node->setLastChange(new \DateTime());
                 $node->setOnline($externalNode['status']['online']);
                 $node->setPid(111);
-
-                if (!$this->internalNodeRepository->add($node)) {
-                    $hasError = true;
-                    $this->scheduler->log('Fehler beim Import', 1);
-                } else {
-                    $this->scheduler->log('Knoten ' . $nodeId . ' Importiert', 0);
-                }
+                $this->internalNodeRepository->add($node);
 
             }
         }
+        $persistenceManager->persistAll();
 
-        if ($hasError) {
+        if ($hasError === true) {
             return false;
         }
 
@@ -76,10 +87,18 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $this->path);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        //Useragent
+        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
+        //301 und 302 folgen
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
         $response = curl_exec($curl);
-        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $body = substr($response, $header_size);
+        $responseStatusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        if ($errno = curl_errno($curl)) {
+            $this->scheduler->log('Curl Error: ' . $errno . ' HTTP:' . $responseStatusCode, 1);
+        }
+        $body = $response;
+        curl_close($curl);
 
         return $body;
     }
@@ -93,6 +112,9 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     {
         $json = $this->getJson();
         $nodes = json_decode($json, true);
+        if ($nodes == NULL) {
+            $this->scheduler->log(json_last_error_msg(), 1);
+        }
         return $nodes;
     }
 

@@ -48,6 +48,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     {
         $aboNewDemand = GeneralUtility::makeInstance(AboNewDemand::class);
         $this->view->assign('demand', $aboNewDemand);
+        $this->view->assign('nodes', $this->nodeRepository->findAll());
     }
 
     /**
@@ -66,6 +67,18 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $newAbo->setSecret($secret);
         $this->aboRepository->add($newAbo);
 
+        //Wir brauchen für die E-Mail eine Besätigungs URL
+        $pid = $this->uriBuilder->getTargetPageUid();
+        $urlAttributes = array();
+        $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'confirm';
+        $urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
+        $urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $newAbo->getEmail();
+        $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $secret;
+        $url = $this->uriBuilder;
+        $url->reset();
+        $url->setTargetPageUid($pid);
+        $url->setArguments($urlAttributes);
+
         //E-Mail
         $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
         //Betreff
@@ -75,7 +88,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         //Empfänger
         $mail->setTo(array($newAbo->getEmail()));
         //Nachricht
-        $mail->setBody("Test Nachricht. \n Secret: " . $secret);
+        $mail->setBody("Hallo, \n jemand hat mit dieser E-Mail ein Benachrichtigungsabo für den Freifunk Knoten " . $aboNewDemand->getNodeId() . " eingerichtet. \n Falls du es warst, bestätige dies bitte mit folgendem Link: $url");
         //Senden
         $mail->send();
     }
@@ -102,8 +115,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
             $this->addFlashMessage('The object was deleted.', '', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
             $this->aboRepository->remove($originalAbo);
             $this->view->assign('removed', true);
-        }
-        else {
+        } else {
             $this->view->assign('removed', false);
         }
     }

@@ -2,21 +2,27 @@
 <f:layout name="Default"/>
 
 <f:section name="main">
-<f:debug>{_all}</f:debug>
-    <f:flashMessages/>
-
+    <p>Trage hier deine E-Mail adresse und die Knoten ID ein. Du erhälst dann jedes mal wenn der Knoten von Online auf Offline wechselt eine Benachrichtigung.</p>
     <f:form controller="Abo" action="create" name="newAbo" object="{demand}" objectName="aboNewDemand">
-        <label for="email">
-            <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/>
-        </label>
-        <f:form.textfield property="email"/>
-        <br>
-        <label for="node">
-            <f:translate key="tx_ffpinodeupdates_domain_model_abo.node"/>
-        </label>
-        <f:form.textfield property="nodeId"/>
-        <br>
-        <f:form.submit value="abonieren" />
+        <fieldset>
+            <label for="email">
+                <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/>
+            </label>
+            <f:form.textfield id="email" property="email"/>
+            <br>
+            <label for="node">
+                <f:translate key="tx_ffpinodeupdates_domain_model_abo.node"/>
+            </label>
+            <f:form.textfield id="node" property="nodeId" additionalAttributes="{list: 'nodeList'}"/>
+            <datalist id="nodeList">
+                <f:for each="{nodes}" as="node">
+                    <option value="{node.nodeId}"/>
+                </f:for>
+            </datalist>
+        </fieldset>
+        <f:form.submit value="abonieren"/>
     </f:form>
+    <p>
     <f:link.action action="removeForm">Abo abbestellen.</f:link.action>
+    </p>
 </f:section>

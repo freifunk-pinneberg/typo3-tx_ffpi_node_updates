@@ -1,7 +1,9 @@
 <?php
 namespace FFPI\FfpiNodeUpdates\Task;
 
-use FFPI\FfpiNodeUpdates\Domain\Repository;
+use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
+use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 {
@@ -13,15 +15,13 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 
     /**
      * @var \FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository
-     * @inject
      */
-    protected $internalNodeRepository = '';
+    protected $internalNodeRepository;
 
     /**
      * @var \FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository
-     * @inject
      */
-    protected $aboRepository = '';
+    protected $aboRepository;
 
     /**
      * Execute the Task
@@ -30,8 +30,24 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      */
     public function execute()
     {
+        /**
+         * @var boolean $hasError
+         */
+        $hasError = false;
+        /**
+         * @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
+         */
+        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+        /**
+         * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager
+         */
+        $persistenceManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager');
+        $this->internalNodeRepository = $objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository');
+        $this->aboRepository = $objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository');
+
         $externalNodes = $this->getExternalNodes();
         if (empty($externalNodes)) {
+            $this->scheduler->log('External Nodes are empty', 1);
             return false;
         }
         $internalNodes = $this->internalNodeRepository->findAll();
@@ -55,6 +71,8 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 
             }
         }
+        //Save all updated nodes
+        $persistenceManager->persistAll();
 
         return true;
     }
@@ -69,10 +87,18 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $this->path);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        //Useragent
+        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
+        //301 und 302 folgen
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
         $response = curl_exec($curl);
-        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-        $body = substr($response, $header_size);
+        $responseStatusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        if ($errno = curl_errno($curl)) {
+            $this->scheduler->log('Curl Error: ' . $errno . ' HTTP:' . $responseStatusCode, 1);
+        }
+        $body = $response;
+        curl_close($curl);
 
         return $body;
     }
@@ -86,6 +112,9 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     {
         $json = $this->getJson();
         $nodes = json_decode($json, true);
+        if ($nodes == NULL) {
+            $this->scheduler->log(json_last_error_msg(), 1);
+        }
         return $nodes;
     }
 
@@ -103,6 +132,10 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             /**
              * @var \FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo
              */
+
+            /**
+             * @var \TYPO3\CMS\Core\Mail\MailMessage
+             */
             $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
             //Betreff
             $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
@@ -113,7 +146,8 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             //Nachricht
             $mail->setBody("Hallo,\n Dein Knoten mit der ID " . $internalNode->getNodeId() . " ist Offline.");
             //Senden
-            if (!$mail->send()) {
+            if ($mail->send() < 1) {
+                $this->scheduler->log($mail->se);
                 $hasError = true;
             }
         }
@@ -125,15 +159,12 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      *
      * @param \FFPI\FfpiNodeUpdates\Domain\Model\Node $internalNode
      * @param boolean $online
-     * @return boolean
+     * @return void
      */
     private function updateNode($internalNode, $online)
     {
         $internalNode->setOnline($online);
         $internalNode->setLastChange(time());
-        if ($this->internalNodeRepository->update($internalNode)) {
-            return true;
-        }
-        return false;
+        $this->internalNodeRepository->update($internalNode);
     }
 }
