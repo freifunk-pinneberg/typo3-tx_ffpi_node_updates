@@ -85,6 +85,16 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     }
 
     /**
+     * This method returns the destination pid as additional information
+     *
+     * @return string Information to display
+     */
+    public function getAdditionalInformation()
+    {
+        return 'Page ID: ' . $this->pid;
+    }
+
+    /**
      * Gets the JSON
      *
      * @return string
