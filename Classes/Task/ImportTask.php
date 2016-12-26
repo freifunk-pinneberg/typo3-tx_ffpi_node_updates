@@ -55,6 +55,11 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         $this->internalNodeRepository = $objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository');
         $externalNodes = $this->getExternalNodes();
 
+        $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $querySettings->setRespectStoragePage(FALSE);
+        $querySettings->setStoragePageIds(array($this->pid));
+        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
+
         if (empty($externalNodes)) {
             $this->scheduler->log('Keine externen Nodes gefunden.', 1);
             return false;
@@ -62,7 +67,7 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 
         foreach ($externalNodes['nodes'] as $externalNode) {
             $nodeId = $externalNode['id'];
-            if (!$this->internalNodeRepository->findOneByNodeId($nodeId)) {
+            if ($this->internalNodeRepository->findOneByNodeId($nodeId) === null) {
                 //Node exisitert noch nicht
                 $this->scheduler->log('Node ' . $nodeId . ' Existiert noch nicht. Starte Import', 0);
                 $node = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Model\Node'); # new \FFPI\FfpiNodeUpdates\Domain\Model\Node();
@@ -74,6 +79,9 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 
             }
         }
+
+        $this->scheduler->log('Total nodes internal: '.$this->internalNodeRepository->countAll(),0);
+
         $persistenceManager->persistAll();
 
         if ($hasError === true) {
@@ -130,7 +138,7 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         $json = $this->getJson();
         $nodes = json_decode($json, true);
         if ($nodes == NULL) {
-            $this->scheduler->log(json_last_error_msg(), 1);
+            $this->scheduler->log('json_decode: '.json_last_error_msg(), 1);
         }
         return $nodes;
     }

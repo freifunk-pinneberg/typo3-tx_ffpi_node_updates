@@ -32,5 +32,5 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\FFPI\FfpiNodeUp
     'extension' => $_EXTKEY,
     'title' => 'Node Import',
     'description' => 'Imports all Nodes',
-    'additionalFields' => ''
+    'additionalFields' => \FFPI\FfpiNodeUpdates\Task\ImportTaskAdditionalFieldProvider::class,
 );
