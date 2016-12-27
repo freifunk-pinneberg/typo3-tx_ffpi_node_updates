@@ -7,6 +7,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 {
+    protected $constructDone = false;
 
     /**
      * @var string
@@ -24,37 +25,105 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     protected $aboRepository;
 
     /**
+     * @var \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder
+     */
+    protected $uriBuilder;
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    protected $objectManager;
+
+    /**
+     * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager
+     */
+    protected $persistenceManager;
+
+    /**
+     * NotificationTask constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->constructDone = true;
+
+        /**
+         * Builds URI for Frontend or Backend
+         *
+         * @var \TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder $this ->uriBuilder
+         */
+        $this->uriBuilder = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder');
+
+        /**
+         * the default Extbase Object Manager
+         *
+         * @var \TYPO3\CMS\Extbase\Object\ObjectManager $this ->objectManager
+         */
+        $this->objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
+
+        /**
+         * Saves the Repository objects into the Database
+         *
+         * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $this ->persistenceManager
+         */
+        $this->persistenceManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager');
+
+        /**
+         * Our Repository for the Freifunk Nodes
+         *
+         * @var \FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository
+         */
+        $this->internalNodeRepository = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository');
+
+        /**
+         * Our Repository for the Abos
+         *
+         * @var \FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository
+         */
+        $this->aboRepository = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository');
+    }
+
+    /**
      * Execute the Task
+     * The main function, will be executed by the scheduler each time
      *
      * @return bool
      */
     public function execute()
     {
+        if(!$this->constructDone) {
+            //I don't know why, but in test with TYPO3 7.6.14 an scheduler 7.6.0 the __construct is not automatic called
+            $this->__construct();
+        }
+
         /**
          * @var boolean $hasError
          */
         $hasError = false;
-        /**
-         * @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
-         */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        /**
-         * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager
-         */
-        $persistenceManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager');
-        $this->internalNodeRepository = $objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository');
-        $this->aboRepository = $objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository');
 
+        //We need the External Nodes. (They come from the json file)
         $externalNodes = $this->getExternalNodes();
         if (empty($externalNodes)) {
+            //We can't do anything when we don't have the exernal nodes
             $this->scheduler->log('External Nodes are empty', 1);
             return false;
         }
+        /**
+         * Array with all internal saved nodes
+         * @var array $internalNodes
+         */
         $internalNodes = $this->internalNodeRepository->findAll();
 
         foreach ($internalNodes as $internalNode) {
             /**
+             * A single node object
              * @var \FFPI\FfpiNodeUpdates\Domain\Model\Node $internalNode
+             */
+
+            /**
+             * Online Status
+             * @var boolean $internalOnline
              */
             $internalOnline = $internalNode->getOnline();
             if ($internalOnline === true) {
@@ -71,8 +140,8 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 
             }
         }
-        //Save all updated nodes
-        $persistenceManager->persistAll();
+        //Last step, Save all updated nodes
+        $this->persistenceManager->persistAll();
 
         return true;
     }
@@ -133,6 +202,20 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
              * @var \FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo
              */
 
+            //Wir brauchen für die E-Mail eine Besätigungs URL
+            $pid = $this->uriBuilder->getTargetPageUid();
+            $urlAttributes = array();
+            $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'removeForm';
+            $urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
+            $urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $abo->getEmail();
+            $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $abo->getSecret();
+            $url = $this->uriBuilder;
+            $url->reset();
+            $url->setTargetPageUid($pid);
+            $url->setCreateAbsoluteUri(true);
+            $url->setArguments($urlAttributes);
+            $url = $url->buildFrontendUri();
+
             /**
              * @var \TYPO3\CMS\Core\Mail\MailMessage
              */
@@ -144,14 +227,21 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             //Empfänger
             $mail->setTo(array($abo->getEmail()));
             //Nachricht
-            $mail->setBody("Hallo,\n Dein Knoten mit der ID " . $internalNode->getNodeId() . " ist Offline.");
+            $body = "Hallo,\n";
+            $body .= "Dein Knoten mit der ID " . $internalNode->getNodeId() . " ist Offline. \n";
+            $body .= "So lange dein Knoten offline bleibt, wirst du keine Benachrichtigungen mehr erhalten.\n\n";
+            $body .= "Wenn du für diesen Knoten in Zukunft keine Benachrichtigungen mehr erhalten möchtest, kannst du sie unter $url abbestellen.";
+            $mail->setBody($body);
             //Senden
             if ($mail->send() < 1) {
-                $this->scheduler->log($mail->se);
+                $this->scheduler->log('Mail could not be send', 1);
                 $hasError = true;
             }
         }
-        return $hasError;
+        if ($hasError) {
+            return false;
+        }
+        return true;
     }
 
     /**

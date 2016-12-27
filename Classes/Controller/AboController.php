@@ -77,6 +77,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $url = $this->uriBuilder;
         $url->reset();
         $url->setTargetPageUid($pid);
+        $url->setCreateAbsoluteUri(true);
         $url->setArguments($urlAttributes);
         $url = $url->buildFrontendUri();
 
