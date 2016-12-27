@@ -78,6 +78,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $url->reset();
         $url->setTargetPageUid($pid);
         $url->setArguments($urlAttributes);
+        $url = $url->buildFrontendUri();
 
         //E-Mail
         $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
