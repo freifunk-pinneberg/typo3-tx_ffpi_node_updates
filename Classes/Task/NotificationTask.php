@@ -92,7 +92,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      */
     public function execute()
     {
-        if(!$this->constructDone) {
+        if (!$this->constructDone) {
             //I don't know why, but in test with TYPO3 7.6.14 an scheduler 7.6.0 the __construct is not automatic called
             $this->__construct();
         }
@@ -126,18 +126,19 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
              * @var boolean $internalOnline
              */
             $internalOnline = $internalNode->getOnline();
-            if ($internalOnline === true) {
-                //check remote status
-                $nodeId = $internalNode->getNodeId();
-                $externalNode = $externalNodes[$nodeId];
-                if ($externalNode['status']['online'] == false) {
-                    //Knoten ist von online nach offline gewechselt
-                    $this->updateNode($internalNode, false);
-                    if (!$this->sendNotification($internalNode)) {
-                        return false;
-                    }
+            //check remote status
+            $nodeId = $internalNode->getNodeId();
+            $externalNode = $externalNodes[$nodeId];
+            if ($internalOnline === true AND $externalNode['status']['online'] == 'false') {
+                //Knoten ist von online nach offline gewechselt
+                $this->scheduler->log('Node ' . $nodeId . ' is now offline', 0);
+                $this->updateNode($internalNode, false);
+                if (!$this->sendNotification($internalNode)) {
+                    return false;
                 }
-
+            } elseif ($internalOnline != $externalNode['status']['online']) {
+                $this->scheduler->log('Node ' . $nodeId . ' is now ' . $externalNode['status']['online']);
+                $this->updateNode($internalNode, $externalNode['status']['online']);
             }
         }
         //Last step, Save all updated nodes
