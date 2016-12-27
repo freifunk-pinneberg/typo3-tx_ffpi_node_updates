@@ -3,6 +3,7 @@ namespace FFPI\FfpiNodeUpdates\Task;
 
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
@@ -82,6 +83,10 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
          * @var \FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository
          */
         $this->aboRepository = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository');
+
+        $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $querySettings->setRespectStoragePage(FALSE);
+        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
     }
 
     /**
@@ -104,17 +109,25 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 
         //We need the External Nodes. (They come from the json file)
         $externalNodes = $this->getExternalNodes();
+
         if (empty($externalNodes)) {
             //We can't do anything when we don't have the exernal nodes
             $this->scheduler->log('External Nodes are empty', 1);
             return false;
+        } else {
+            $externalNodesNew = array();
+            foreach ($externalNodes as $externalNode) {
+                $externalNodesNew[$externalNode['id']] = $externalNode;
+            }
+            $externalNodes = $externalNodesNew;
+            unset($externalNodesNew);
         }
         /**
          * Array with all internal saved nodes
          * @var array $internalNodes
          */
-        $internalNodes = $this->internalNodeRepository->findAll();
-
+        $internalNodes = $this->internalNodeRepository->findAll()->toArray();
+        
         foreach ($internalNodes as $internalNode) {
             /**
              * A single node object
@@ -129,7 +142,9 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             //check remote status
             $nodeId = $internalNode->getNodeId();
             $externalNode = $externalNodes[$nodeId];
-            if ($internalOnline === true AND $externalNode['status']['online'] == 'false') {
+            #DebugUtility::debug($externalNode);
+
+            if ($internalOnline === true AND $externalNode['status']['online'] === false) {
                 //Knoten ist von online nach offline gewechselt
                 $this->scheduler->log('Node ' . $nodeId . ' is now offline', 0);
                 $this->updateNode($internalNode, false);
@@ -137,7 +152,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
                     return false;
                 }
             } elseif ($internalOnline != $externalNode['status']['online']) {
-                $this->scheduler->log('Node ' . $nodeId . ' is now ' . $externalNode['status']['online']);
+                #$this->scheduler->log('Node ' . $nodeId . ' is now ' . $externalNode['status']['online']);
                 $this->updateNode($internalNode, $externalNode['status']['online']);
             }
         }
@@ -185,7 +200,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         if ($nodes == NULL) {
             $this->scheduler->log(json_last_error_msg(), 1);
         }
-        return $nodes;
+        return $nodes['nodes'];
     }
 
     /**
@@ -255,7 +270,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     private function updateNode($internalNode, $online)
     {
         $internalNode->setOnline($online);
-        $internalNode->setLastChange(time());
+        $internalNode->setLastChange(new \DateTime());
         $this->internalNodeRepository->update($internalNode);
     }
 }
