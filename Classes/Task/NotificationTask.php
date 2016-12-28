@@ -133,13 +133,15 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
                 $externalNodesNew[$externalNode['id']] = $externalNode;
             }
             $externalNodes = $externalNodesNew;
-            unset($externalNodesNew);
+            #unset($externalNodesNew);
         }
         /**
          * Array with all internal saved nodes
          * @var array $internalNodes
          */
         $internalNodes = $this->internalNodeRepository->findAll()->toArray();
+        DebugUtility::debug($externalNodes,'External Nodes');
+        DebugUtility::debug($internalNodes, 'Internal Nodes');
 
         foreach ($internalNodes as $internalNode) {
             /**
