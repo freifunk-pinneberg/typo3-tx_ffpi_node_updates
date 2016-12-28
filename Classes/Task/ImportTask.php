@@ -1,7 +1,20 @@
 <?php
+
+/***
+ *
+ * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
+ *
+ ***/
+
 namespace FFPI\FfpiNodeUpdates\Task;
 
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
@@ -17,7 +30,7 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     /**
      * @var string
      */
-    protected $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json'; //@todo Aus Typoscript auslesen
+    protected $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json'; //@todo get from TypoScript
 
     /**
      * @var \FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository
@@ -53,35 +66,42 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         $persistenceManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager');
 
         $this->internalNodeRepository = $objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository');
+
+        //Get the external nodes
         $externalNodes = $this->getExternalNodes();
 
+        //set the correct pid for the storage, get from the TYPO3 task settings ($this->pid)
         $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
         $querySettings->setRespectStoragePage(FALSE);
         $querySettings->setStoragePageIds(array($this->pid));
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
 
+        //check if we have external nodes
         if (empty($externalNodes)) {
-            $this->scheduler->log('Keine externen Nodes gefunden.', 1);
+            $this->scheduler->log('No external Nodes found!', 1);
+            //if we don't have them, we can't do anything
             return false;
         }
 
         foreach ($externalNodes['nodes'] as $externalNode) {
             $nodeId = $externalNode['id'];
             if ($this->internalNodeRepository->findOneByNodeId($nodeId) === null) {
-                //Node exisitert noch nicht
-                $this->scheduler->log('Node ' . $nodeId . ' Existiert noch nicht. Starte Import', 0);
-                $node = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Model\Node'); # new \FFPI\FfpiNodeUpdates\Domain\Model\Node();
+                //Node dose not exist
+                $this->scheduler->log('Node ' . $nodeId . ' dose not exist. Start import', 0);
+                //create an new object
+                $node = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Model\Node');
                 $node->setNodeId($nodeId);
                 $node->setLastChange(new \DateTime());
                 $node->setOnline($externalNode['status']['online']);
                 $node->setPid($this->pid);
+                //add the object to the repo
                 $this->internalNodeRepository->add($node);
-
             }
         }
 
-        $this->scheduler->log('Total nodes internal: '.$this->internalNodeRepository->countAll(),0);
+        $this->scheduler->log('Total nodes internal: ' . $this->internalNodeRepository->countAll(), 0);
 
+        //Save all changes in the Database
         $persistenceManager->persistAll();
 
         if ($hasError === true) {
@@ -124,7 +144,7 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         }
         $body = $response;
         curl_close($curl);
-
+        DebugUtility::debug($body, 'JSON Raw');
         return $body;
     }
 
@@ -138,7 +158,7 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         $json = $this->getJson();
         $nodes = json_decode($json, true);
         if ($nodes == NULL) {
-            $this->scheduler->log('json_decode: '.json_last_error_msg(), 1);
+            $this->scheduler->log('json_decode: ' . json_last_error_msg(), 1);
         }
         return $nodes;
     }

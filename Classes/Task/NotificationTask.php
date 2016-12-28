@@ -1,4 +1,16 @@
 <?php
+
+/***
+ *
+ * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
+ *
+ ***/
+
 namespace FFPI\FfpiNodeUpdates\Task;
 
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
@@ -13,7 +25,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     /**
      * @var string
      */
-    protected $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json'; //@todo Aus Typoscript auslesen
+    protected $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json'; //@todo get from TypoScript
 
     /**
      * @var \FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository
@@ -117,6 +129,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         } else {
             $externalNodesNew = array();
             foreach ($externalNodes as $externalNode) {
+                //the node id must be the array key
                 $externalNodesNew[$externalNode['id']] = $externalNode;
             }
             $externalNodes = $externalNodesNew;
@@ -127,7 +140,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
          * @var array $internalNodes
          */
         $internalNodes = $this->internalNodeRepository->findAll()->toArray();
-        
+
         foreach ($internalNodes as $internalNode) {
             /**
              * A single node object
@@ -145,20 +158,31 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             #DebugUtility::debug($externalNode);
 
             if ($internalOnline === true AND $externalNode['status']['online'] === false) {
-                //Knoten ist von online nach offline gewechselt
+                //node changed from online to offline since last check
                 $this->scheduler->log('Node ' . $nodeId . ' is now offline', 0);
                 $this->updateNode($internalNode, false);
                 if (!$this->sendNotification($internalNode)) {
-                    return false;
+                    //it was not possible to send a notification
+                    $this->scheduler->log('Notification for ' . $nodeId . ' could not be send.', 1);
+                    $hasError = true;
                 }
             } elseif ($internalOnline != $externalNode['status']['online']) {
-                #$this->scheduler->log('Node ' . $nodeId . ' is now ' . $externalNode['status']['online']);
+                //The status has been changed, update the object
                 $this->updateNode($internalNode, $externalNode['status']['online']);
+                //Log the change
+                if ($externalNode['status']['online']) {
+                    $this->scheduler->log('Node ' . $nodeId . ' is now online.', 0);
+                } else {
+                    $this->scheduler->log('Node ' . $nodeId . ' is now offline.', 0);
+                }
             }
         }
-        //Last step, Save all updated nodes
+        //Last step, Save all updated nodes to the database
         $this->persistenceManager->persistAll();
 
+        if ($hasError) {
+            return false;
+        }
         return true;
     }
 
@@ -174,7 +198,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         //Useragent
         curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
-        //301 und 302 folgen
+        //follow 301 and 302
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
         $response = curl_exec($curl);
@@ -218,7 +242,13 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
              * @var \FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo
              */
 
-            //Wir brauchen für die E-Mail eine Besätigungs URL
+            //first, check if the abo is confirmed, we don't want to spam
+            if (!$abo->getConfirmed()) {
+                //Not confirmed, go to the next abo
+                continue;
+            }
+
+            //build url to remove the abo
             $pid = $this->uriBuilder->getTargetPageUid();
             $urlAttributes = array();
             $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'removeForm';
@@ -232,8 +262,11 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             $url->setArguments($urlAttributes);
             $url = $url->buildFrontendUri();
 
+            //Create the e-mail
+            //@todo make it multilingual
+            //@todo use fluid templates
             /**
-             * @var \TYPO3\CMS\Core\Mail\MailMessage
+             * @var \TYPO3\CMS\Core\Mail\MailMessage $mail
              */
             $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
             //Betreff
@@ -250,7 +283,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             $mail->setBody($body);
             //Senden
             if ($mail->send() < 1) {
-                $this->scheduler->log('Mail could not be send', 1);
+                $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
                 $hasError = true;
             }
         }
