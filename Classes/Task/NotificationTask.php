@@ -113,10 +113,10 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      */
     public function execute()
     {
-        if ($this->constructDone !== true) {
+        #if ($this->constructDone !== true) {
             //I don't know why, but in test with TYPO3 7.6.14 an scheduler 7.6.0 the __construct is not automatic called
             $this->__construct();
-        }
+        #}
 
         DebugUtility::debug($this->internalNodeRepository);
 
