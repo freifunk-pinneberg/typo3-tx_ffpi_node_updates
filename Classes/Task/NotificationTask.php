@@ -98,6 +98,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
 
         $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
         $querySettings->setRespectStoragePage(FALSE);
+        $querySettings->setRespectSysLanguage(FALSE);
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
     }
 
@@ -113,6 +114,8 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             //I don't know why, but in test with TYPO3 7.6.14 an scheduler 7.6.0 the __construct is not automatic called
             $this->__construct();
         }
+
+        DebugUtility::debug($this->internalNodeRepository);
 
         /**
          * @var boolean $hasError
