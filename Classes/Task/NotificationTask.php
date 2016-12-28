@@ -59,8 +59,6 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     {
         parent::__construct();
 
-        $this->constructDone = true;
-
         /**
          * Builds URI for Frontend or Backend
          *
@@ -96,10 +94,15 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
          */
         $this->aboRepository = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository');
 
+        /**
+         * @var \TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings $querySettings
+         */
         $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
         $querySettings->setRespectStoragePage(FALSE);
         $querySettings->setRespectSysLanguage(FALSE);
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
+
+        $this->constructDone = true;
     }
 
     /**
@@ -110,7 +113,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      */
     public function execute()
     {
-        if (!$this->constructDone) {
+        if ($this->constructDone !== true) {
             //I don't know why, but in test with TYPO3 7.6.14 an scheduler 7.6.0 the __construct is not automatic called
             $this->__construct();
         }
@@ -143,8 +146,8 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
          * @var array $internalNodes
          */
         $internalNodes = $this->internalNodeRepository->findAll()->toArray();
-        DebugUtility::debug($externalNodes,'External Nodes');
-        DebugUtility::debug($internalNodes, 'Internal Nodes');
+        #DebugUtility::debug($externalNodes,'External Nodes');
+        #DebugUtility::debug($internalNodes, 'Internal Nodes');
 
         foreach ($internalNodes as $internalNode) {
             /**
@@ -290,6 +293,10 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             if ($mail->send() < 1) {
                 $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
                 $hasError = true;
+            }
+            else {
+                //Update last notification
+                $abo->setLastNotification(new \DateTime());
             }
         }
         if ($hasError) {
