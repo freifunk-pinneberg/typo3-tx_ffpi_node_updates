@@ -100,7 +100,9 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
         $querySettings->setRespectStoragePage(FALSE);
         $querySettings->setRespectSysLanguage(FALSE);
+        //Set the settings for our repositorys
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
+        $this->aboRepository->setDefaultQuerySettings($querySettings);
 
         $this->constructDone = true;
     }
@@ -114,11 +116,12 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     public function execute()
     {
         #if ($this->constructDone !== true) {
-            //I don't know why, but in test with TYPO3 7.6.14 an scheduler 7.6.0 the __construct is not automatic called
-            $this->__construct();
+        //I don't know why, but in test with TYPO3 7.6.14 an scheduler 7.6.0 the __construct is not automatic called
+        $this->__construct();
         #}
 
-        DebugUtility::debug($this->internalNodeRepository);
+        #DebugUtility::debug($this->internalNodeRepository, 'Internal Node Repository');
+        #DebugUtility::debug($this->aboRepository, 'Abo Repository');
 
         /**
          * @var boolean $hasError
@@ -171,7 +174,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
                 $this->updateNode($internalNode, false);
                 if (!$this->sendNotification($internalNode)) {
                     //it was not possible to send a notification
-                    $this->scheduler->log('Notification for ' . $nodeId . ' could not be send.', 1);
+                    $this->scheduler->log('One or more Notifications for ' . $nodeId . ' could not be send.', 1);
                     $hasError = true;
                 }
             } elseif ($internalOnline != $externalNode['status']['online']) {
@@ -243,8 +246,17 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      */
     private function sendNotification($internalNode)
     {
+        #DebugUtility::debug($internalNode, 'Internal Node (Notification method)');
         $hasError = false;
-        $abos = $this->aboRepository->findByNode($internalNode);
+
+        //Get all abos for this Node
+        $abos = $this->aboRepository->findByNode($internalNode)->toArray();
+
+        //if we have only one abo, it is not an array
+        if (is_object($abos)) {
+            $abos = array($abos);
+        }
+        #DebugUtility::debug($abos, 'Abos');
         foreach ($abos as $abo) {
             /**
              * @var \FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo
@@ -257,18 +269,25 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             }
 
             //build url to remove the abo
-            $pid = $this->uriBuilder->getTargetPageUid();
+            $url = '';
+
+            //uribuilder dose not work in tasks. @todo find out why
+            /*
+            $pid = 111;
             $urlAttributes = array();
             $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'removeForm';
             $urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
             $urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $abo->getEmail();
             $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $abo->getSecret();
             $url = $this->uriBuilder;
+            $url->initializeObject();
             $url->reset();
             $url->setTargetPageUid($pid);
             $url->setCreateAbsoluteUri(true);
             $url->setArguments($urlAttributes);
             $url = $url->buildFrontendUri();
+            */
+
 
             //Create the e-mail
             //@todo make it multilingual
@@ -293,10 +312,10 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             if ($mail->send() < 1) {
                 $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
                 $hasError = true;
-            }
-            else {
+            } else {
                 //Update last notification
                 $abo->setLastNotification(new \DateTime());
+                $this->aboRepository->update($abo);
             }
         }
         if ($hasError) {
