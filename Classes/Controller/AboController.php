@@ -90,7 +90,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         //Empfänger
         $mail->setTo(array($newAbo->getEmail()));
         //Nachricht
-        $mail->setBody("Hallo, \n jemand hat mit dieser E-Mail ein Benachrichtigungsabo für den Freifunk Knoten " . $aboNewDemand->getNodeId() . " eingerichtet. \n Falls du es warst, bestätige dies bitte mit folgendem Link: $url");
+        $mail->setBody("Hallo, \njemand hat mit dieser E-Mail ein Benachrichtigungsabo für den Freifunk Knoten " . $aboNewDemand->getNodeId() . " eingerichtet. \nFalls du es warst, bestätige dies bitte mit folgendem Link: $url");
         //Senden
         $mail->send();
     }
