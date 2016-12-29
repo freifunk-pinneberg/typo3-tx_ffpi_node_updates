@@ -306,7 +306,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             $body = "Hallo,\n";
             $body .= "Dein Knoten mit der ID " . $internalNode->getNodeId() . " ist Offline. \n";
             $body .= "So lange dein Knoten offline bleibt, wirst du keine Benachrichtigungen mehr erhalten.\n\n";
-            $body .= "Wenn du für diesen Knoten in Zukunft keine Benachrichtigungen mehr erhalten möchtest, kannst du sie unter $url abbestellen.";
+            #$body .= "Wenn du für diesen Knoten in Zukunft keine Benachrichtigungen mehr erhalten möchtest, kannst du sie unter $url abbestellen.";
             $mail->setBody($body);
             //Senden
             if ($mail->send() < 1) {

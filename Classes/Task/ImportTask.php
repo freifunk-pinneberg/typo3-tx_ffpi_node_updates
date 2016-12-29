@@ -144,7 +144,7 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         }
         $body = $response;
         curl_close($curl);
-        DebugUtility::debug($body, 'JSON Raw');
+        #DebugUtility::debug($body, 'JSON Raw');
         return $body;
     }
 
