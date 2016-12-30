@@ -2,15 +2,22 @@
 <f:layout name="Default"/>
 
 <f:section name="main">
-    <f:debug>{_all}</f:debug>
     <f:if condition="confirmed">
         <f:then>
-            <p>Dein Abo wurde bestätigt. Du erhälst nun jedes mal eine Benachrichtigung wenn dein Knoten offline geht.</p>
-            <p>E-Mail: {abo.email}<br>
-            Knoten: {abo.node.nodeId}</p>
+            <p>
+                <f:translate key="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1"/>
+            </p>
+            <p>
+                <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/>
+                : {abo.email}<br>
+                <f:translate key="tx_ffpinodeupdates_domain_model_abo.node"/>
+                : {abo.node.nodeId}
+            </p>
         </f:then>
         <f:else>
-            <p>Aktivierung fehlgeschlagen. Bitte prüfe den Link. Solltest du weiterhin Probleme haben wende dich an <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a></p>
+            <p>
+                <f:translate key="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1"/>
+            </p>
         </f:else>
     </f:if>
 </f:section>

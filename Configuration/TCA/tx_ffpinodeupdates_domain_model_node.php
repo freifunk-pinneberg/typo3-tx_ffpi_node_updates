@@ -1,7 +1,7 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_node',
+        'title' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node',
         'label' => 'node_id',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -79,7 +79,7 @@ return [
 
         'node_id' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_node.node_id',
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.node_id',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -89,7 +89,7 @@ return [
         ],
         'online' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_node.online',
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.online',
             'config' => [
                 'type' => 'check',
                 'items' => [
@@ -103,7 +103,7 @@ return [
         ],
         'last_change' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_node.last_change',
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.last_change',
             'config' => [
                 'type' => 'input',
                 'size' => 10,

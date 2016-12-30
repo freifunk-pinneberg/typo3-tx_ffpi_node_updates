@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
+		<header/>
+		<body>
+            <!-- TCA names -->
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node">
+				<target>Freifunk Knoten</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_id">
+				<target>Knoten ID</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.online">
+				<target>Online</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.last_change">
+				<target>Letzte Änderung</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo">
+				<target>Benachrichtigungs-Abo</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.email">
+				<target>E-Mail</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirmed">
+				<target>Bestätigt</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.last_notification">
+				<target>Letzte Benachrichtigung</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.secret">
+				<target>Secret</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.node">
+				<target>Knoten</target>
+			</trans-unit>
+			<!-- Create a new abo -->
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_p1">
+				<target>Trage hier deine E-Mail Adresse und die Knoten ID ein. Du erhälst dann jedes mal wenn der Knoten von Online auf Offline wechselt eine Benachrichtigung.</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
+				<target>Abonieren</target>
+			</trans-unit>
+			<!-- Remove a abo -->
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
+				<target>Abo beenden</target>
+			</trans-unit>
+            <!-- Confirm a abo -->
+            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
+                <target>Dein Abo wurde bestätigt. Du erhältst nun jedes mal eine Benachrichtigung wenn dein Knoten offline geht.</target>
+            </trans-unit>
+            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
+                <target><![CDATA[Aktivierung fehlgeschlagen. Bitte prüfe den Link. Solltest du weiterhin Probleme haben wende dich an <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></target>
+            </trans-unit>
+		</body>
+	</file>
+</xliff>

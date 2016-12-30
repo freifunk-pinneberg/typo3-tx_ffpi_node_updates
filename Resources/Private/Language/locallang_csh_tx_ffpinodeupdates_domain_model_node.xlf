@@ -4,13 +4,13 @@
 		<header/>
 		<body>
 			<trans-unit id="node_id.description">
-				<source>nodeId</source>
+				<source>Node ID</source>
 			</trans-unit>
 			<trans-unit id="online.description">
-				<source>online</source>
+				<source>Online</source>
 			</trans-unit>
 			<trans-unit id="last_change.description">
-				<source>lastChange</source>
+				<source>Last change</source>
 			</trans-unit>
 		</body>
 	</file>

@@ -3,8 +3,9 @@
 	<file source-language="en" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
 		<header/>
 		<body>
+            <!-- TCA names -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node">
-				<source>Node</source>
+				<source>Freifunk Node</source>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_id">
 				<source>Node Id</source>
@@ -16,7 +17,7 @@
 				<source>Last Change</source>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo">
-				<source>Abo</source>
+				<source>Notification abo</source>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.email">
 				<source>Email</source>
@@ -33,6 +34,24 @@
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.node">
 				<source>Node</source>
 			</trans-unit>
+			<!-- Create a new abo -->
+            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_p1">
+                <source>Enter your e-mail address and the node ID. You will receive a notification every time the node changes from online to offline.</source>
+            </trans-unit>
+            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
+                <source>Subscribe</source>
+            </trans-unit>
+            <!-- Remove a abo -->
+            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
+                <source>Unsubscribe</source>
+            </trans-unit>
+            <!-- Confirm a abo -->
+            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
+                <target>Your subscription has been confirmed. You will receive an alert every time your node goes offline.</target>
+            </trans-unit>
+            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
+                <target><![CDATA[Activation failed. Please check the link. If you still have problems, please contact <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></target>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>

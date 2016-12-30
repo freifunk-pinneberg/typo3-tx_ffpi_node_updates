@@ -2,7 +2,9 @@
 <f:layout name="Default"/>
 
 <f:section name="main">
-    <p>Trage hier deine E-Mail adresse und die Knoten ID ein. Du erhälst dann jedes mal wenn der Knoten von Online auf Offline wechselt eine Benachrichtigung.</p>
+    <p>
+        <f:translate key="tx_ffpinodeupdates_domain_model_abo.new_p1"/>
+    </p>
     <f:form controller="Abo" action="create" name="newAbo" object="{demand}" objectName="aboNewDemand">
         <fieldset>
             <label for="email">
@@ -23,6 +25,6 @@
         <f:form.submit value="abonieren"/>
     </f:form>
     <p>
-    <f:link.action action="removeForm">Abo abbestellen.</f:link.action>
+        <f:link.action action="removeForm">Abo abbestellen.</f:link.action>
     </p>
 </f:section>

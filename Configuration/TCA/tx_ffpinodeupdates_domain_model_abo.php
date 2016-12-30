@@ -1,7 +1,7 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo',
+        'title' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_abo',
         'label' => 'email',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -118,7 +118,7 @@ return [
 
         'email' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.email',
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_abo.email',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -128,7 +128,7 @@ return [
         ],
         'confirmed' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.confirmed',
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_abo.confirmed',
             'config' => [
                 'type' => 'check',
                 'items' => [
@@ -142,7 +142,7 @@ return [
         ],
         'last_notification' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.last_notification',
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_abo.last_notification',
             'config' => [
                 'type' => 'input',
                 'size' => 10,
@@ -154,7 +154,7 @@ return [
         ],
         'secret' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.secret',
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_abo.secret',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -164,7 +164,7 @@ return [
         ],
         'node' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang_db.xlf:tx_ffpinodeupdates_domain_model_abo.node',
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_abo.node',
             'config' => [
                 'type' => 'inline',
                 'foreign_table' => 'tx_ffpinodeupdates_domain_model_node',
