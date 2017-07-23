@@ -7,6 +7,7 @@ CREATE TABLE tx_ffpinodeupdates_domain_model_node (
 	pid int(11) DEFAULT '0' NOT NULL,
 
 	node_id varchar(255) DEFAULT '' NOT NULL,
+	node_name VARCHAR(255) DEFAULT '' NOT NULL,
 	online tinyint(1) unsigned DEFAULT '0' NOT NULL,
 	last_change int(11) DEFAULT '0' NOT NULL,
 

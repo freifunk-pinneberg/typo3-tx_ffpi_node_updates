@@ -25,6 +25,13 @@ class Node extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $nodeId = '';
 
     /**
+     * nodeName
+     *
+     * @var string
+     */
+    protected $nodeName = '';
+
+    /**
      * online
      *
      * @var bool
@@ -57,6 +64,20 @@ class Node extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setNodeId($nodeId)
     {
         $this->nodeId = $nodeId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNodeName(){
+        return $this->nodeName;
+    }
+
+    /**
+     * @param string $nodeName
+     */
+    public function setNodeName($nodeName){
+        $this->nodeName = $nodeName;
     }
 
     /**

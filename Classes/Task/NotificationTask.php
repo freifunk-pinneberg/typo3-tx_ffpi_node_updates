@@ -120,9 +120,6 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         $this->__construct();
         #}
 
-        #DebugUtility::debug($this->internalNodeRepository, 'Internal Node Repository');
-        #DebugUtility::debug($this->aboRepository, 'Abo Repository');
-
         /**
          * @var boolean $hasError
          */
@@ -142,15 +139,12 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
                 $externalNodesNew[$externalNode['id']] = $externalNode;
             }
             $externalNodes = $externalNodesNew;
-            #unset($externalNodesNew);
         }
         /**
          * Array with all internal saved nodes
          * @var array $internalNodes
          */
         $internalNodes = $this->internalNodeRepository->findAll()->toArray();
-        #DebugUtility::debug($externalNodes,'External Nodes');
-        #DebugUtility::debug($internalNodes, 'Internal Nodes');
 
         foreach ($internalNodes as $internalNode) {
             /**
@@ -166,7 +160,6 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             //check remote status
             $nodeId = $internalNode->getNodeId();
             $externalNode = $externalNodes[$nodeId];
-            #DebugUtility::debug($externalNode);
 
             if ($internalOnline === true AND $externalNode['status']['online'] === false) {
                 //node changed from online to offline since last check
@@ -256,7 +249,6 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         if (is_object($abos)) {
             $abos = array($abos);
         }
-        #DebugUtility::debug($abos, 'Abos');
         foreach ($abos as $abo) {
             /**
              * @var \FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo
@@ -295,7 +287,7 @@ class NotificationTask extends \TYPO3\CMS\Extbase\Scheduler\Task
             /**
              * @var \TYPO3\CMS\Core\Mail\MailMessage $mail
              */
-            $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
+            $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Mail\MailMessage::class);
             //Betreff
             $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
             //Absender

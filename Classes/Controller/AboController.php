@@ -67,32 +67,8 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         $newAbo->setSecret($secret);
         $this->aboRepository->add($newAbo);
 
-        //Wir brauchen für die E-Mail eine Besätigungs URL
-        $pid = $this->uriBuilder->getTargetPageUid();
-        $urlAttributes = array();
-        $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'confirm';
-        $urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
-        $urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $newAbo->getEmail();
-        $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $secret;
-        $url = $this->uriBuilder;
-        $url->reset();
-        $url->setTargetPageUid($pid);
-        $url->setCreateAbsoluteUri(true);
-        $url->setArguments($urlAttributes);
-        $url = $url->buildFrontendUri();
 
-        //E-Mail
-        $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Mail\\MailMessage');
-        //Betreff
-        $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
-        //Absender
-        $mail->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
-        //Empfänger
-        $mail->setTo(array($newAbo->getEmail()));
-        //Nachricht
-        $mail->setBody("Hallo, \njemand hat mit dieser E-Mail ein Benachrichtigungsabo für den Freifunk Knoten " . $aboNewDemand->getNodeId() . " eingerichtet. \nFalls du es warst, bestätige dies bitte mit folgendem Link: $url");
-        //Senden
-        $mail->send();
+        $this->sendConfirmEmail($newAbo, $secret);
     }
 
     public function removeFormAction()
@@ -150,6 +126,74 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         } else {
             $this->view->assign('confirmed', false);
         }
+    }
+
+    private function sendConfirmEmail($newAbo, $secret)
+    {
+        /**
+        $emailView = $this->objectManager->get(\TYPO3\CMS\Fluid\View\StandaloneView::class);
+        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+        $templateRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
+        $templatePathAndFilename = $templateRootPath . '/Abo/ConfirmEmail.html';
+        $emailView->setTemplatePathAndFilename($templatePathAndFilename);
+
+        */
+
+        /**
+        $emailView->assign('nodeId', $newAbo->getNodeId());
+        $emailView->assign('url', $url);
+        $emailView->assign('nodeName', $newAbo->getNodeName());
+
+        $emailBody = $emailView->render();
+
+
+        //E-Mail
+        $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Mail\MailMessage::class);
+        //Betreff
+        $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
+        //Absender
+        $mail->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
+        //Empfänger
+        $mail->setTo(array($newAbo->getEmail()));
+        //Nachricht
+        $mail->setBody($emailBody);
+        //Senden
+        $mail->send();
+        */
+
+        //Wir brauchen für die E-Mail eine Besätigungs URL
+        $url = $this->getConfirmLink($newAbo->getEmail(), $secret);
+
+        $emailData = array(
+            'nodeId' => $newAbo->getNodeId(),
+            'url' => $url,
+            'nodeName' => $newAbo->getNodeName(),
+        );
+
+        //send mail
+        $mail = new \FFPI\FfpiNodeUpdates\Utility\MailUtility();
+        $mail->sendMail(array($newAbo->getEmail()), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Abo/ConfirmEmail.html', $emailData);
+    }
+
+    /**
+     * @param string $email
+     * @param string $secret
+     * @return string Link
+     */
+    private function getConfirmLink($email, $secret){
+        $pid = $this->uriBuilder->getTargetPageUid();
+        $urlAttributes = array();
+        $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'confirm';
+        $urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
+        $urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $email;
+        $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $secret;
+        $url = $this->uriBuilder;
+        $url->reset();
+        $url->setTargetPageUid($pid);
+        $url->setCreateAbsoluteUri(true);
+        $url->setArguments($urlAttributes);
+        $url = $url->buildFrontendUri();
+        return $url;
     }
 
     /**
