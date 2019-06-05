@@ -1,21 +1,24 @@
 <?php
+
 namespace FFPI\FfpiNodeUpdates\Domain\Model;
 
-    /***
-     *
-     * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
-     *
-     * For the full copyright and license information, please read the
-     * LICENSE.txt file that was distributed with this source code.
-     *
-     *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
-     *
-     ***/
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+
+/***
+ *
+ * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
+ *
+ ***/
 
 /**
  * Freifunk Nodes
  */
-class Node extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class Node extends AbstractEntity
 {
     /**
      * nodeId
@@ -69,14 +72,16 @@ class Node extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * @return string
      */
-    public function getNodeName(){
+    public function getNodeName()
+    {
         return $this->nodeName;
     }
 
     /**
      * @param string $nodeName
      */
-    public function setNodeName($nodeName){
+    public function setNodeName($nodeName)
+    {
         $this->nodeName = $nodeName;
     }
 

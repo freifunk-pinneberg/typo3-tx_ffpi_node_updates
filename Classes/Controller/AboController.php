@@ -14,30 +14,45 @@
 namespace FFPI\FfpiNodeUpdates\Controller;
 
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
+use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
+use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand;
+use FFPI\FfpiNodeUpdates\Utility\MailUtility;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
  * AboController
  */
-class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class AboController extends ActionController
 {
     /**
      * aboRepository
      *
-     * @var \FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository
-     * @inject
+     * @var AboRepository
+     *
      */
     protected $aboRepository = null;
 
     /**
      * nodeRepository
      *
-     * @var \FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository
-     * @inject
+     * @var NodeRepository
+     *
      */
     protected $nodeRepository = null;
+
+    public function injectAboRepository(AboRepository $aboRepository)
+    {
+        $this->aboRepository = $aboRepository;
+    }
+
+    public function injectNodeRepository(NodeRepository $nodeRepository)
+    {
+        $this->nodeRepository = $nodeRepository;
+    }
 
     /**
      * action new
@@ -54,7 +69,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * action create
      *
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand $aboNewDemand
+     * @param AboNewDemand $aboNewDemand
      * @donotvalidate $aboNewDemand
      * @return void
      */
@@ -83,14 +98,14 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * action remove
      *
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
+     * @param AboRemoveDemand $aboRemoveDemand
      * @return void
      */
     public function removeAction($aboRemoveDemand)
     {
         $originalAbo = $this->aboRepository->findOneBySecret($aboRemoveDemand->getSecret());
         if (!empty($originalAbo) AND $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
-            $this->addFlashMessage('The object was deleted.', '', \TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR);
+            $this->addFlashMessage('The object was deleted.', '', AbstractMessage::ERROR);
             $this->aboRepository->remove($originalAbo);
             $this->view->assign('removed', true);
         } else {
@@ -112,7 +127,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 
         if (!empty($secret) AND !empty($email)) {
             /**
-             * @var \FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo
+             * @var Abo $abo
              */
             $abo = $this->aboRepository->findOneBySecret($secret);
             if (!empty($abo) AND $abo->getEmail() == $email) {
@@ -171,7 +186,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
         );
 
         //send mail
-        $mail = new \FFPI\FfpiNodeUpdates\Utility\MailUtility();
+        $mail = new MailUtility();
         $mail->sendMail(array($newAbo->getEmail()), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Abo/ConfirmEmail.html', $emailData);
     }
 
@@ -197,7 +212,7 @@ class AboController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Abo $abo
+     * @param Abo $abo
      * @return bool
      */
     private function checkAbo($abo)

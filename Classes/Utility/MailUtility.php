@@ -13,19 +13,24 @@
 
 namespace FFPI\FfpiNodeUpdates\Utility;
 
+use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 class MailUtility {
 
-    /** @var \TYPO3\CMS\Extbase\Object\ObjectManager */
+    /** @var ObjectManager */
     var $objectManager = null;
 
-    /** @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManager */
+    /** @var ConfigurationManager */
     var $configurationManager = null;
 
     public function __construct(){
-        $this->objectManager = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
-        $this->configurationManager = GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Configuration\ConfigurationManager::class);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
     }
 
     /**
@@ -43,8 +48,8 @@ class MailUtility {
         //Render the Template to get the mail body
         $emailBody = $template->render();
         //Create the email object
-        /** @var \TYPO3\CMS\Core\Mail\MailMessage $email */
-        $email = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Mail\MailMessage::class);
+        /** @var MailMessage $email */
+        $email = GeneralUtility::makeInstance(MailMessage::class);
         //Set mail data
         $email->setSubject($subject);
         $email->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
@@ -60,13 +65,13 @@ class MailUtility {
     /**
      * @param string $template
      * @param array $vars
-     * @return \TYPO3\CMS\Fluid\View\StandaloneView
+     * @return StandaloneView
      */
     private function getTemplate($template, $vars){
-        /** @var \TYPO3\CMS\Fluid\View\StandaloneView $emailView */
-        $emailView = $this->objectManager->get(\TYPO3\CMS\Fluid\View\StandaloneView::class);
-        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
-        $templateRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
+        /** @var StandaloneView $emailView */
+        $emailView = $this->objectManager->get(StandaloneView::class);
+        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+        $templateRootPath = GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
         $templatePathAndFilename = $templateRootPath . '/' . $template;
         $emailView->setTemplatePathAndFilename($templatePathAndFilename);
         $emailView->assignMultiple($vars);

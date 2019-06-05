@@ -1,9 +1,12 @@
 <?php
 namespace FFPI\FfpiNodeUpdates\Task;
 
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
+use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
-class ImportTaskAdditionalFieldProvider implements \TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface
+class ImportTaskAdditionalFieldProvider implements AdditionalFieldProviderInterface
 {
 
     /**
@@ -12,10 +15,10 @@ class ImportTaskAdditionalFieldProvider implements \TYPO3\CMS\Scheduler\Addition
      *
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
      * @param AbstractTask|NULL $task When editing, reference to the current task. NULL when adding.
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return array Array containing all the information pertaining to the additional fields
      */
-    public function getAdditionalFields(array &$taskInfo, $task, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject)
     {
         if (empty($taskInfo['FfpiNodeUpdates_pid'])) {
             if ($parentObject->CMD === 'edit') {
@@ -44,17 +47,17 @@ class ImportTaskAdditionalFieldProvider implements \TYPO3\CMS\Scheduler\Addition
      * If the task class is not relevant, the method is expected to return TRUE
      *
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool TRUE if validation was ok (or selected class is not relevant), FALSE otherwise
      */
-    public function validateAdditionalFields(array &$submittedData, \TYPO3\CMS\Scheduler\Controller\SchedulerModuleController $parentObject)
+    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $parentObject)
     {
         if (!empty($submittedData['FfpiNodeUpdates_pid']) AND is_numeric($submittedData['FfpiNodeUpdates_pid'])) {
             return true;
         } else {
             $parentObject->addMessage(
                 'Page Id must be integer, ' . gettype($submittedData['FfpiNodeUpdates_pid']) . ' given',
-                \TYPO3\CMS\Core\Messaging\FlashMessage::ERROR
+                FlashMessage::ERROR
             );
             return false;
         }
@@ -65,10 +68,10 @@ class ImportTaskAdditionalFieldProvider implements \TYPO3\CMS\Scheduler\Addition
      * if the task class matches
      *
      * @param array $submittedData Array containing the data submitted by the user
-     * @param \TYPO3\CMS\Scheduler\Task\AbstractTask $task Reference to the current task object
+     * @param AbstractTask $task Reference to the current task object
      * @return void
      */
-    public function saveAdditionalFields(array $submittedData, \TYPO3\CMS\Scheduler\Task\AbstractTask $task)
+    public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
         $task->pid = intval($submittedData['FfpiNodeUpdates_pid']);
     }

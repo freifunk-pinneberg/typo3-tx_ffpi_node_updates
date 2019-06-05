@@ -13,17 +13,21 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
+use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
-use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Scheduler\Task;
+use TYPO3\CMS\Scheduler\Scheduler;
 
-class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
+class ImportTask extends Task
 {
     /**
      * Reference to a scheduler object
      *
-     * @var \TYPO3\CMS\Scheduler\Scheduler
+     * @var Scheduler
      */
     protected $scheduler;
 
@@ -33,7 +37,7 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
     protected $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json'; //@todo get from TypoScript
 
     /**
-     * @var \FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository
+     * @var NodeRepository
      */
     protected $internalNodeRepository;
 
@@ -52,26 +56,20 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
      */
     public function execute()
     {
-        /**
-         * @var boolean $hasError
-         */
+        /** @var bool $hasError */
         $hasError = false;
-        /**
-         * @var \TYPO3\CMS\Extbase\Object\ObjectManager $objectManager
-         */
-        $objectManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager');
-        /**
-         * @var \TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager
-         */
-        $persistenceManager = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager');
+        /** @var ObjectManager $objectManager */
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        /** @var PersistenceManager $persistenceManager */
+        $persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
 
-        $this->internalNodeRepository = $objectManager->get('FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository');
+        $this->internalNodeRepository = $objectManager->get(NodeRepository::class);
 
         //Get the external nodes
         $externalNodes = $this->getExternalNodes();
 
         //set the correct pid for the storage, get from the TYPO3 task settings ($this->pid)
-        $querySettings = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Persistence\\Generic\\Typo3QuerySettings');
+        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $querySettings->setRespectStoragePage(FALSE);
         $querySettings->setStoragePageIds(array($this->pid));
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
@@ -89,8 +87,9 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
                 //Node dose not exist
                 $this->scheduler->log('Node ' . $nodeId . ' dose not exist. Start import', 0);
                 //create an new object
-                $node = $this->objectManager->get('FFPI\FfpiNodeUpdates\Domain\Model\Node');
+                $node = $this->objectManager->get(Node::class);
                 $node->setNodeId($nodeId);
+                $node->setNodeName($externalNode['name']);
                 $node->setLastChange(new \DateTime());
                 $node->setOnline($externalNode['status']['online']);
                 $node->setPid($this->pid);
@@ -144,7 +143,6 @@ class ImportTask extends \TYPO3\CMS\Extbase\Scheduler\Task
         }
         $body = $response;
         curl_close($curl);
-        #DebugUtility::debug($body, 'JSON Raw');
         return $body;
     }
 

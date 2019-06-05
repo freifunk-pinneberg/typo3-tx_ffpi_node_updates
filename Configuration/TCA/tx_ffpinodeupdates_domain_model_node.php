@@ -18,10 +18,10 @@ return [
         'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/tx_ffpinodeupdates_domain_model_node.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'hidden, node_id, online, last_change',
+        'showRecordFieldList' => 'hidden, node_id, node_name, online, last_change',
     ],
     'types' => [
-        '1' => ['showitem' => 'hidden, node_id, online, last_change, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
+        '1' => ['showitem' => 'hidden, node_id, node_name, online, last_change, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
     ],
     'columns' => [
         't3ver_label' => [
@@ -80,6 +80,16 @@ return [
         'node_id' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.node_id',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+
+        ],
+        'node_name' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.node_name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,

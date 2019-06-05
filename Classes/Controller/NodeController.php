@@ -1,29 +1,42 @@
 <?php
+
 namespace FFPI\FfpiNodeUpdates\Controller;
 
-    /***
-     *
-     * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
-     *
-     * For the full copyright and license information, please read the
-     * LICENSE.txt file that was distributed with this source code.
-     *
-     *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
-     *
-     ***/
+use FFPI\FfpiNodeUpdates\Domain\Model\Node;
+use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+
+/***
+ *
+ * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
+ *
+ ***/
 
 /**
  * NodeController
  */
-class NodeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class NodeController extends ActionController
 {
     /**
      * nodeRepository
      *
-     * @var \FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository
-     * @inject
+     * @var NodeRepository
+     *
      */
     protected $nodeRepository = null;
+
+    /**
+     * @param NodeRepository $nodeRepository
+     */
+    public function injectNodeRepository(NodeRepository $nodeRepository)
+    {
+        $this->nodeRepository = $nodeRepository;
+    }
 
     /**
      * action list
@@ -39,10 +52,10 @@ class NodeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * action show
      *
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Node $node
+     * @param Node $node
      * @return void
      */
-    public function showAction(\FFPI\FfpiNodeUpdates\Domain\Model\Node $node)
+    public function showAction(Node $node)
     {
         $this->view->assign('node', $node);
     }
