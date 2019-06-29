@@ -32,7 +32,7 @@
   },
   "minimum-stability": "beta",
   "require": {
-    "typo3/cms": "7.6 - 9.5",
+    "typo3/cms": "8.7.0 - 9.5.99",
     "ext-openssl": "*",
     "ext-json": "*"
   },
