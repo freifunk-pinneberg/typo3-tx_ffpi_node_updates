@@ -23,9 +23,9 @@ use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
-use TYPO3\CMS\Extbase\Scheduler\Task;
+use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
-class NotificationTask extends Task
+class NotificationTask extends AbstractTask
 {
     protected $constructDone = false;
 
@@ -66,13 +66,13 @@ class NotificationTask extends Task
         $this->internalNodeRepository = $nodeRepository;
     }
 
-    /**
-     * NotificationTask constructor.
-     */
-    public function __construct()
+    public function execute()
     {
-        parent::__construct();
+        $this->initialiseMainTask();
+        return $this->mainTask();
+    }
 
+    protected function initialiseMainTask(): void {
         /**
          * the default Extbase Object Manager
          *
@@ -117,8 +117,6 @@ class NotificationTask extends Task
         //Set the settings for our repositorys
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
         $this->aboRepository->setDefaultQuerySettings($querySettings);
-
-        $this->constructDone = true;
     }
 
     /**
@@ -127,13 +125,8 @@ class NotificationTask extends Task
      *
      * @return bool
      */
-    public function execute()
+    protected function mainTask()
     {
-        if ($this->constructDone !== true) {
-            //I don't know why, but in test with TYPO3 7.6.14 an scheduler 7.6.0 the __construct is not automatic called
-            $this->__construct();
-        }
-
         /**
          * @var boolean $hasError
          */
@@ -323,7 +316,7 @@ class NotificationTask extends Task
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @return void
      */
-    private function updateNode(Node $internalNode, array $externalNode)
+    private function updateNode(Node &$internalNode, array $externalNode)
     {
         $internalNode->setOnline($externalNode['status']['online']);
         $internalNode->setNodeName($externalNode['name']);
