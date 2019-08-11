@@ -19,10 +19,15 @@ use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class NotificationTask extends AbstractTask
@@ -50,7 +55,7 @@ class NotificationTask extends AbstractTask
     protected $uriBuilder;
 
     /**
-     * @var ObjectManager
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
      */
     protected $objectManager;
 
@@ -60,9 +65,15 @@ class NotificationTask extends AbstractTask
     protected $persistenceManager;
 
     /**
+     * @var DataMapFactory
+     */
+    protected $dataMapFactory;
+
+    /**
      * @param NodeRepository $nodeRepository
      */
-    public function injectNodeRepository(NodeRepository $nodeRepository){
+    public function injectNodeRepository(NodeRepository $nodeRepository)
+    {
         $this->internalNodeRepository = $nodeRepository;
     }
 
@@ -72,7 +83,8 @@ class NotificationTask extends AbstractTask
         return $this->mainTask();
     }
 
-    protected function initialiseMainTask(): void {
+    protected function initialiseMainTask(): void
+    {
         /**
          * the default Extbase Object Manager
          *
@@ -86,6 +98,13 @@ class NotificationTask extends AbstractTask
          * @var UriBuilder
          */
         $this->uriBuilder = $this->objectManager->get(UriBuilder::class);
+
+        /**
+         * DataMapFacotry, not directly used by this task, but needs to be aviable for the repository
+         *
+         * @var DataMapFactory
+         */
+        $this->dataMapFactory = $this->objectManager->get(DataMapFactory::class);
 
         /**
          * Saves the Repository objects into the Database
@@ -138,30 +157,9 @@ class NotificationTask extends AbstractTask
         /** @var Node[] $internalNodes */
         $internalNodes = $this->internalNodeRepository->findAll();
 
-        foreach ($internalNodes as $internalNode) {
-            /** @var array $externalNode */
-            $externalNode = $externalNodes[$internalNode->getNodeId()];
+        $this->updateAllNodes($externalNodes, $internalNodes);
 
-            if ($internalNode->getOnline() === true && $externalNode['status']['online'] === false) {
-                //node changed from online to offline since last check
-                $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline', 0);
-                $this->updateNode($internalNode, $externalNode);
-                if (!$this->sendNotification($internalNode)) {
-                    //it was not possible to send a notification
-                    $this->scheduler->log('One or more Notifications for ' . $internalNode->getNodeId() . ' could not be send.', 1);
-                    $hasError = true;
-                }
-            } elseif ($internalNode->getOnline() !== $externalNode['status']['online']) {
-                //The status has been changed, update the object
-                $this->updateNode($internalNode, $externalNode);
-                //Log the change
-                if ($externalNode['status']['online']) {
-                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now online.', 0);
-                } else {
-                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline.', 0);
-                }
-            }
-        }
+
         //Last step, Save all updated nodes to the database
         $this->persistenceManager->persistAll();
 
@@ -176,7 +174,7 @@ class NotificationTask extends AbstractTask
      *
      * @return string
      */
-    private function getJson()
+    protected function getJson()
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $this->path);
@@ -202,7 +200,7 @@ class NotificationTask extends AbstractTask
      *
      * @return array
      */
-    private function getExternalNodes()
+    protected function getExternalNodes()
     {
         $json = $this->getJson();
         $nodes = json_decode($json, true);
@@ -232,13 +230,13 @@ class NotificationTask extends AbstractTask
      * @param Node $internalNode
      * @return boolean
      */
-    private function sendNotification($internalNode)
+    protected function sendNotification($internalNode)
     {
         $hasError = false;
 
         //Get all abos for this Node
         /** @var Abo[] $abos */
-        $abos = $this->aboRepository->findByNode($internalNode)->toArray();
+        $abos = $this->aboRepository->findByNode($internalNode);
 
         //if we have only one abo, it is not an array
         if ($abos instanceof Abo) {
@@ -251,55 +249,78 @@ class NotificationTask extends AbstractTask
                 //Not confirmed, go to the next abo
                 continue;
             }
-
-            //build url to remove the abo
-            $url = '';
-
-            //uribuilder dose not work in tasks. @todo find out why
-
-            $pid = 1;
-            $urlAttributes = array();
-            $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'removeForm';
-            $urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
-            $urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $abo->getEmail();
-            $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $abo->getSecret();
-            $url = $this->uriBuilder;
-            $url->initializeObject();
-            $url->reset();
-            $url->setTargetPageUid($pid);
-            $url->setCreateAbsoluteUri(true);
-            $url->setArguments($urlAttributes);
-            $url = $url->buildFrontendUri();
-
-
-            //Create the e-mail
-            //@todo make it multilingual
-            //@todo use fluid templates
-            /**
-             * @var MailMessage $mail
-             */
-            $mail = GeneralUtility::makeInstance(MailMessage::class);
-            //Betreff
-            $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
-            //Absender
-            $mail->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
-            //Empfänger
-            $mail->setTo(array($abo->getEmail()));
-            //Nachricht
-            $body = "Hallo,\n";
-            $body .= "Dein Knoten mit der ID " . $internalNode->getNodeId() . " und dem Namen " . $internalNode->getNodeName() . " ist Offline. \n";
-            $body .= "So lange dein Knoten offline bleibt, wirst du keine Benachrichtigungen mehr erhalten.\n\n";
-            $body .= "Wenn du für diesen Knoten in Zukunft keine Benachrichtigungen mehr erhalten möchtest, kannst du sie unter $url abbestellen.";
-            $mail->setBody($body);
-            //Senden
-            if ($mail->send() < 1) {
-                $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
+            if (!$this->sendNotificationMail($abo, $internalNode)) {
                 $hasError = true;
-            } else {
-                //Update last notification
-                $abo->setLastNotification(new \DateTime());
-                $this->aboRepository->update($abo);
             }
+        }
+        return $hasError;
+    }
+
+    protected function sendNotificationMail(Abo $abo, Node $internalNode): bool
+    {
+        //build url to remove the abo
+        $url = '';
+
+        //uribuilder dose not work in tasks. @todo find out why
+
+        $pid = 1;
+        //$urlAttributes = array();
+        //$urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'removeForm';
+        //$urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
+        //$urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $abo->getEmail();
+        //$urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $abo->getSecret();
+        $url = $this->uriBuilder;
+        $url->initializeObject();
+        $url->reset();
+        $url->uriFor('removeForm', ['email' => $abo->getEmail(), 'secret' => $abo->getSecret()], 'Abo', 'ffpi_nodeupdates', 'Nodeabo');
+        $url->setTargetPageUid($pid);
+        $url->setCreateAbsoluteUri(true);
+        $url = $url->buildFrontendUri();
+
+
+        //Create the e-mail
+        //@todo make it multilingual
+        //@todo use fluid templates
+        /**
+         * @var MailMessage $mail
+         */
+        $mail = GeneralUtility::makeInstance(MailMessage::class);
+        //Betreff
+        $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
+        //Absender
+        $mail->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
+        //Empfänger
+        $mail->setTo(array($abo->getEmail()));
+
+        $view = $this->objectManager->get(StandaloneView::class);
+        $view->setFormat('html');
+        $view->setTemplateRootPaths(
+            $this->objectManager->get(
+                ConfigurationManager::class
+            )->getConfiguration(
+                ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK)['view']['templateRootPath']
+        );
+        $view->setTemplate('Mail/Notification.html');
+
+        $view->assign('node', $internalNode);
+        $view->assign('unsubscribeUrl', $url);
+        $htmlBody = $view->render();
+
+        //Nachricht
+        $body = "Hallo,\n";
+        $body .= "Dein Knoten mit der ID " . $internalNode->getNodeId() . " und dem Namen " . $internalNode->getNodeName() . " ist Offline. \n";
+        $body .= "So lange dein Knoten offline bleibt, wirst du keine Benachrichtigungen mehr erhalten.\n\n";
+        $body .= "Wenn du für diesen Knoten in Zukunft keine Benachrichtigungen mehr erhalten möchtest, kannst du sie unter $url abbestellen.";
+        $mail->setBody($body);
+
+        //Senden
+        if ($mail->send() < 1) {
+            $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
+            $hasError = true;
+        } else {
+            //Update last notification
+            $abo->setLastNotification(new \DateTime());
+            $this->aboRepository->update($abo);
         }
         if ($hasError) {
             return false;
@@ -307,20 +328,86 @@ class NotificationTask extends AbstractTask
         return true;
     }
 
+    protected function updateAllNodes(array $externalNodes, QueryResultInterface $internalNodes): bool
+    {
+        $hasError = false;
+        foreach ($internalNodes as $internalNode) {
+            /** @var array $externalNode */
+            $externalNode = $externalNodes[$internalNode->getNodeId()];
+
+            if ($internalNode->getOnline() === true && $externalNode['status']['online'] === false) {
+                //node changed from online to offline since last check
+                $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline', 0);
+                $this->updateNode($internalNode, $externalNode);
+                if (!$this->sendNotification($internalNode)) {
+                    //it was not possible to send a notification
+                    $this->scheduler->log('One or more Notifications for ' . $internalNode->getNodeId() . ' could not be send.', 1);
+                    $hasError = true;
+                }
+            } elseif ($internalNode->getOnline() !== $externalNode['status']['online']) {
+                //The status has been changed, update the object
+                $this->updateNode($internalNode, $externalNode);
+                //Log the change
+                if ($externalNode['status']['online']) {
+                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now online.', 0);
+                } else {
+                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline.', 0);
+                }
+            }
+        }
+        return $hasError;
+    }
+
     /**
      * Update Node Status
      *
      * @param Node $internalNode
      * @param array $externalNode
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
      */
-    private function updateNode(Node &$internalNode, array $externalNode)
+    protected function updateNode(?Node $internalNode, ?array $externalNode)
     {
+        if (empty($externalNode)) {
+            return;
+        }
+        if (!($internalNode instanceof Node)) {
+            $internalNode = $this->createNodeIfNotExist($externalNode);
+        }
+        if (!($internalNode instanceof Node)) {
+            return;
+        }
         $internalNode->setOnline($externalNode['status']['online']);
         $internalNode->setNodeName($externalNode['name']);
         $internalNode->setLastChange(new \DateTime());
         $this->internalNodeRepository->update($internalNode);
+    }
+
+    /**
+     * @param array $externalNode
+     * @return Node|null
+     */
+    protected function createNodeIfNotExist(array $externalNode): ?Node
+    {
+        if (empty($externalNode['id'])) {
+            return null;
+        }
+        $internalNode = $this->internalNodeRepository->findOneByNodeId($externalNode['id']);
+        if ($internalNode instanceof Node) {
+            return $internalNode;
+        }
+        //Node not exists
+        $node = new Node();
+        $node->setNodeId($externalNode['id']);
+        $node->setNodeName($externalNode['name']);
+        $node->setLastChange(new \DateTime());
+        if ($externalNode['status']['online'] == true) {
+            $node->setOnline(true);
+        } else {
+            $node->setOnline(false);
+        }
+        $this->internalNodeRepository->add($node);
+        return $node;
     }
 }
