@@ -32,8 +32,6 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class NotificationTask extends AbstractTask
 {
-    protected $constructDone = false;
-
     /**
      * @var string
      */
@@ -68,14 +66,6 @@ class NotificationTask extends AbstractTask
      * @var DataMapFactory
      */
     protected $dataMapFactory;
-
-    /**
-     * @param NodeRepository $nodeRepository
-     */
-    public function injectNodeRepository(NodeRepository $nodeRepository)
-    {
-        $this->internalNodeRepository = $nodeRepository;
-    }
 
     public function execute()
     {
@@ -151,14 +141,19 @@ class NotificationTask extends AbstractTask
          */
         $hasError = false;
 
-        //We need the External Nodes. (They come from the json file)
+        // We need the External Nodes. (They come from the json file)
         $externalNodes = $this->getExternalNodes();
+        if (empty($externalNodes)) {
+            return false;
+        }
 
-        /** @var Node[] $internalNodes */
+        // And the nodes that we already have
         $internalNodes = $this->internalNodeRepository->findAll();
 
-        $this->updateAllNodes($externalNodes, $internalNodes);
-
+        // Update Every Node and Send Notifications
+        if (!$this->updateAllNodes($externalNodes, $internalNodes)) {
+            $hasError = true;
+        }
 
         //Last step, Save all updated nodes to the database
         $this->persistenceManager->persistAll();
@@ -167,61 +162,6 @@ class NotificationTask extends AbstractTask
             return false;
         }
         return true;
-    }
-
-    /**
-     * Gets the JSON
-     *
-     * @return string
-     */
-    protected function getJson()
-    {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $this->path);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        //Useragent
-        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
-        //follow 301 and 302
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-
-        $response = curl_exec($curl);
-        $responseStatusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        if ($errno = curl_errno($curl)) {
-            $this->scheduler->log('Curl Error: ' . $errno . ' HTTP:' . $responseStatusCode, 1);
-        }
-        $body = $response;
-        curl_close($curl);
-
-        return $body;
-    }
-
-    /**
-     * Gets External Nodes
-     *
-     * @return array
-     */
-    protected function getExternalNodes()
-    {
-        $json = $this->getJson();
-        $nodes = json_decode($json, true);
-        if ($nodes == NULL) {
-            $this->scheduler->log(json_last_error_msg(), 1);
-        }
-        $externalNodes = $nodes['nodes'];
-
-        if (empty($externalNodes) || !is_array($externalNodes)) {
-            //We can't do anything when we don't have the exernal nodes
-            $this->scheduler->log('External Nodes are empty', 1);
-            return [];
-        } else {
-            $externalNodesNew = array();
-            foreach ($externalNodes as $externalNode) {
-                //the node id must be the array key
-                $externalNodesNew[$externalNode['id']] = $externalNode;
-            }
-            $externalNodes = $externalNodesNew;
-        }
-        return $externalNodes;
     }
 
     /**
@@ -253,7 +193,7 @@ class NotificationTask extends AbstractTask
                 $hasError = true;
             }
         }
-        return $hasError;
+        return !$hasError;
     }
 
     protected function sendNotificationMail(Abo $abo, Node $internalNode): bool
@@ -292,19 +232,19 @@ class NotificationTask extends AbstractTask
         //Empfänger
         $mail->setTo(array($abo->getEmail()));
 
-        $view = $this->objectManager->get(StandaloneView::class);
-        $view->setFormat('html');
-        $view->setTemplateRootPaths(
-            $this->objectManager->get(
-                ConfigurationManager::class
-            )->getConfiguration(
-                ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK)['view']['templateRootPath']
-        );
-        $view->setTemplate('Mail/Notification.html');
+        //$view = $this->objectManager->get(StandaloneView::class);
+        //$view->setFormat('html');
+        //$view->setTemplateRootPaths(
+        //    $this->objectManager->get(
+        //        ConfigurationManager::class
+        //    )->getConfiguration(
+        //        ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK)['view']['templateRootPath']
+        //);
+        //$view->setTemplate('Mail/Notification.html');
 
-        $view->assign('node', $internalNode);
-        $view->assign('unsubscribeUrl', $url);
-        $htmlBody = $view->render();
+        //$view->assign('node', $internalNode);
+        //$view->assign('unsubscribeUrl', $url);
+        //$htmlBody = $view->render();
 
         //Nachricht
         $body = "Hallo,\n";
@@ -355,7 +295,7 @@ class NotificationTask extends AbstractTask
                 }
             }
         }
-        return $hasError;
+        return !$hasError;
     }
 
     /**
@@ -379,9 +319,13 @@ class NotificationTask extends AbstractTask
             return;
         }
         $internalNode->setOnline($externalNode['status']['online']);
-        $internalNode->setNodeName($externalNode['name']);
-        $internalNode->setLastChange(new \DateTime());
-        $this->internalNodeRepository->update($internalNode);
+        if(!empty($externalNode['name'])) {
+            $internalNode->setNodeName($externalNode['name']);
+        }
+        if ($internalNode->_isDirty()) {
+            $internalNode->setLastChange(new \DateTime());
+            $this->internalNodeRepository->update($internalNode);
+        }
     }
 
     /**
@@ -410,4 +354,60 @@ class NotificationTask extends AbstractTask
         $this->internalNodeRepository->add($node);
         return $node;
     }
+
+    /**
+     * Gets External Nodes
+     *
+     * @return array
+     */
+    protected function getExternalNodes()
+    {
+        $json = $this->getJson();
+        $nodes = json_decode($json, true);
+        if ($nodes == NULL) {
+            $this->scheduler->log(json_last_error_msg(), 1);
+        }
+        $externalNodes = $nodes['nodes'];
+
+        if (empty($externalNodes) || !is_array($externalNodes)) {
+            //We can't do anything when we don't have the exernal nodes
+            $this->scheduler->log('External Nodes are empty', 1);
+            return [];
+        } else {
+            $externalNodesNew = array();
+            foreach ($externalNodes as $externalNode) {
+                //the node id must be the array key
+                $externalNodesNew[$externalNode['id']] = $externalNode;
+            }
+            $externalNodes = $externalNodesNew;
+        }
+        return $externalNodes;
+    }
+
+    /**
+     * Gets the JSON
+     *
+     * @return string
+     */
+    protected function getJson()
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $this->path);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        //Useragent
+        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
+        //follow 301 and 302
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+
+        $response = curl_exec($curl);
+        $responseStatusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        if ($errno = curl_errno($curl)) {
+            $this->scheduler->log('Curl Error: ' . $errno . ' HTTP:' . $responseStatusCode, 1);
+        }
+        $body = $response;
+        curl_close($curl);
+
+        return $body;
+    }
+
 }

@@ -136,4 +136,18 @@ class Node extends AbstractEntity
     {
         $this->lastChange = $lastChange;
     }
+
+    /**
+     * Get a clean label
+     * @return string
+     */
+    public function getLabel(): string
+    {
+        if (!empty($this->getNodeName())) {
+            $label = $this->getNodeName() . ' - ' . $this->getNodeId();
+        } else {
+            $label = $this->getNodeId();
+        }
+        return $label;
+    }
 }

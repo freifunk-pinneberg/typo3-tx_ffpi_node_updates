@@ -70,7 +70,6 @@ class AboController extends ActionController
      * action create
      *
      * @param AboNewDemand $aboNewDemand
-     * @donotvalidate $aboNewDemand
      * @return void
      */
     public function createAction($aboNewDemand)

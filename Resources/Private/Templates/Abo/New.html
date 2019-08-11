@@ -6,7 +6,6 @@
         <f:translate key="tx_ffpinodeupdates_domain_model_abo.new_p1"/>
     </p>
     <f:form controller="Abo" action="create" name="newAbo" object="{demand}" objectName="aboNewDemand">
-        <f:debug>{nodes}</f:debug>
         <fieldset>
             <label for="email">
                 <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/>
@@ -16,7 +15,7 @@
             <label for="node">
                 <f:translate key="tx_ffpinodeupdates_domain_model_abo.node"/>
             </label>
-            <f:form.select id="node" options="{nodes}" optionLabelField="nodeName" optionValueField="nodeId" />
+            <f:form.select id="node" options="{nodes}" optionLabelField="label" optionValueField="nodeId" />
         </fieldset>
         <f:form.submit value="abonieren"/>
     </f:form>

@@ -166,17 +166,9 @@ return [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_abo.node',
             'config' => [
-                'type' => 'inline',
+                'type' => 'select',
                 'foreign_table' => 'tx_ffpinodeupdates_domain_model_node',
                 'minitems' => 0,
-                'maxitems' => 1,
-                'appearance' => [
-                    'collapseAll' => 0,
-                    'levelLinksPosition' => 'top',
-                    'showSynchronizationLink' => 1,
-                    'showPossibleLocalizationRecords' => 1,
-                    'showAllLocalizationLink' => 1
-                ],
             ],
 
         ],
