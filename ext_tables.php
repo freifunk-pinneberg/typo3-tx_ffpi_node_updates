@@ -11,6 +11,12 @@ call_user_func(
             'Node Abo'
         );
 
+        TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+            'FFPI.FfpiNodeUpdates',
+            'Gatewayhealth',
+            'Gateway health'
+        );
+
         TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($extKey, 'Configuration/TypoScript', 'Freifunk knoten Benachrichtigung');
 
         TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_ffpinodeupdates_domain_model_node', 'EXT:ffpi_node_updates/Resources/Private/Language/locallang_csh_tx_ffpinodeupdates_domain_model_node.xlf');
@@ -18,6 +24,9 @@ call_user_func(
 
         TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_ffpinodeupdates_domain_model_abo', 'EXT:ffpi_node_updates/Resources/Private/Language/locallang_csh_tx_ffpinodeupdates_domain_model_abo.xlf');
         TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_ffpinodeupdates_domain_model_abo');
+
+        TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_ffpinodeupdates_domain_model_gateway', 'EXT:ffpi_node_updates/Resources/Private/Language/locallang_csh_tx_ffpinodeupdates_domain_model_gateway.xlf');
+        TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_ffpinodeupdates_domain_model_gateway');
 
     },
     $_EXTKEY

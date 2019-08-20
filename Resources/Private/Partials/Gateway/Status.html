@@ -1,0 +1,9 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:if condition="{value} == 1">
+    <f:then><span class="ok">OK</span></f:then>
+    <f:else if="{value} == 2"><span class="error">Fehler</span></f:else>
+    <f:else><span class="unknown">Unbekannt</span></f:else>
+</f:if>
+
+</html>

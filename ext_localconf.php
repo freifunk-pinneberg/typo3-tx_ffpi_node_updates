@@ -35,6 +35,18 @@ call_user_func(
             ]
         );
 
+        ExtensionUtility::configurePlugin(
+            'FFPI.FfpiNodeUpdates',
+            'Gatewayhealth',
+            [
+                'Gateway' => 'overview'
+            ],
+            // non-cacheable actions
+            [
+                'Gateway' => ''
+            ]
+        );
+
     },
     $_EXTKEY
 );

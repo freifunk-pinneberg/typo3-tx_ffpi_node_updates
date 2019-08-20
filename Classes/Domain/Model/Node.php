@@ -49,6 +49,13 @@ class Node extends AbstractEntity
     protected $lastChange = null;
 
     /**
+     * role
+     *
+     * @var string
+     */
+    protected $role = '';
+
+    /**
      * Returns the nodeId
      *
      * @return string $nodeId
@@ -135,6 +142,22 @@ class Node extends AbstractEntity
     public function setLastChange(\DateTime $lastChange)
     {
         $this->lastChange = $lastChange;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRole(): string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param string $role
+     */
+    public function setRole(string $role): void
+    {
+        $this->role = $role;
     }
 
     /**

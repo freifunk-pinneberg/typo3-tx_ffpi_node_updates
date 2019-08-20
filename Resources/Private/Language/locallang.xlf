@@ -16,6 +16,9 @@
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.last_change">
 				<source>Last Change</source>
 			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.role">
+				<source>Role</source>
+			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo">
 				<source>Notification abo</source>
 			</trans-unit>
@@ -52,6 +55,9 @@
             <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
                 <target><![CDATA[Activation failed. Please check the link. If you still have problems, please contact <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></target>
             </trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway">
+				<source>Freifunk Gateway</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

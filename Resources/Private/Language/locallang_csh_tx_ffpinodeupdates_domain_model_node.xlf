@@ -12,6 +12,9 @@
 			<trans-unit id="last_change.description">
 				<source>Last change</source>
 			</trans-unit>
+			<trans-unit id="last_change.role">
+				<source>Role</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

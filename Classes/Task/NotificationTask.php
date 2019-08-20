@@ -322,6 +322,9 @@ class NotificationTask extends AbstractTask
         if(!empty($externalNode['name'])) {
             $internalNode->setNodeName($externalNode['name']);
         }
+        if(!empty($externalNode['role'])) {
+            $internalNode->setRole($externalNode['role']);
+        }
         if ($internalNode->_isDirty()) {
             $internalNode->setLastChange(new \DateTime());
             $this->internalNodeRepository->update($internalNode);
@@ -345,6 +348,7 @@ class NotificationTask extends AbstractTask
         $node = new Node();
         $node->setNodeId($externalNode['id']);
         $node->setNodeName($externalNode['name']);
+        $node->setRole($externalNode['role']);
         $node->setLastChange(new \DateTime());
         if ($externalNode['status']['online'] == true) {
             $node->setOnline(true);

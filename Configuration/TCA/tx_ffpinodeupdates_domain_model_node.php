@@ -18,10 +18,10 @@ return [
         'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/tx_ffpinodeupdates_domain_model_node.gif'
     ],
     'interface' => [
-        'showRecordFieldList' => 'hidden, node_id, node_name, online, last_change',
+        'showRecordFieldList' => 'hidden, node_id, node_name, role, online, last_change',
     ],
     'types' => [
-        '1' => ['showitem' => 'hidden, node_id, node_name, online, last_change, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
+        '1' => ['showitem' => 'hidden, node_id, node_name, online, role, last_change, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
     ],
     'columns' => [
         't3ver_label' => [
@@ -76,7 +76,6 @@ return [
                 ],
             ],
         ],
-
         'node_id' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.node_id',
@@ -95,7 +94,15 @@ return [
                 'size' => 30,
                 'eval' => 'trim'
             ],
-
+        ],
+        'role' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.role',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
         ],
         'online' => [
             'exclude' => 1,
@@ -109,7 +116,6 @@ return [
                 ],
                 'default' => 0
             ]
-
         ],
         'last_change' => [
             'exclude' => 1,
@@ -121,8 +127,6 @@ return [
                 'checkbox' => 1,
                 'default' => time()
             ],
-
         ],
-
     ],
 ];
