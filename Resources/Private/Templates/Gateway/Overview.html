@@ -7,30 +7,61 @@
         <f:for as="gateway" each="{gateways}">
             <div class="gateway">
                 <h3>{gateway.node.nodeName}</h3>
-                <dl>
-                    <td>Node ID</td>
-                    <dd>{gateway.node.nodeId}</dd>
-                    <dt>Ping</dt>
-                    <dd>{gateway.ping} ms</dd>
-
-                    <dt>OpenVPN</dt>
-                    <dd><f:render partial="Gateway/Status.html" arguments="{'value': gateway.openVpn}" /></dd>
-
-                    <dt>Network Interface</dt>
-                    <dd><f:render partial="Gateway/Status.html" arguments="{'value': gateway.networkInterface}" /></dd>
-
-                    <dt>Firewall</dt>
-                    <dd><f:render partial="Gateway/Status.html" arguments="{'value': gateway.firewall}" /></dd>
-
-                    <dt>Exit VPN</dt>
-                    <dd><f:render partial="Gateway/Status.html" arguments="{'value': gateway.exitVpn}" /></dd>
-
-                    <dt>Last Check</dt>
-                    <dd><f:format.date date="{gateway.lastHealthCheck}" format="d.m.Y - H:i:s" /></dd>
-
-                    <dt>Last Change</dt>
-                    <dd><f:format.date date="{gateway.lastChange}" format="d.m.Y - H:i" /> Uhr</dd>
-                </dl>
+                <table>
+                    <tr>
+                        <td>Node ID</td>
+                        <td>{gateway.node.nodeId}</td>
+                    </tr>
+                    <tr>
+                        <td>Ping</td>
+                        <td>{gateway.ping} ms</td>
+                    </tr>
+                    <tr>
+                        <td><abbr title="Fast and Secure Tunneling Daemon">Fastd</abbr></td>
+                        <td>
+                            <f:if condition="{gateway.node.online}">
+                                <f:then><span class="ok">Online</span></f:then>
+                                <f:else><span class="error">Offline</span></f:else>
+                            </f:if>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>OpenVPN</td>
+                        <td>
+                            <f:render partial="Gateway/Status.html" arguments="{'value': gateway.openVpn}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Network Interface</td>
+                        <td>
+                            <f:render partial="Gateway/Status.html" arguments="{'value': gateway.networkInterface}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Firewall</td>
+                        <td>
+                            <f:render partial="Gateway/Status.html" arguments="{'value': gateway.firewall}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Exit VPN</td>
+                        <td>
+                            <f:render partial="Gateway/Status.html" arguments="{'value': gateway.exitVpn}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Last Check</td>
+                        <td>
+                            <f:format.date date="{gateway.lastHealthCheck}" format="d.m.Y - H:i"/> Uhr
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Last Change</td>
+                        <td>
+                            <f:format.date date="{gateway.lastHealthChange}" format="d.m.Y - H:i"/> Uhr
+                        </td>
+                    </tr>
+                </table>
             </div>
         </f:for>
     </div>

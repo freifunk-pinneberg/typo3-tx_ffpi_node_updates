@@ -28,7 +28,7 @@ class Gateway extends AbstractEntity
     protected $ping = null;
 
     /** @var int */
-    protected $openVPN = self::STATE_UNKNOWN;
+    protected $openVpn = self::STATE_UNKNOWN;
 
     /** @var int */
     protected $networkInterface = self::STATE_UNKNOWN;
@@ -132,18 +132,18 @@ class Gateway extends AbstractEntity
     /**
      * @return int
      */
-    public function getOpenVPN(): int
+    public function getOpenVpn(): int
     {
-        return $this->openVPN;
+        return $this->openVpn;
     }
 
     /**
      * @param int
      * @return Gateway
      */
-    public function setOpenVPN(int $openVPN): Gateway
+    public function setOpenVpn(int $openVpn): Gateway
     {
-        $this->openVPN = $openVPN;
+        $this->openVpn = $openVpn;
         return $this;
     }
 
