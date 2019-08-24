@@ -11,6 +11,7 @@
  *
  ***/
 
+use FFPI\FfpiNodeUpdates\Task\GatewayUpdateTask;
 use FFPI\FfpiNodeUpdates\Task\ImportTask;
 use FFPI\FfpiNodeUpdates\Task\ImportTaskAdditionalFieldProvider;
 use FFPI\FfpiNodeUpdates\Task\NotificationTask;
@@ -62,4 +63,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][ImportTask::clas
     'title' => 'Node Import',
     'description' => 'Imports all Nodes',
     'additionalFields' => ImportTaskAdditionalFieldProvider::class,
+);
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][GatewayUpdateTask::class] = array(
+    'extension' => $_EXTKEY,
+    'title' => 'Gateway Update',
+    'description' => 'Updates the gateways',
+    //'additionalFields' => ImportTaskAdditionalFieldProvider::class,
 );

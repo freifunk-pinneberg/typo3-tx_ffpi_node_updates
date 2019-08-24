@@ -18,7 +18,7 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'node,open_vpn',
-        'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/tx_ffpinodeupdates_domain_model_gateway.gif'
+        'iconfile' => 'apps-filetree-mount'
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, http_adress, node, ping, open_vpn, network_interface, firewall, exit_vpn',
