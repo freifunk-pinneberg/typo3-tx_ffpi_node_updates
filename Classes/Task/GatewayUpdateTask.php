@@ -70,6 +70,7 @@ class GatewayUpdateTask extends AbstractTask
      */
     protected function ping(string $host): ?int
     {
+        //@TODO: Implement Ping
         return null;
     }
 

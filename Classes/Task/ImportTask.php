@@ -19,10 +19,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
-use TYPO3\CMS\Extbase\Scheduler\Task;
+use TYPO3\CMS\Scheduler\Task\AbstractTask;
 use TYPO3\CMS\Scheduler\Scheduler;
 
-class ImportTask extends Task
+class ImportTask extends AbstractTask
 {
     /**
      * Reference to a scheduler object
@@ -42,12 +42,34 @@ class ImportTask extends Task
     protected $internalNodeRepository;
 
     /**
+     * @var ObjectManager
+     */
+    protected $objectManager;
+
+    /**
+     * @var PersistenceManager
+     */
+    protected $persistenceManager;
+
+    /**
      * pid for the storage
      *
      * @var int $pid
      */
     public $pid;
 
+    protected function inistalizeTask()
+    {
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $this->internalNodeRepository = $this->objectManager->get(NodeRepository::class);
+
+        //set the correct pid for the storage, get from the TYPO3 task settings ($this->pid)
+        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
+        $querySettings->setRespectStoragePage(FALSE);
+        $querySettings->setStoragePageIds(array($this->pid));
+        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
+    }
 
     /**
      * Execute the Task
@@ -56,23 +78,12 @@ class ImportTask extends Task
      */
     public function execute()
     {
+        $this->inistalizeTask();
         /** @var bool $hasError */
         $hasError = false;
-        /** @var ObjectManager $objectManager */
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var PersistenceManager $persistenceManager */
-        $persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
-
-        $this->internalNodeRepository = $objectManager->get(NodeRepository::class);
 
         //Get the external nodes
         $externalNodes = $this->getExternalNodes();
-
-        //set the correct pid for the storage, get from the TYPO3 task settings ($this->pid)
-        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
-        $querySettings->setRespectStoragePage(FALSE);
-        $querySettings->setStoragePageIds(array($this->pid));
-        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
 
         //check if we have external nodes
         if (empty($externalNodes)) {
@@ -83,32 +94,36 @@ class ImportTask extends Task
 
         foreach ($externalNodes['nodes'] as $externalNode) {
             $nodeId = $externalNode['id'];
-            if ($this->internalNodeRepository->findOneByNodeId($nodeId) === null) {
+            $internalNode = $this->internalNodeRepository->findOneByNodeId($nodeId);
+            if ($internalNode === null) {
                 //Node dose not exist
                 $this->scheduler->log('Node ' . $nodeId . ' dose not exist. Start import', 0);
                 //create an new object
-                $node = $this->objectManager->get(Node::class);
+                $node = new Node;
                 $node->setNodeId($nodeId);
                 $node->setNodeName($externalNode['name']);
+                $node->setRole($externalNode['role']);
                 $node->setLastChange(new \DateTime());
                 $node->setOnline($externalNode['status']['online']);
                 $node->setPid($this->pid);
                 //add the object to the repo
                 $this->internalNodeRepository->add($node);
+            } elseif ($internalNode instanceof Node){
+                $internalNode->setRole($externalNode['role']);
+                $internalNode->setNodeName($externalNode['name']);
+                $this->internalNodeRepository->update($internalNode);
             }
         }
 
         $this->scheduler->log('Total nodes internal: ' . $this->internalNodeRepository->countAll(), 0);
 
         //Save all changes in the Database
-        $persistenceManager->persistAll();
+        $this->persistenceManager->persistAll();
 
         if ($hasError === true) {
             return false;
         }
-
         return true;
-
     }
 
     /**

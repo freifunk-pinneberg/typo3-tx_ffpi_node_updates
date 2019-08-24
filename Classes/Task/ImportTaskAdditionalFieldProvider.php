@@ -2,11 +2,11 @@
 namespace FFPI\FfpiNodeUpdates\Task;
 
 use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
+use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
-class ImportTaskAdditionalFieldProvider implements AdditionalFieldProviderInterface
+class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 {
 
     /**
@@ -21,7 +21,7 @@ class ImportTaskAdditionalFieldProvider implements AdditionalFieldProviderInterf
     public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject)
     {
         if (empty($taskInfo['FfpiNodeUpdates_pid'])) {
-            if ($parentObject->CMD === 'edit') {
+            if ($parentObject->getCurrentAction() === 'edit') {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
                 $taskInfo['FfpiNodeUpdates_pid'] = $task->pid;
             } else {
@@ -55,7 +55,7 @@ class ImportTaskAdditionalFieldProvider implements AdditionalFieldProviderInterf
         if (!empty($submittedData['FfpiNodeUpdates_pid']) AND is_numeric($submittedData['FfpiNodeUpdates_pid'])) {
             return true;
         } else {
-            $parentObject->addMessage(
+            $this->addMessage(
                 'Page Id must be integer, ' . gettype($submittedData['FfpiNodeUpdates_pid']) . ' given',
                 FlashMessage::ERROR
             );
