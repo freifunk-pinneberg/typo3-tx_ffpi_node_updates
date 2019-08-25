@@ -35,7 +35,12 @@ class NotificationTask extends AbstractTask
     /**
      * @var string
      */
-    protected $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json'; //@todo get from TypoScript
+    public $path;
+
+    /**
+     * @var int
+     */
+    public $pid;
 
     /**
      * @var NodeRepository
@@ -121,6 +126,7 @@ class NotificationTask extends AbstractTask
          * @var Typo3QuerySettings $querySettings
          */
         $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
+        $querySettings->setStoragePageIds([(int)$this->pid]);
         $querySettings->setRespectStoragePage(FALSE);
         $querySettings->setRespectSysLanguage(FALSE);
         //Set the settings for our repositorys
@@ -319,10 +325,10 @@ class NotificationTask extends AbstractTask
             return;
         }
         $internalNode->setOnline($externalNode['status']['online']);
-        if(!empty($externalNode['name'])) {
+        if (!empty($externalNode['name'])) {
             $internalNode->setNodeName($externalNode['name']);
         }
-        if(!empty($externalNode['role'])) {
+        if (!empty($externalNode['role'])) {
             $internalNode->setRole($externalNode['role']);
         }
         if ($internalNode->_isDirty()) {

@@ -7,6 +7,7 @@ use FFPI\FfpiNodeUpdates\Domain\Repository\GatewayRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class GatewayUpdateTask extends AbstractTask
@@ -20,11 +21,17 @@ class GatewayUpdateTask extends AbstractTask
     /** @var PersistenceManager */
     protected $persistenceManager;
 
+    /** @var int */
+    public $pid;
+
     protected function inistalizeTask()
     {
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->gatewayRepository = $this->objectManager->get(GatewayRepository::class);
         $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $querySettings = new Typo3QuerySettings();
+        $querySettings->setStoragePageIds([(int)$this->pid]);
+        $this->gatewayRepository->setDefaultQuerySettings($querySettings);
     }
 
     /**
@@ -66,12 +73,18 @@ class GatewayUpdateTask extends AbstractTask
 
     /**
      * @param string $host
-     * @return int|null
+     * @return float|null
      */
-    protected function ping(string $host): ?int
+    protected function ping(string $host): ?float
     {
-        //@TODO: Implement Ping
-        return null;
+        try {
+            $pingRawResult = exec('ping -q -c 2 ' . $host . ' | grep avg');
+        } catch (\Exception $e) {
+            return null;
+        }
+        $result = preg_replace('/rtt\smin\/avg\/max\/mdev\s=\s\d+.\d+\/(\d+.\d+)\/\d+.\d+\/\d+.\d+\sms/', '${1}', $pingRawResult);
+        $result = floatval($result);
+        return $result;
     }
 
     /**
@@ -107,6 +120,7 @@ class GatewayUpdateTask extends AbstractTask
                     $newKey = 'openVpn';
                     break;
                 case 'Interface mullvad':
+                case 'Interface earthvpn':
                     $newKey = 'networkInterface';
                     break;
                 case 'Firewall-Interface':
@@ -156,11 +170,19 @@ class GatewayUpdateTask extends AbstractTask
                 $value = Gateway::STATE_UNKNOWN;
             }
             if ($gateway->_hasProperty($property) && ($gateway->_getProperty($property) != $value)) {
-                $healtChanged = true;
-                $gateway->_setProperty($property, $value);
+                if ($property !== 'ping') {
+                    $healtChanged = true;
+                    $gateway->_setProperty($property, $value);
+                } elseif (($gateway->_getProperty($property) > 0 && ($value == 0 || $value == null)) ||
+                    ($value > 0 && ($gateway->_getProperty($property) == 0 || $gateway->_getProperty($property) == null))) {
+                    $healtChanged = true;
+                    $gateway->_setProperty($property, $value);
+                } else {
+                    $gateway->_setProperty($property, $value);
+                }
             }
         }
-        if($healtChanged){
+        if ($healtChanged) {
             $gateway->setLastHealthChange(new \DateTime());
         }
         $gateway->setLastHealthCheck(new \DateTime());

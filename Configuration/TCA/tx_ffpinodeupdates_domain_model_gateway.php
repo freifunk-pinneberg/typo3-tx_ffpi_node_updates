@@ -18,7 +18,7 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'node,open_vpn',
-        'iconfile' => 'apps-filetree-mount'
+        'iconfile' => 'EXT:core/Resources/Public/Icons/T3Icons/apps/apps-filetree-mount.svg'
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, http_adress, node, ping, open_vpn, network_interface, firewall, exit_vpn',

@@ -7,9 +7,8 @@ use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
-class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
+class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 {
-
     /**
      * This method is used to define new fields for adding or editing a task
      * In this case, it adds an email field
@@ -21,28 +20,18 @@ class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
      */
     public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject)
     {
-        if (empty($taskInfo['FfpiNodeUpdates_pid']) || empty($taskInfo['FfpiNodeUpdates_url'])) {
+        if (empty($taskInfo['FfpiNodeUpdates_pid'])) {
             if ($parentObject->getCurrentAction() === 'edit') {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
                 $taskInfo['FfpiNodeUpdates_pid'] = $task->pid;
-                $taskInfo['FfpiNodeUpdates_url'] = $task->path;
             } else {
                 // Otherwise set an empty value, as it will not be used anyway
                 $taskInfo['FfpiNodeUpdates_pid'] = '';
-                $taskInfo['FfpiNodeUpdates_url'] = '';
             }
         }
 
         $additionalFields = [];
 
-        $fieldID = 'FfpiNodeUpdates_url';
-        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_url]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_url']) . '" size="30">';
-        $additionalFields[$fieldID] = [
-            'code' => $fieldCode,
-            'label' => 'nodelist.json URL',
-            'cshKey' => '_MOD_system_txschedulerM1',
-            'cshLabel' => $fieldID
-        ];
         $fieldID = 'FfpiNodeUpdates_pid';
         $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_pid]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_pid']) . '" size="30">';
         $additionalFields[$fieldID] = [
@@ -72,13 +61,6 @@ class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
             );
             $ret = false;
         }
-        if (empty($submittedData['FfpiNodeUpdates_url'])) {
-            $this->addMessage(
-                'URL must not be empty',
-                FlashMessage::ERROR
-            );
-            $ret = false;
-        }
         return $ret;
     }
 
@@ -93,6 +75,5 @@ class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
         $task->pid = intval($submittedData['FfpiNodeUpdates_pid']);
-        $task->url = trim($submittedData['FfpiNodeUpdates_url']);
     }
 }

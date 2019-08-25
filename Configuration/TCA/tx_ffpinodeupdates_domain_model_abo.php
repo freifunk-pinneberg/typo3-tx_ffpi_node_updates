@@ -18,7 +18,7 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'email,confirmed,last_notification,secret,node,',
-        'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/tx_ffpinodeupdates_domain_model_abo.gif'
+        'iconfile' => 'EXT:install/Resources/Public/Icons/modules/install-test-mail.svg'
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, email, confirmed, last_notification, secret, node',
@@ -145,7 +145,7 @@ return [
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_abo.last_notification',
             'config' => [
                 'type' => 'input',
-                'renderType' => 'selectSingle',
+                'renderType' => 'inputDateTime',
                 'size' => 10,
                 'eval' => 'datetime',
                 'checkbox' => 1,

@@ -34,7 +34,7 @@ class ImportTask extends AbstractTask
     /**
      * @var string
      */
-    protected $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json'; //@todo get from TypoScript
+    public $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json';
 
     /**
      * @var NodeRepository

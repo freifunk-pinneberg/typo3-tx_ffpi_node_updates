@@ -7,7 +7,7 @@ use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
-class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
+class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
 {
 
     /**
@@ -93,6 +93,6 @@ class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
         $task->pid = intval($submittedData['FfpiNodeUpdates_pid']);
-        $task->url = trim($submittedData['FfpiNodeUpdates_url']);
+        $task->path = trim($submittedData['FfpiNodeUpdates_url']);
     }
 }

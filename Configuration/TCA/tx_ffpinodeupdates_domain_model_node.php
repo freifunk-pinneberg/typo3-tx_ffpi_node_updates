@@ -14,8 +14,8 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'searchFields' => 'node_id,node_name,online,last_change,',
-        'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/tx_ffpinodeupdates_domain_model_node.gif'
+        'searchFields' => 'node_id,node_name,role,online,last_change,',
+        'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/wifi-router.svg',
     ],
     'interface' => [
         'showRecordFieldList' => 'hidden, node_id, node_name, role, online, last_change',
