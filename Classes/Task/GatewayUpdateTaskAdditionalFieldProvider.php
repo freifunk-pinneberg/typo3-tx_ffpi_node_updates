@@ -21,7 +21,7 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
     public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject)
     {
         if (empty($taskInfo['FfpiNodeUpdates_pid'])) {
-            if ($parentObject->getCurrentAction() === 'edit') {
+            if ($parentObject->getCurrentAction()->equals('edit')) {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
                 $taskInfo['FfpiNodeUpdates_pid'] = $task->pid;
             } else {

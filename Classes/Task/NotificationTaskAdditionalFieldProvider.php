@@ -22,7 +22,7 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
     public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject)
     {
         if (empty($taskInfo['FfpiNodeUpdates_pid']) || empty($taskInfo['FfpiNodeUpdates_url'])) {
-            if ($parentObject->getCurrentAction() === 'edit') {
+            if ($parentObject->getCurrentAction()->equals('edit')) {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
                 $taskInfo['FfpiNodeUpdates_pid'] = $task->pid;
                 $taskInfo['FfpiNodeUpdates_url'] = $task->path;
