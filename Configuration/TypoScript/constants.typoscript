@@ -7,9 +7,4 @@ plugin.tx_ffpinodeupdates_nodeabo {
         # cat=plugin.tx_ffpinodeupdates_nodeabo/file; type=string; label=Path to template layouts (FE)
         layoutRootPath =
     }
-
-    persistence {
-        # cat=plugin.tx_ffpinodeupdates_nodeabo//a; type=string; label=Default storage PID
-        storagePid =
-    }
 }

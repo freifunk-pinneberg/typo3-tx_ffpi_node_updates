@@ -7,17 +7,4 @@ plugin.tx_ffpinodeupdates_nodeabo {
         layoutRootPaths.0 = EXT:ffpi_node_updates/Resources/Private/Layouts/
         layoutRootPaths.1 = {$plugin.tx_ffpinodeupdates_nodeabo.view.layoutRootPath}
     }
-
-    persistence {
-        storagePid = {$plugin.tx_ffpinodeupdates_nodeabo.persistence.storagePid}
-        #recursive = 1
-    }
-
-    features {
-        #skipDefaultArguments = 1
-    }
-
-    mvc {
-        #callDefaultActionIfActionCantBeResolved = 1
-    }
 }
