@@ -93,6 +93,6 @@ class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
         $task->pid = intval($submittedData['FfpiNodeUpdates_pid']);
-        $task->url = trim($submittedData['FfpiNodeUpdates_url']);
+        $task->path = trim($submittedData['FfpiNodeUpdates_url']);
     }
 }

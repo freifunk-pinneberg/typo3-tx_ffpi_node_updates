@@ -34,7 +34,7 @@ class ImportTask extends AbstractTask
     /**
      * @var string
      */
-    public $path = 'http://meshviewer.pinneberg.freifunk.net/data/nodelist.json';
+    public $path;
 
     /**
      * @var NodeRepository
