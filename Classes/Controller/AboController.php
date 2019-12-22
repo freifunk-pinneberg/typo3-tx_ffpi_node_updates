@@ -15,9 +15,9 @@ namespace FFPI\FfpiNodeUpdates\Controller;
 
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
+use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand;
 use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
-use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use Throwable;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
@@ -80,7 +80,7 @@ class AboController extends ActionController
      * @return void
      * @throws Throwable
      */
-    public function createAction($aboNewDemand)
+    public function createAction(AboNewDemand $aboNewDemand)
     {
         $newAbo = GeneralUtility::makeInstance(Abo::class);
         $newAbo->setEmail($aboNewDemand->getEmail());
@@ -152,7 +152,7 @@ class AboController extends ActionController
         }
     }
 
-    private function sendConfirmEmail($newAbo, $secret)
+    private function sendConfirmEmail(Abo $newAbo, string $secret)
     {
         /**
         $emailView = $this->objectManager->get(\TYPO3\CMS\Fluid\View\StandaloneView::class);
@@ -189,14 +189,14 @@ class AboController extends ActionController
         $url = $this->getConfirmLink($newAbo->getEmail(), $secret);
 
         $emailData = array(
-            'nodeId' => $newAbo->getNodeId(),
+            'nodeId' => $newAbo->getNode()->getNodeId(),
             'url' => $url,
-            'nodeName' => $newAbo->getNodeName(),
+            'nodeName' => $newAbo->getNode()->getNodeName(),
         );
 
         //send mail
         $mail = new MailUtility();
-        $mail->sendMail(array($newAbo->getEmail()), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Abo/ConfirmEmail.html', $emailData);
+        $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Abo/ConfirmEmail.html', $emailData);
     }
 
     /**

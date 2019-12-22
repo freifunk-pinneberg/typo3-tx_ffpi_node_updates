@@ -3,6 +3,7 @@
 namespace FFPI\FfpiNodeUpdates\Domain\Model;
 
 use DateTime;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /***
  *
@@ -18,7 +19,7 @@ use DateTime;
 /**
  * Abo
  */
-class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
+class Abo extends AbstractEntity
 {
     /**
      * email
@@ -39,7 +40,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var DateTime
      */
-    protected $lastNotification = null;
+    protected $lastNotification;
 
     /**
      * secret
@@ -53,14 +54,14 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @var Node
      */
-    protected $node = null;
+    protected $node;
 
     /**
      * Returns the email
      *
      * @return string $email
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -71,7 +72,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $email
      * @return void
      */
-    public function setEmail($email)
+    public function setEmail(string $email)
     {
         $this->email = $email;
     }
@@ -92,7 +93,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param bool $confirmed
      * @return void
      */
-    public function setConfirmed($confirmed)
+    public function setConfirmed(bool $confirmed)
     {
         $this->confirmed = $confirmed;
     }
@@ -102,7 +103,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return bool
      */
-    public function isConfirmed()
+    public function isConfirmed(): bool
     {
         return $this->confirmed;
     }
@@ -112,7 +113,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return DateTime $lastNotification
      */
-    public function getLastNotification()
+    public function getLastNotification(): ?DateTime
     {
         return $this->lastNotification;
     }
@@ -133,7 +134,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string $secret
      */
-    public function getSecret()
+    public function getSecret(): string
     {
         return $this->secret;
     }
@@ -144,7 +145,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @param string $secret
      * @return void
      */
-    public function setSecret($secret)
+    public function setSecret(string $secret)
     {
         $this->secret = $secret;
     }
@@ -154,7 +155,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return Node $node
      */
-    public function getNode()
+    public function getNode(): ?Node
     {
         return $this->node;
     }

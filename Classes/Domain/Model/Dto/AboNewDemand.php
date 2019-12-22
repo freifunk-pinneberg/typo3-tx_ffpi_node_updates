@@ -8,8 +8,7 @@ class AboNewDemand
      * nodeId
      *
      * @var string
-     * @Extbase\Validate("NotEmpty")
-     * @TYPO3\CMS\Extbase\Annotation\Validate("StringLength", options={"minimum": 3)
+     * @TYPO3\CMS\Extbase\Annotation\Validate("NotEmpty")
      */
     protected $nodeId = '';
 

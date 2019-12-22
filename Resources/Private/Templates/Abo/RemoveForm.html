@@ -3,8 +3,20 @@
 
 <f:section name="main">
     <f:form controller="Abo" action="remove" name="removeAbo" object="{demand}" objectName="aboRemoveDemand">
-        <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/> <f:form.textfield property="email" value="{email}"/><br>
-        <f:translate key="tx_ffpinodeupdates_domain_model_abo.secret"/> <f:form.textfield property="secret" value="{secret}"/><br>
-        <f:form.submit value="Eintrag löschen" />
+        <label for="email" class="control-label">
+            <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/>
+        </label>
+        <div class="input">
+            <f:form.textfield id="email" property="email" type="email" value="{email}" required="required"/>
+        </div>
+        <br>
+        <label for="secret" class="control-label">
+            <f:translate key="tx_ffpinodeupdates_domain_model_abo.secret"/>
+        </label>
+        <div class="input">
+            <f:form.textfield id="secret" property="secret" value="{secret}" required="required" />
+        </div>
+        <br>
+        <f:form.submit value="Eintrag löschen" class="btn button" />
     </f:form>
 </f:section>

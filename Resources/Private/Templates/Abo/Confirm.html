@@ -2,7 +2,7 @@
 <f:layout name="Default"/>
 
 <f:section name="main">
-    <f:if condition="confirmed">
+    <f:if condition="{confirmed}">
         <f:then>
             <p>
                 <f:translate key="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1"/>
@@ -16,7 +16,7 @@
         </f:then>
         <f:else>
             <p>
-                <f:translate key="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1"/>
+                <f:format.raw><f:translate key="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1"/></f:format.raw>
             </p>
         </f:else>
     </f:if>

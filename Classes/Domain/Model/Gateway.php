@@ -5,6 +5,7 @@ namespace FFPI\FfpiNodeUpdates\Domain\Model;
 
 
 use DateTime;
+use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class Gateway extends AbstractEntity
@@ -14,9 +15,9 @@ class Gateway extends AbstractEntity
     public const STATE_ERROR = 2;
 
     /**
-     * @var Node
+     * @var \FFPI\FfpiNodeUpdates\Domain\Model\Node
      */
-    protected $node = null;
+    protected $node;
 
     /**
      * @var string
@@ -26,17 +27,17 @@ class Gateway extends AbstractEntity
     /**
      * @var DateTime
      */
-    protected $lastHealthCheck = null;
+    protected $lastHealthCheck;
 
     /**
      * @var DateTime
      */
-    protected $lastHealthChange = null;
+    protected $lastHealthChange;
 
     /**
      * @var float|null
      */
-    protected $ping = null;
+    protected $ping;
 
     /**
      * @var int
