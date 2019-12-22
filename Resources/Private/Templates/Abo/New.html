@@ -6,18 +6,23 @@
         <f:translate key="tx_ffpinodeupdates_domain_model_abo.new_p1"/>
     </p>
     <f:form controller="Abo" action="create" name="newAbo" object="{demand}" objectName="aboNewDemand">
-        <fieldset>
-            <label for="email">
+        <fieldset class="new-node-abo">
+            <label for="email" class="control-label">
                 <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/>
             </label>
-            <f:form.textfield id="email" property="email"/>
+            <div class="input">
+                <f:form.textfield id="email" property="email" type="email" required="required"/>
+            </div>
             <br>
-            <label for="node">
+            <label for="node" class="control-label">
                 <f:translate key="tx_ffpinodeupdates_domain_model_abo.node"/>
             </label>
-            <f:form.select id="node" options="{nodes}" optionLabelField="label" optionValueField="nodeId" />
+            <div class="input">
+                <f:form.select id="node" options="{nodes}" optionLabelField="label" optionValueField="nodeId"
+                               prependOptionLabel="Bitte wählen" required="required"/>
+            </div>
         </fieldset>
-        <f:form.submit value="abonieren"/>
+        <f:form.submit value="Abonieren" class="btn button"/>
     </f:form>
     <p>
         <f:link.action action="removeForm">Abo abbestellen.</f:link.action>

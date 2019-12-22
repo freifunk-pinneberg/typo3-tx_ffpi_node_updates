@@ -2,6 +2,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Domain\Model;
 
+use DateTime;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /***
@@ -44,7 +45,7 @@ class Node extends AbstractEntity
     /**
      * lastChange
      *
-     * @var \DateTime
+     * @var DateTime
      */
     protected $lastChange = null;
 
@@ -126,7 +127,7 @@ class Node extends AbstractEntity
     /**
      * Returns the lastChange
      *
-     * @return \DateTime $lastChange
+     * @return DateTime $lastChange
      */
     public function getLastChange()
     {
@@ -136,10 +137,10 @@ class Node extends AbstractEntity
     /**
      * Sets the lastChange
      *
-     * @param \DateTime $lastChange
+     * @param DateTime $lastChange
      * @return void
      */
-    public function setLastChange(\DateTime $lastChange)
+    public function setLastChange(DateTime $lastChange)
     {
         $this->lastChange = $lastChange;
     }

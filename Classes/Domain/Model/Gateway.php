@@ -4,6 +4,7 @@
 namespace FFPI\FfpiNodeUpdates\Domain\Model;
 
 
+use DateTime;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class Gateway extends AbstractEntity
@@ -12,31 +13,49 @@ class Gateway extends AbstractEntity
     public const STATE_OK = 1;
     public const STATE_ERROR = 2;
 
-    /** @var \FFPI\FfpiNodeUpdates\Domain\Model\Node */
+    /**
+     * @var Node
+     */
     protected $node = null;
 
-    /** @var string $httpAdress */
+    /**
+     * @var string
+     */
     protected $httpAdress = '';
 
-    /** @var \DateTime */
+    /**
+     * @var DateTime
+     */
     protected $lastHealthCheck = null;
 
-    /** @var \DateTime */
+    /**
+     * @var DateTime
+     */
     protected $lastHealthChange = null;
 
-    /** @var float|null $ping */
+    /**
+     * @var float|null
+     */
     protected $ping = null;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $openVpn = self::STATE_UNKNOWN;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $networkInterface = self::STATE_UNKNOWN;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $firewall = self::STATE_UNKNOWN;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $exitVpn = self::STATE_UNKNOWN;
 
     /**
@@ -76,36 +95,36 @@ class Gateway extends AbstractEntity
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getLastHealthCheck(): \DateTime
+    public function getLastHealthCheck(): DateTime
     {
         return $this->lastHealthCheck;
     }
 
     /**
-     * @param \DateTime $lastHealthCheck
+     * @param DateTime $lastHealthCheck
      * @return Gateway
      */
-    public function setLastHealthCheck(\DateTime $lastHealthCheck): Gateway
+    public function setLastHealthCheck(DateTime $lastHealthCheck): Gateway
     {
         $this->lastHealthCheck = $lastHealthCheck;
         return $this;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getLastHealthChange(): \DateTime
+    public function getLastHealthChange(): DateTime
     {
         return $this->lastHealthChange;
     }
 
     /**
-     * @param \DateTime $lastHealthChange
+     * @param DateTime $lastHealthChange
      * @return Gateway
      */
-    public function setLastHealthChange(\DateTime $lastHealthChange): Gateway
+    public function setLastHealthChange(DateTime $lastHealthChange): Gateway
     {
         $this->lastHealthChange = $lastHealthChange;
         return $this;

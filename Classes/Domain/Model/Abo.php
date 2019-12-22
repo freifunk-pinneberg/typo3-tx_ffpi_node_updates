@@ -1,16 +1,19 @@
 <?php
+
 namespace FFPI\FfpiNodeUpdates\Domain\Model;
 
-    /***
-     *
-     * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
-     *
-     * For the full copyright and license information, please read the
-     * LICENSE.txt file that was distributed with this source code.
-     *
-     *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
-     *
-     ***/
+use DateTime;
+
+/***
+ *
+ * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
+ *
+ ***/
 
 /**
  * Abo
@@ -34,7 +37,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * lastNotification
      *
-     * @var \DateTime
+     * @var DateTime
      */
     protected $lastNotification = null;
 
@@ -48,7 +51,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * node
      *
-     * @var \FFPI\FfpiNodeUpdates\Domain\Model\Node
+     * @var Node
      */
     protected $node = null;
 
@@ -107,7 +110,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the lastNotification
      *
-     * @return \DateTime $lastNotification
+     * @return DateTime $lastNotification
      */
     public function getLastNotification()
     {
@@ -117,10 +120,10 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the lastNotification
      *
-     * @param \DateTime $lastNotification
+     * @param DateTime $lastNotification
      * @return void
      */
-    public function setLastNotification(\DateTime $lastNotification)
+    public function setLastNotification(DateTime $lastNotification)
     {
         $this->lastNotification = $lastNotification;
     }
@@ -149,7 +152,7 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Returns the node
      *
-     * @return \FFPI\FfpiNodeUpdates\Domain\Model\Node $node
+     * @return Node $node
      */
     public function getNode()
     {
@@ -159,10 +162,10 @@ class Abo extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     /**
      * Sets the node
      *
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Node $node
+     * @param Node $node
      * @return void
      */
-    public function setNode(\FFPI\FfpiNodeUpdates\Domain\Model\Node $node)
+    public function setNode(Node $node)
     {
         $this->node = $node;
     }

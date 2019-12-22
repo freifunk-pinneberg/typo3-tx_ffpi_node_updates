@@ -7,7 +7,7 @@
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  *
- *  (c) 2016 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
+ *  (c) 2019 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
  *
  ***/
 
@@ -19,9 +19,11 @@ use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
+use Throwable;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
  * AboController
@@ -63,7 +65,12 @@ class AboController extends ActionController
     {
         $aboNewDemand = GeneralUtility::makeInstance(AboNewDemand::class);
         $this->view->assign('demand', $aboNewDemand);
-        $this->view->assign('nodes', $this->nodeRepository->findAll());
+        $this->view->assign('nodes', $this->nodeRepository->findAll()->getQuery()->setOrderings(
+            [
+                'nodeName' => QueryInterface::ORDER_ASCENDING,
+                'nodeId' => QueryInterface::ORDER_ASCENDING
+            ]
+        )->execute());
     }
 
     /**
@@ -71,6 +78,7 @@ class AboController extends ActionController
      *
      * @param AboNewDemand $aboNewDemand
      * @return void
+     * @throws Throwable
      */
     public function createAction($aboNewDemand)
     {
@@ -99,6 +107,7 @@ class AboController extends ActionController
      *
      * @param AboRemoveDemand $aboRemoveDemand
      * @return void
+     * @throws Throwable
      */
     public function removeAction($aboRemoveDemand)
     {
@@ -116,6 +125,7 @@ class AboController extends ActionController
      * action confirm
      *
      * @return void
+     * @throws Throwable
      */
     public function confirmAction()
     {
