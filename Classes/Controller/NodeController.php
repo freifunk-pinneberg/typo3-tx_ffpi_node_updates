@@ -28,7 +28,7 @@ class NodeController extends ActionController
      * @var NodeRepository
      *
      */
-    protected $nodeRepository = null;
+    protected $nodeRepository ;
 
     /**
      * @param NodeRepository $nodeRepository

@@ -36,7 +36,7 @@ class AboController extends ActionController
      * @var AboRepository
      *
      */
-    protected $aboRepository = null;
+    protected $aboRepository;
 
     /**
      * nodeRepository
@@ -44,13 +44,19 @@ class AboController extends ActionController
      * @var NodeRepository
      *
      */
-    protected $nodeRepository = null;
+    protected $nodeRepository;
 
+    /**
+     * @param AboRepository $aboRepository
+     */
     public function injectAboRepository(AboRepository $aboRepository)
     {
         $this->aboRepository = $aboRepository;
     }
 
+    /**
+     * @param NodeRepository $nodeRepository
+     */
     public function injectNodeRepository(NodeRepository $nodeRepository)
     {
         $this->nodeRepository = $nodeRepository;
@@ -93,6 +99,9 @@ class AboController extends ActionController
         $this->sendConfirmEmail($newAbo, $secret);
     }
 
+    /**
+     * action removeForm
+     */
     public function removeFormAction()
     {
         $args = $this->request->getArguments();
@@ -152,38 +161,43 @@ class AboController extends ActionController
         }
     }
 
-    private function sendConfirmEmail(Abo $newAbo, string $secret)
+    /**
+     * @param Abo $newAbo
+     * @param string $secret
+     * @return bool
+     * @throws Throwable
+     */
+    private function sendConfirmEmail(Abo $newAbo, string $secret): bool
     {
         /**
-        $emailView = $this->objectManager->get(\TYPO3\CMS\Fluid\View\StandaloneView::class);
-        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
-        $templateRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
-        $templatePathAndFilename = $templateRootPath . '/Abo/ConfirmEmail.html';
-        $emailView->setTemplatePathAndFilename($templatePathAndFilename);
-
-        */
+         * $emailView = $this->objectManager->get(\TYPO3\CMS\Fluid\View\StandaloneView::class);
+         * $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+         * $templateRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
+         * $templatePathAndFilename = $templateRootPath . '/Abo/ConfirmEmail.html';
+         * $emailView->setTemplatePathAndFilename($templatePathAndFilename);
+         */
 
         /**
-        $emailView->assign('nodeId', $newAbo->getNodeId());
-        $emailView->assign('url', $url);
-        $emailView->assign('nodeName', $newAbo->getNodeName());
-
-        $emailBody = $emailView->render();
-
-
-        //E-Mail
-        $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Mail\MailMessage::class);
-        //Betreff
-        $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
-        //Absender
-        $mail->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
-        //Empfänger
-        $mail->setTo(array($newAbo->getEmail()));
-        //Nachricht
-        $mail->setBody($emailBody);
-        //Senden
-        $mail->send();
-        */
+         * $emailView->assign('nodeId', $newAbo->getNodeId());
+         * $emailView->assign('url', $url);
+         * $emailView->assign('nodeName', $newAbo->getNodeName());
+         *
+         * $emailBody = $emailView->render();
+         *
+         *
+         * //E-Mail
+         * $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Mail\MailMessage::class);
+         * //Betreff
+         * $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
+         * //Absender
+         * $mail->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
+         * //Empfänger
+         * $mail->setTo(array($newAbo->getEmail()));
+         * //Nachricht
+         * $mail->setBody($emailBody);
+         * //Senden
+         * $mail->send();
+         */
 
         //Wir brauchen für die E-Mail eine Besätigungs URL
         $url = $this->getConfirmLink($newAbo->getEmail(), $secret);
@@ -197,6 +211,11 @@ class AboController extends ActionController
         //send mail
         $mail = new MailUtility();
         $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Abo/ConfirmEmail.html', $emailData);
+        if ($mail >= 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -204,7 +223,8 @@ class AboController extends ActionController
      * @param string $secret
      * @return string Link
      */
-    private function getConfirmLink($email, $secret){
+    private function getConfirmLink($email, $secret)
+    {
         $pid = $this->uriBuilder->getTargetPageUid();
         $urlAttributes = array();
         $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'confirm';

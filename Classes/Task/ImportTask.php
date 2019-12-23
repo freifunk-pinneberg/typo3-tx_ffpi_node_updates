@@ -15,6 +15,7 @@ namespace FFPI\FfpiNodeUpdates\Task;
 
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
+use Throwable;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
@@ -75,8 +76,9 @@ class ImportTask extends AbstractTask
      * Execute the Task
      *
      * @return bool
+     * @throws Throwable
      */
-    public function execute()
+    public function execute(): bool
     {
         $this->inistalizeTask();
         /** @var bool $hasError */
