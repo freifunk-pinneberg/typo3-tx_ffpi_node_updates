@@ -41,6 +41,9 @@
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
 				<target>Abonieren</target>
 			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.abo_created">
+				<target>Dein Abo wurde eingetragen, ist aber noch inaktiv. Wir haben dir eine Bestätigungs E-Mail geschickt. Klicke auf den enthaltenen  Link um dein Abo zu bestätigen.</target>
+			</trans-unit>
 			<!-- Remove a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
 				<target>Abo beenden</target>

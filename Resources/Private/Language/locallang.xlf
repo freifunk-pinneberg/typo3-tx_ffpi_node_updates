@@ -44,6 +44,9 @@
             <trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
                 <source>Subscribe</source>
             </trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.abo_created">
+				<source>You abo has been created bit os inactive. We have send a confirmation mail to you. Click on the link in the mail to confirm your abo.</source>
+			</trans-unit>
             <!-- Remove a abo -->
             <trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
                 <source>Unsubscribe</source>
