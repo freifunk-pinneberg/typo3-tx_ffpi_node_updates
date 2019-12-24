@@ -65,9 +65,13 @@ class GatewayUpdateTask extends AbstractTask
      */
     protected function getGatewayData(string $url): array
     {
-        $url = $this->ping(parse_url($url, PHP_URL_HOST));
-        if(!empty($url)) {
-            $ret['ping'] = $this->ping(parse_url($url, PHP_URL_HOST));
+        $ret = [];
+        if(!empty(parse_url($url, PHP_URL_HOST))) {
+            try {
+                $ret['ping'] = $this->ping(parse_url($url, PHP_URL_HOST));
+            } catch (\Exception $e) {
+                $this->logException($e);
+            }
         }
         $ffgateCheck = $this->getFfgateCheckData($url);
         $ffgateCheck = $this->formatGatewayData($ffgateCheck);
@@ -96,7 +100,7 @@ class GatewayUpdateTask extends AbstractTask
      */
     protected function getFfgateCheckData(string $url): array
     {
-        $file = file_get_contents($url);
+        $file = @file_get_contents($url);
         if ($file === false) {
             return [];
         }
