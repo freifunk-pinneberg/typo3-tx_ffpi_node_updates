@@ -63,6 +63,7 @@ class MailUtility
         $email->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
         $email->setTo($to);
         $email->setBody($emailBody);
+        $email->setContentType('text/html');
 
         //Send mail
         return $email->send();
