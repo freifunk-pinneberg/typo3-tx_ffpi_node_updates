@@ -3,6 +3,7 @@
 namespace FFPI\FfpiNodeUpdates\Domain\Model;
 
 use DateTime;
+use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /***
@@ -163,7 +164,7 @@ class Abo extends AbstractEntity
     /**
      * Sets the node
      *
-     * @param Node $node
+     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Node $node
      * @return void
      */
     public function setNode(Node $node)
