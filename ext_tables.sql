@@ -21,8 +21,7 @@ CREATE TABLE tx_ffpinodeupdates_domain_model_node (
 	endtime int(11) unsigned DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
-	KEY parent (pid),
-
+	KEY parent (pid)
 );
 
 #
@@ -54,7 +53,6 @@ CREATE TABLE tx_ffpinodeupdates_domain_model_abo (
 	PRIMARY KEY (uid),
 	KEY parent (pid),
 	KEY language (l10n_parent,sys_language_uid)
-
 );
 
 #
@@ -70,5 +68,5 @@ CREATE TABLE tx_ffpinodeupdates_domain_model_gateway (
     firewall int(1) DEFAULT '0',
     exit_vpn  int(1) DEFAULT '0',
     last_health_check int(11) DEFAULT '0' NOT NULL,
-    last_health_change int(11) DEFAULT '0' NOT NULL,
+    last_health_change int(11) DEFAULT '0' NOT NULL
 );
