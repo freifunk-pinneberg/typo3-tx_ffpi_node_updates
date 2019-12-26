@@ -20,6 +20,7 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Frontend\ContentObject\ContentContentObject;
 
 class MailUtility
 {
@@ -45,11 +46,10 @@ class MailUtility
      * @param string $subject
      * @param string $templateName
      * @param array $vars
-     * @param string $language
      * @return int the number of recipients who were accepted for delivery
      * @throws Throwable
      */
-    public function sendMail(string $to, string $subject, string $templateName, array $vars = array(), string $language = ''): int
+    public function sendMail(string $to, string $subject, string $templateName, array $vars = array()): int
     {
         //Get the Fluid Template
         $template = $this->getTemplate($templateName, $vars);
@@ -79,16 +79,57 @@ class MailUtility
     {
         /** @var StandaloneView $emailView */
         $emailView = $this->objectManager->get(StandaloneView::class);
-        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
-        //$templateRootPaths = $extbaseFrameworkConfiguration['view']['templateRootPaths'];
-        $emailView->setTemplateRootPaths($extbaseFrameworkConfiguration['view']['templateRootPaths']);
-        $emailView->setPartialRootPaths($extbaseFrameworkConfiguration['view']['partialRootPaths']);
-        $emailView->setLayoutRootPaths($extbaseFrameworkConfiguration['view']['layoutRootPaths']);
+
+        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK, 'ffpi_node_updates', 'tx_ffpinodeupdates_nodeabo');
+
+        $emailView->getRequest()->setControllerExtensionName('ffpi_node_updates');
+        $emailView->getRequest()->setControllerName('mail');
+        $view = $this->getTemplatePaths();
+        $emailView->setTemplateRootPaths($view['templateRootPaths']);
+        $emailView->setPartialRootPaths($view['partialRootPaths']);
+        $emailView->setLayoutRootPaths($view['layoutRootPaths']);
         $emailView->setTemplate($template);
         //$templatePathAndFilename = $templateRootPath . '/' . $template;
         //$emailView->setTemplatePathAndFilename($templatePathAndFilename);
         $emailView->assignMultiple($vars);
 
         return $emailView;
+    }
+
+    /**
+     * @return array
+     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
+     */
+    private function getTemplatePaths(): array {
+        //Try 1: Try it with configruation Framework. Should work if we are in FE
+        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK, 'ffpi_node_updates', 'tx_ffpinodeupdates_nodeabo');
+        if(isset($extbaseFrameworkConfiguration['view']) && !empty($extbaseFrameworkConfiguration['view']))
+        {
+            return $extbaseFrameworkConfiguration['view'];
+        }
+
+        //Try 2: Get complete TS and use a fixed xpath. Should always work as long as there is valid TS included
+        $ts = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
+        if(isset($ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']) && !empty($ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.'])) {
+            $view = [];
+            $view['templateRootPaths'] = $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['templateRootPaths.'];
+            $view['partialRootPaths'] = $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['partialRootPaths.'];
+            $view['layoutRootPaths'] = $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['layoutRootPaths.'];
+            return $view;
+        }
+
+        //Try 3: Give up and use a hardcoded path
+        $view = [
+            'templateRootPaths' => [
+                0 => 'EXT:ffpi_node_updates/Resources/Private/Templates/',
+            ],
+            'partialRootPaths' => [
+                0 => 'EXT:ffpi_node_updates/Resources/Private/Partials/',
+            ],
+            'layoutRootPaths' => [
+                0 => 'EXT:ffpi_node_updates/Resources/Private/Layouts/',
+            ],
+        ];
+        return $view;
     }
 }

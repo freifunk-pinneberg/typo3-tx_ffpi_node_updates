@@ -35,6 +35,16 @@ class GatewayUpdateTask extends AbstractTask
     }
 
     /**
+     * This method returns the destination pid as additional information
+     *
+     * @return string Information to display
+     */
+    public function getAdditionalInformation(): string
+    {
+        return 'Storage Page: ' . $this->pid;
+    }
+
+    /**
      * @return bool
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException

@@ -133,9 +133,9 @@ class ImportTask extends AbstractTask
      *
      * @return string Information to display
      */
-    public function getAdditionalInformation()
+    public function getAdditionalInformation(): string
     {
-        return 'Page ID: ' . $this->pid;
+        return 'Storage Page: ' . $this->pid;
     }
 
     /**

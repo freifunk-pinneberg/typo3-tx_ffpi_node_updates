@@ -169,48 +169,17 @@ class AboController extends ActionController
      */
     private function sendConfirmEmail(Abo $newAbo, string $secret): bool
     {
-        /**
-         * $emailView = $this->objectManager->get(\TYPO3\CMS\Fluid\View\StandaloneView::class);
-         * $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
-         * $templateRootPath = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName($extbaseFrameworkConfiguration['view']['templateRootPath']);
-         * $templatePathAndFilename = $templateRootPath . '/Abo/ConfirmEmail.html';
-         * $emailView->setTemplatePathAndFilename($templatePathAndFilename);
-         */
-
-        /**
-         * $emailView->assign('nodeId', $newAbo->getNodeId());
-         * $emailView->assign('url', $url);
-         * $emailView->assign('nodeName', $newAbo->getNodeName());
-         *
-         * $emailBody = $emailView->render();
-         *
-         *
-         * //E-Mail
-         * $mail = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Mail\MailMessage::class);
-         * //Betreff
-         * $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
-         * //Absender
-         * $mail->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
-         * //Empfänger
-         * $mail->setTo(array($newAbo->getEmail()));
-         * //Nachricht
-         * $mail->setBody($emailBody);
-         * //Senden
-         * $mail->send();
-         */
-
         //Wir brauchen für die E-Mail eine Besätigungs URL
         $url = $this->getConfirmLink($newAbo->getEmail(), $secret);
 
         $emailData = array(
-            'nodeId' => $newAbo->getNode()->getNodeId(),
+            'node' => $newAbo->getNode(),
             'url' => $url,
-            'nodeName' => $newAbo->getNode()->getNodeName(),
         );
 
         //send mail
         $mail = new MailUtility();
-        $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Abo/ConfirmEmail.html', $emailData);
+        $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
         if ($mail >= 1) {
             return true;
         } else {

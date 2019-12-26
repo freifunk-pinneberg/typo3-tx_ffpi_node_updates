@@ -14,20 +14,17 @@
 namespace FFPI\FfpiNodeUpdates\Task;
 
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
-use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
-use TYPO3\CMS\Core\Mail\MailMessage;
+use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
+use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
-use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class NotificationTask extends AbstractTask
@@ -40,7 +37,12 @@ class NotificationTask extends AbstractTask
     /**
      * @var int
      */
-    public $pid;
+    public $storagePid;
+
+    /**
+     * @var int
+     */
+    public $unsubscribePid;
 
     /**
      * @var NodeRepository
@@ -126,12 +128,26 @@ class NotificationTask extends AbstractTask
          * @var Typo3QuerySettings $querySettings
          */
         $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
-        $querySettings->setStoragePageIds([(int)$this->pid]);
+        $querySettings->setStoragePageIds([(int)$this->storagePid]);
         $querySettings->setRespectStoragePage(FALSE);
         $querySettings->setRespectSysLanguage(FALSE);
         //Set the settings for our repositorys
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
         $this->aboRepository->setDefaultQuerySettings($querySettings);
+    }
+
+    /**
+     * This method returns the destination pid as additional information
+     *
+     * @return string Information to display
+     */
+    public function getAdditionalInformation(): string
+    {
+        $string = 'Storage Page: ' . $this->storagePid . "\n";
+        $string .= 'Unsubscribe Page: ' . $this->unsubscribePid . "\n";
+        $string .= 'nodes.json: ' . $this->path . "\n";
+
+        return $string;
     }
 
     /**
@@ -176,18 +192,14 @@ class NotificationTask extends AbstractTask
      * @param Node $internalNode
      * @return boolean
      */
-    protected function sendNotification($internalNode)
+    protected function sendNotification(Node $internalNode)
     {
         $hasError = false;
 
         //Get all abos for this Node
         /** @var Abo[] $abos */
-        $abos = $this->aboRepository->findByNode($internalNode);
+        $abos = $this->aboRepository->findByNode($internalNode)->toArray();
 
-        //if we have only one abo, it is not an array
-        if ($abos instanceof Abo) {
-            $abos = array($abos);
-        }
         foreach ($abos as $abo) {
 
             //first, check if the abo is confirmed, we don't want to spam
@@ -205,62 +217,31 @@ class NotificationTask extends AbstractTask
     protected function sendNotificationMail(Abo $abo, Node $internalNode): bool
     {
         //build url to remove the abo
+        $pid = $this->unsubscribePid;
         $url = '';
-
-        //uribuilder dose not work in tasks. @todo find out why
-
-        $pid = 1;
-        //$urlAttributes = array();
-        //$urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'removeForm';
-        //$urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
-        //$urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $abo->getEmail();
-        //$urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $abo->getSecret();
         $url = $this->uriBuilder;
         $url->initializeObject();
         $url->reset();
-        $url->uriFor('removeForm', ['email' => $abo->getEmail(), 'secret' => $abo->getSecret()], 'Abo', 'ffpi_nodeupdates', 'Nodeabo');
+        $url->uriFor(
+            'removeForm',
+            ['email' => $abo->getEmail(), 'secret' => $abo->getSecret()],
+            'Abo',
+            'ffpi_nodeupdates',
+            'Nodeabo'
+        );
         $url->setTargetPageUid($pid);
         $url->setCreateAbsoluteUri(true);
         $url = $url->buildFrontendUri();
 
+        $emailData = [
+            'node' => $internalNode,
+            'url' => $url
+        ];
 
-        //Create the e-mail
-        //@todo make it multilingual
-        //@todo use fluid templates
-        /**
-         * @var MailMessage $mail
-         */
-        $mail = GeneralUtility::makeInstance(MailMessage::class);
-        //Betreff
-        $mail->setSubject('Freifunk Pinneberg: Knoten Benachrichtigung');
-        //Absender
-        $mail->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
-        //Empfänger
-        $mail->setTo(array($abo->getEmail()));
+        $mail = new MailUtility();
+        $send = $mail->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData);
 
-        //$view = $this->objectManager->get(StandaloneView::class);
-        //$view->setFormat('html');
-        //$view->setTemplateRootPaths(
-        //    $this->objectManager->get(
-        //        ConfigurationManager::class
-        //    )->getConfiguration(
-        //        ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK)['view']['templateRootPath']
-        //);
-        //$view->setTemplate('Mail/Notification.html');
-
-        //$view->assign('node', $internalNode);
-        //$view->assign('unsubscribeUrl', $url);
-        //$htmlBody = $view->render();
-
-        //Nachricht
-        $body = "Hallo,\n";
-        $body .= "Dein Knoten mit der ID " . $internalNode->getNodeId() . " und dem Namen " . $internalNode->getNodeName() . " ist Offline. \n";
-        $body .= "So lange dein Knoten offline bleibt, wirst du keine Benachrichtigungen mehr erhalten.\n\n";
-        $body .= "Wenn du für diesen Knoten in Zukunft keine Benachrichtigungen mehr erhalten möchtest, kannst du sie unter $url abbestellen.";
-        $mail->setBody($body);
-
-        //Senden
-        if ($mail->send() < 1) {
+        if ($send < 1) {
             $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
             $hasError = true;
         } else {
@@ -280,6 +261,10 @@ class NotificationTask extends AbstractTask
         foreach ($internalNodes as $internalNode) {
             /** @var array $externalNode */
             $externalNode = $externalNodes[$internalNode->getNodeId()];
+
+            if($externalNode === null){
+                continue;
+            }
 
             if ($internalNode->getOnline() === true && $externalNode['status']['online'] === false) {
                 //node changed from online to offline since last check

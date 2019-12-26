@@ -52,7 +52,7 @@ class Abo extends AbstractEntity
     /**
      * node
      *
-     * @var Node
+     * @var \FFPI\FfpiNodeUpdates\Domain\Model\Node
      */
     protected $node;
 

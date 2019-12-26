@@ -24,11 +24,13 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
         if (empty($taskInfo['FfpiNodeUpdates_pid']) || empty($taskInfo['FfpiNodeUpdates_url'])) {
             if ($parentObject->getCurrentAction()->equals('edit')) {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
-                $taskInfo['FfpiNodeUpdates_pid'] = $task->pid;
+                $taskInfo['FfpiNodeUpdates_storage_pid'] = $task->storagePid;
+                $taskInfo['FfpiNodeUpdates_unsubscribe_pid'] = $task->unsubscribePid;
                 $taskInfo['FfpiNodeUpdates_url'] = $task->path;
             } else {
                 // Otherwise set an empty value, as it will not be used anyway
-                $taskInfo['FfpiNodeUpdates_pid'] = '';
+                $taskInfo['FfpiNodeUpdates_storage_pid'] = '';
+                $taskInfo['FfpiNodeUpdates_unsubscribe_pid'] = '';
                 $taskInfo['FfpiNodeUpdates_url'] = '';
             }
         }
@@ -43,11 +45,19 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldID
         ];
-        $fieldID = 'FfpiNodeUpdates_pid';
-        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_pid]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_pid']) . '" size="30">';
+        $fieldID = 'FfpiNodeUpdates_storage_pid';
+        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_storage_pid]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_storage_pid']) . '" size="30">';
         $additionalFields[$fieldID] = [
             'code' => $fieldCode,
-            'label' => 'Page ID',
+            'label' => 'Storage pid',
+            'cshKey' => '_MOD_system_txschedulerM1',
+            'cshLabel' => $fieldID
+        ];
+        $fieldID = 'FfpiNodeUpdates_unsubscribe_pid';
+        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_unsubscribe_pid]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_unsubscribe_pid']) . '" size="30">';
+        $additionalFields[$fieldID] = [
+            'code' => $fieldCode,
+            'label' => 'Unsubscribe pid',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldID
         ];
@@ -65,9 +75,16 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
     public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $parentObject)
     {
         $ret = true;
-        if (empty($submittedData['FfpiNodeUpdates_pid']) || !is_numeric($submittedData['FfpiNodeUpdates_pid'])) {
+        if (empty($submittedData['FfpiNodeUpdates_storage_pid']) || !is_numeric($submittedData['FfpiNodeUpdates_storage_pid'])) {
             $this->addMessage(
-                'Page Id must be integer, ' . gettype($submittedData['FfpiNodeUpdates_pid']) . ' given',
+                'Page Id must be integer, ' . gettype($submittedData['FfpiNodeUpdates_storage_pid']) . ' given',
+                FlashMessage::ERROR
+            );
+            $ret = false;
+        }
+        if (empty($submittedData['FfpiNodeUpdates_unsubscribe_pid']) || !is_numeric($submittedData['FfpiNodeUpdates_unsubscribe_pid'])) {
+            $this->addMessage(
+                'Page Id must be integer, ' . gettype($submittedData['FfpiNodeUpdates_unsubscribe_pid']) . ' given',
                 FlashMessage::ERROR
             );
             $ret = false;
@@ -92,7 +109,8 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
      */
     public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
-        $task->pid = intval($submittedData['FfpiNodeUpdates_pid']);
+        $task->storagePid = intval($submittedData['FfpiNodeUpdates_storage_pid']);
+        $task->unsubscribePid = intval($submittedData['FfpiNodeUpdates_unsubscribe_pid']);
         $task->path = trim($submittedData['FfpiNodeUpdates_url']);
     }
 }
