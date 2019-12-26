@@ -53,7 +53,7 @@
             </trans-unit>
             <!-- Confirm a abo -->
             <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
-                <target>Your subscription has been confirmed. You will receive an alert every time your node goes offline.</target>
+                <target>Your subscription has been confirmed. You will receive an alert every time your node goes offline. You can use the secret to disable the abo later.</target>
             </trans-unit>
             <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
                 <target><![CDATA[Activation failed. Please check the link. If you still have problems, please contact <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></target>

@@ -50,7 +50,7 @@
 			</trans-unit>
             <!-- Confirm a abo -->
             <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
-                <target>Dein Abo wurde bestätigt. Du erhältst nun jedes mal eine Benachrichtigung wenn dein Knoten offline geht.</target>
+                <target>Dein Abo wurde bestätigt. Du erhältst nun jedes mal eine Benachrichtigung wenn dein Knoten offline geht. Mit dem Secret kannst du das Abo später wieder abbestellen.</target>
             </trans-unit>
             <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
                 <target><![CDATA[Aktivierung fehlgeschlagen. Bitte prüfe den Link. Solltest du weiterhin Probleme haben wende dich an <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></target>
