@@ -100,15 +100,15 @@ class AboController extends ActionController
     }
 
     /**
+     * @param AboRemoveDemand
      * action removeForm
      */
-    public function removeFormAction()
+    public function removeFormAction($aboRemoveDemand = null)
     {
-        $args = $this->request->getArguments();
-        $secret = $args['secret'];
-        $email = $args['email'];
-        $this->view->assign('secret', $secret);
-        $this->view->assign('email', $email);
+        if (!($aboRemoveDemand instanceof AboRemoveDemand)) {
+            $aboRemoveDemand = new AboRemoveDemand();
+        }
+        $this->view->assign('aboRemoveDemand', $aboRemoveDemand);
     }
 
     /**

@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
+use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
@@ -217,21 +218,7 @@ class NotificationTask extends AbstractTask
     protected function sendNotificationMail(Abo $abo, Node $internalNode): bool
     {
         //build url to remove the abo
-        $pid = $this->unsubscribePid;
-        $url = '';
-        $url = $this->uriBuilder;
-        $url->initializeObject();
-        $url->reset();
-        $url->uriFor(
-            'removeForm',
-            ['email' => $abo->getEmail(), 'secret' => $abo->getSecret()],
-            'Abo',
-            'ffpi_nodeupdates',
-            'Nodeabo'
-        );
-        $url->setTargetPageUid($pid);
-        $url->setCreateAbsoluteUri(true);
-        $url = $url->buildFrontendUri();
+        $url = $this->buildUnsubscribeLink($abo);
 
         $emailData = [
             'node' => $internalNode,
@@ -403,6 +390,34 @@ class NotificationTask extends AbstractTask
         curl_close($curl);
 
         return $body;
+    }
+
+    /**
+     * @param Abo $abo
+     * @return string
+     */
+    protected function buildUnsubscribeLink(Abo $abo): string
+    {
+        $pid = $this->unsubscribePid;
+
+        $aboRemoveDemand = new AboRemoveDemand();
+        $aboRemoveDemand->setEmail($abo->getEmail());
+        $aboRemoveDemand->setSecret($abo->getSecret());
+
+        $url = $this->uriBuilder;
+        $url->initializeObject();
+        $url->reset();
+        $url->uriFor(
+            'removeForm',
+            ['aboRemoveDemand' => $aboRemoveDemand],
+            'Abo',
+            'ffpi_nodeupdates',
+            'Nodeabo'
+        );
+        $url->setTargetPageUid($pid);
+        $url->setCreateAbsoluteUri(true);
+        $url = $url->buildFrontendUri();
+        return $url;
     }
 
 }
