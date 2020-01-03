@@ -409,7 +409,12 @@ class NotificationTask extends AbstractTask
         $url->reset();
         $url->uriFor(
             'removeForm',
-            ['aboRemoveDemand' => $aboRemoveDemand],
+            [
+                'aboRemoveDemand' => [
+                    'email' => $abo->getEmail(),
+                    'secret' => $abo->getSecret()
+                ]
+            ],
             'Abo',
             'ffpinodeupdates',
             'Nodeabo'

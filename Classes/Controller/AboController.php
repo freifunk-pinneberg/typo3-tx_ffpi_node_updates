@@ -100,6 +100,15 @@ class AboController extends ActionController
     }
 
     /**
+     *
+     */
+    protected function initializeRemoveFormAction(){
+        /** @var \TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration $propertyMappingConfiguration */
+        $propertyMappingConfiguration = $this->arguments['aboRemoveDemand']->getPropertyMappingConfiguration();
+        $propertyMappingConfiguration->allowProperties('email', 'secret');
+    }
+
+    /**
      * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
      * action removeForm
      */
