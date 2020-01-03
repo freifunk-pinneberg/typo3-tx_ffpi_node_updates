@@ -411,7 +411,7 @@ class NotificationTask extends AbstractTask
             'removeForm',
             ['aboRemoveDemand' => $aboRemoveDemand],
             'Abo',
-            'ffpi_nodeupdates',
+            'ffpinodeupdates',
             'Nodeabo'
         );
         $url->setTargetPageUid($pid);

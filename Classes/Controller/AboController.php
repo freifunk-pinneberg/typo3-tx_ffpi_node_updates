@@ -100,7 +100,7 @@ class AboController extends ActionController
     }
 
     /**
-     * @param AboRemoveDemand
+     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
      * action removeForm
      */
     public function removeFormAction($aboRemoveDemand = null)
@@ -114,11 +114,11 @@ class AboController extends ActionController
     /**
      * action remove
      *
-     * @param AboRemoveDemand $aboRemoveDemand
+     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
      * @return void
      * @throws Throwable
      */
-    public function removeAction($aboRemoveDemand)
+    public function removeAction(AboRemoveDemand $aboRemoveDemand)
     {
         $originalAbo = $this->aboRepository->findOneBySecret($aboRemoveDemand->getSecret());
         if (!empty($originalAbo) AND $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
