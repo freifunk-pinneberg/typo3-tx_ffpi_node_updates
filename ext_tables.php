@@ -14,6 +14,8 @@ call_user_func(
         TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addLLrefForTCAdescr('tx_ffpinodeupdates_domain_model_gateway', 'EXT:ffpi_node_updates/Resources/Private/Language/locallang_csh_tx_ffpinodeupdates_domain_model_gateway.xlf');
         TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_ffpinodeupdates_domain_model_gateway');
 
+        TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_ffpinodeupdates_domain_model_freifunkapifile');
+
     },
     $_EXTKEY
 );

@@ -21,7 +21,8 @@ CREATE TABLE tx_ffpinodeupdates_domain_model_node (
 	endtime int(11) unsigned DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
-	KEY parent (pid)
+	KEY parent (pid),
+	KEY nodeId (node_id)
 );
 
 #
@@ -69,4 +70,15 @@ CREATE TABLE tx_ffpinodeupdates_domain_model_gateway (
     exit_vpn  int(1) DEFAULT '0',
     last_health_check int(11) DEFAULT '0' NOT NULL,
     last_health_change int(11) DEFAULT '0' NOT NULL
+);
+
+CREATE TABLE tx_ffpinodeupdates_domain_model_freifunkapifile (
+    uid int(11) NOT NULL auto_increment,
+    pid int(11) DEFAULT '0' NOT NULL,
+
+    name varchar(255) DEFAULT '' NOT NULL,
+    json_template text DEFAULT '' NOT NULL,
+    activeNodes int(11) DEFAULT '0' NOT NULL,
+
+    PRIMARY KEY (uid),
 );

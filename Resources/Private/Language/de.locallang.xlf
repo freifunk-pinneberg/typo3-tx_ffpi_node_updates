@@ -55,6 +55,16 @@
             <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
                 <target><![CDATA[Aktivierung fehlgeschlagen. Bitte prüfe den Link. Solltest du weiterhin Probleme haben wende dich an <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></target>
             </trans-unit>
+
+			<trans-unit id="tx_ffpinodeupdates_domain_model_freifunkapifile">
+				<target>Freifunk API File</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_freifunkapifile.name">
+				<target>Name</target>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_freifunkapifile.json_template">
+				<target>JSON Template</target>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

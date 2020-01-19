@@ -8,3 +8,21 @@ plugin.tx_ffpinodeupdates_nodeabo {
         layoutRootPaths.1 = {$plugin.tx_ffpinodeupdates_nodeabo.view.layoutRootPath}
     }
 }
+
+
+// Freifunk API File
+plugin.tx_ffpinodeupdates_freifunkapifile.persistence.storagePid = {$plugin.tx_ffpinodeupdates_freifunkapifile.persistence.storagePid}
+ff_api_file = PAGE
+ff_api_file {
+    config {
+        disableAllHeaderCode = 1
+        additionalHeaders {
+            10 {
+                header = Content-Type: application/json
+                replace = 1
+            }
+        }
+    }
+    typeNum = 202001192011
+    10 < tt_content.list.20.ffpinodeupdates_freifunkapifile
+}

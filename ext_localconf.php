@@ -42,6 +42,18 @@ call_user_func(
             ]
         );
 
+        TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+            'FFPI.FfpiNodeUpdates',
+            'Freifunkapifile',
+            [
+                'Freifunkapifile' => 'show'
+            ],
+            // non-cacheable actions
+            [
+                'Freifunkapifile' => ''
+            ]
+        );
+
     },
     $_EXTKEY
 );

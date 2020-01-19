@@ -11,3 +11,9 @@ TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
     'Gatewayhealth',
     'Gateway health'
 );
+
+TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+    'FFPI.FfpiNodeUpdates',
+    'Freifunkapifile',
+    'Freifunk API File'
+);
