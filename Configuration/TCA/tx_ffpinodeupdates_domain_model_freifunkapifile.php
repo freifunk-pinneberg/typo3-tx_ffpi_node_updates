@@ -15,16 +15,17 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'name',
+        'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/json.svg',
     ],
     'interface' => [
         'showRecordFieldList' => 'hidden, name, json_template',
     ],
     'types' => [
-        '1' => ['showitem' => 'hidden, name, json_template, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
+        '1' => ['showitem' => 'hidden, name, json_template, --div--;LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:tabs.access, starttime, endtime'],
     ],
     'columns' => [
         't3ver_label' => [
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.versionLabel',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.versionLabel',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -33,7 +34,7 @@ return [
         ],
         'hidden' => [
             'exclude' => 1,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
                 'items' => [
