@@ -40,6 +40,14 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldID
         ];
+        $fieldID = 'FfpiNodeUpdates_notification_mail';
+        $fieldCode = '<input type="email" class="form-control" name="tx_scheduler[FfpiNodeUpdates_notification_mail]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_notification_mail']) . '" size="30">';
+        $additionalFields[$fieldID] = [
+            'code' => $fieldCode,
+            'label' => 'Page ID',
+            'cshKey' => '_MOD_system_txschedulerM1',
+            'cshLabel' => $fieldID
+        ];
         return $additionalFields;
     }
 
@@ -75,5 +83,6 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
     public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
         $task->pid = intval($submittedData['FfpiNodeUpdates_pid']);
+        $task->notificationMail = trim($submittedData['FfpiNodeUpdates_notification_mail']);
     }
 }

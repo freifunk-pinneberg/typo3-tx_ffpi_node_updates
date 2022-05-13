@@ -4,6 +4,8 @@ namespace FFPI\FfpiNodeUpdates\Task;
 
 use FFPI\FfpiNodeUpdates\Domain\Model\Gateway;
 use FFPI\FfpiNodeUpdates\Domain\Repository\GatewayRepository;
+use FFPI\FfpiNodeUpdates\Utility\MailUtility;
+use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
@@ -23,6 +25,9 @@ class GatewayUpdateTask extends AbstractTask
 
     /** @var int */
     public $pid;
+
+    /** @var string */
+    public $notificationMail;
 
     protected function inistalizeTask()
     {
@@ -76,7 +81,7 @@ class GatewayUpdateTask extends AbstractTask
     protected function getGatewayData(string $url): array
     {
         $ret = [];
-        if(!empty(parse_url($url, PHP_URL_HOST))) {
+        if (!empty(parse_url($url, PHP_URL_HOST))) {
             try {
                 $ret['ping'] = $this->ping(parse_url($url, PHP_URL_HOST));
             } catch (\Exception $e) {
@@ -99,7 +104,8 @@ class GatewayUpdateTask extends AbstractTask
         } catch (\Exception $e) {
             return null;
         }
-        $result = preg_replace('/rtt\smin\/avg\/max\/mdev\s=\s\d+.\d+\/(\d+.\d+)\/\d+.\d+\/\d+.\d+\sms/', '${1}', $pingRawResult);
+        $result = preg_replace('/rtt\smin\/avg\/max\/mdev\s=\s\d+.\d+\/(\d+.\d+)\/\d+.\d+\/\d+.\d+\sms/', '${1}',
+            $pingRawResult);
         $result = floatval($result);
         return $result;
     }
@@ -199,10 +205,55 @@ class GatewayUpdateTask extends AbstractTask
                 }
             }
         }
+        $gateway->setLastHealthCheck(new \DateTime());
         if ($healtChanged) {
             $gateway->setLastHealthChange(new \DateTime());
+            $this->sendNotification($gateway, $properties);
         }
-        $gateway->setLastHealthCheck(new \DateTime());
+
         return $gateway;
+    }
+
+    protected function sendNotification(Gateway $gateway, array $properties)
+    {
+        if (empty($this->notificationMail)) {
+            return false;
+        }
+        $subject = "Es gibt Probleme mit dem Gateway " . $gateway->getNode()->getNodeId() . "(" . $gateway->getNode()->getNodeName() . ")!";
+        $bodytext = "Eine Automatische Überprüfung hat Probleme auf dem Gateway gefunden. Nachfolgend ist der Zustand wie er um " . $gateway->getLastHealthCheck()->format('r') . " festgestellt wurde.\n";
+        $bodytext .= "Ping: " . $gateway->getPing() . "\n";
+        $bodytext .= "Fastd online: " . self::stateToString($gateway->getNode()->isOnline()) . "\n";
+        $bodytext .= "OpenVPN: " . self::stateToString($gateway->getOpenVpn()) . "\n";
+        $bodytext .= "Network Interface: " . self::stateToString($gateway->getNetworkInterface()) . "\n";
+        $bodytext .= "Firewall: " . self::stateToString($gateway->getExitVpn()) . "\n";
+        $bodytext .= "Exit VPN: " . self::stateToString($gateway->getExitVpn()) . "\n";
+
+        $email = GeneralUtility::makeInstance(MailMessage::class);
+        $email->setSubject($subject)
+            ->setBody($bodytext)
+            ->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'])
+            ->setContentType('text/plain')
+            ->setTo($this->notificationMail)
+            ->send();
+        if ($email > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function stateToString($state): string
+    {
+        switch (true) {
+            case $state === Gateway::STATE_UNKNOWN:
+                return 'Unbekannt';
+            case $state === Gateway::STATE_OK:
+            case $state === true:
+                return 'OK';
+            case $state === Gateway::STATE_ERROR:
+            case $state === false:
+                return 'Error';
+        }
+        return (string)$state;
     }
 }
