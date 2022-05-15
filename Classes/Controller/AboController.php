@@ -148,7 +148,6 @@ class AboController extends ActionController
     public function confirmAction()
     {
         $args = $this->request->getArguments();
-        #var_dump($args);
         $secret = $args['secret'];
         $email = $args['email'];
 

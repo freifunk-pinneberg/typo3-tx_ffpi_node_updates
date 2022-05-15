@@ -29,6 +29,15 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
                 $taskInfo['FfpiNodeUpdates_pid'] = '';
             }
         }
+        if (empty($taskInfo['FfpiNodeUpdates_notification_mail'])) {
+            if ($parentObject->getCurrentAction()->equals('edit')) {
+                // In case of edit, and editing a test task, set to internal value if not data was submitted already
+                $taskInfo['FfpiNodeUpdates_notification_mail'] = $task->notificationMail;
+            } else {
+                // Otherwise set an empty value, as it will not be used anyway
+                $taskInfo['FfpiNodeUpdates_notification_mail'] = '';
+            }
+        }
 
         $additionalFields = [];
 
@@ -44,7 +53,7 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
         $fieldCode = '<input type="email" class="form-control" name="tx_scheduler[FfpiNodeUpdates_notification_mail]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_notification_mail']) . '" size="30">';
         $additionalFields[$fieldID] = [
             'code' => $fieldCode,
-            'label' => 'Page ID',
+            'label' => 'Benarichtigungs Mail (optional)',
             'cshKey' => '_MOD_system_txschedulerM1',
             'cshLabel' => $fieldID
         ];
