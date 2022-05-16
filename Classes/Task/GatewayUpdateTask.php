@@ -185,7 +185,8 @@ class GatewayUpdateTask extends AbstractTask
     protected function updateGatewayObject(Gateway $gateway, array $gatewayData): Gateway
     {
         $properties = ['ping', 'openVpn', 'networkInterface', 'firewall', 'exitVpn'];
-        $healtChanged = false;
+        $healthChanged = false;
+        $healthy = true;
         foreach ($properties as $property) {
             if (isset($gatewayData[$property])) {
                 $value = $gatewayData[$property];
@@ -194,27 +195,32 @@ class GatewayUpdateTask extends AbstractTask
             }
             if ($gateway->_hasProperty($property) && ($gateway->_getProperty($property) != $value)) {
                 if ($property !== 'ping') {
-                    $healtChanged = true;
+                    $healthChanged = true;
                     $gateway->_setProperty($property, $value);
                 } elseif (($gateway->_getProperty($property) > 0 && ($value == 0 || $value == null)) ||
                     ($value > 0 && ($gateway->_getProperty($property) == 0 || $gateway->_getProperty($property) == null))) {
-                    $healtChanged = true;
+                    $healthChanged = true;
                     $gateway->_setProperty($property, $value);
                 } else {
                     $gateway->_setProperty($property, $value);
                 }
             }
+            if (($value === Gateway::STATE_UNKNOWN || $value === Gateway::STATE_ERROR) && $property !== 'ping') {
+                $healthy = false;
+            }
         }
         $gateway->setLastHealthCheck(new \DateTime());
-        if ($healtChanged) {
+        if ($healthChanged) {
             $gateway->setLastHealthChange(new \DateTime());
-            $this->sendNotification($gateway, $properties);
+            if (!$healthy) {
+                $this->sendNotification($gateway);
+            }
         }
 
         return $gateway;
     }
 
-    protected function sendNotification(Gateway $gateway, array $properties)
+    protected function sendNotification(Gateway $gateway)
     {
         if (empty($this->notificationMail)) {
             return false;
