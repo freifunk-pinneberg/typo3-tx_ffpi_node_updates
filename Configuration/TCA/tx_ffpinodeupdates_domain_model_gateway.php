@@ -144,8 +144,8 @@ return [
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
+                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -157,8 +157,8 @@ return [
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
+                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -170,8 +170,8 @@ return [
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
+                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -183,8 +183,8 @@ return [
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
+                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
                 ],
             ]
         ],

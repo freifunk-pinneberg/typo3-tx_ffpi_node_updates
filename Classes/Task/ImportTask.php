@@ -68,7 +68,7 @@ class ImportTask extends AbstractTask
         //set the correct pid for the storage, get from the TYPO3 task settings ($this->pid)
         $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
         $querySettings->setRespectStoragePage(FALSE);
-        $querySettings->setStoragePageIds(array($this->pid));
+        $querySettings->setStoragePageIds([$this->pid]);
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
     }
 
@@ -110,7 +110,7 @@ class ImportTask extends AbstractTask
                 $node->setPid($this->pid);
                 //add the object to the repo
                 $this->internalNodeRepository->add($node);
-            } elseif ($internalNode instanceof Node){
+            } elseif ($internalNode instanceof Node) {
                 $internalNode->setRole($externalNode['role']);
                 $internalNode->setNodeName($externalNode['name']);
                 $this->internalNodeRepository->update($internalNode);
@@ -177,6 +177,4 @@ class ImportTask extends AbstractTask
         }
         return $nodes;
     }
-
-
 }

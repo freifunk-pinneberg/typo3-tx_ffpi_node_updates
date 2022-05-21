@@ -49,7 +49,7 @@ class MailUtility
      * @return int the number of recipients who were accepted for delivery
      * @throws Throwable
      */
-    public function sendMail(string $to, string $subject, string $templateName, array $vars = array()): int
+    public function sendMail(string $to, string $subject, string $templateName, array $vars = []): int
     {
         //Get the Fluid Template
         $template = $this->getTemplate($templateName, $vars);
@@ -60,7 +60,7 @@ class MailUtility
         $email = GeneralUtility::makeInstance(MailMessage::class);
         //Set mail data
         $email->setSubject($subject);
-        $email->setFrom(array('service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'));
+        $email->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg']);
         $email->setTo($to);
         $email->setBody($emailBody);
         $email->setContentType('text/html');
@@ -100,17 +100,17 @@ class MailUtility
      * @return array
      * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
      */
-    private function getTemplatePaths(): array {
+    private function getTemplatePaths(): array
+    {
         //Try 1: Try it with configruation Framework. Should work if we are in FE
         $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK, 'ffpi_node_updates', 'tx_ffpinodeupdates_nodeabo');
-        if(isset($extbaseFrameworkConfiguration['view']) && !empty($extbaseFrameworkConfiguration['view']))
-        {
+        if (isset($extbaseFrameworkConfiguration['view']) && !empty($extbaseFrameworkConfiguration['view'])) {
             return $extbaseFrameworkConfiguration['view'];
         }
 
         //Try 2: Get complete TS and use a fixed xpath. Should always work as long as there is valid TS included
         $ts = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
-        if(isset($ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']) && !empty($ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.'])) {
+        if (isset($ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']) && !empty($ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.'])) {
             $view = [];
             $view['templateRootPaths'] = $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['templateRootPaths.'];
             $view['partialRootPaths'] = $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['partialRootPaths.'];

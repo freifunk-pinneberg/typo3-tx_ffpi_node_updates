@@ -221,5 +221,4 @@ class Gateway extends AbstractEntity
         return $this;
     }
 
-
 }

@@ -1,12 +1,12 @@
 plugin.tx_ffpinodeupdates_nodeabo {
-    view {
-        templateRootPaths.0 = EXT:ffpi_node_updates/Resources/Private/Templates/
-        templateRootPaths.1 = {$plugin.tx_ffpinodeupdates_nodeabo.view.templateRootPath}
-        partialRootPaths.0 = EXT:ffpi_node_updates/Resources/Private/Partials/
-        partialRootPaths.1 = {$plugin.tx_ffpinodeupdates_nodeabo.view.partialRootPath}
-        layoutRootPaths.0 = EXT:ffpi_node_updates/Resources/Private/Layouts/
-        layoutRootPaths.1 = {$plugin.tx_ffpinodeupdates_nodeabo.view.layoutRootPath}
-    }
+  view {
+    templateRootPaths.0 = EXT:ffpi_node_updates/Resources/Private/Templates/
+    templateRootPaths.1 = {$plugin.tx_ffpinodeupdates_nodeabo.view.templateRootPath}
+    partialRootPaths.0 = EXT:ffpi_node_updates/Resources/Private/Partials/
+    partialRootPaths.1 = {$plugin.tx_ffpinodeupdates_nodeabo.view.partialRootPath}
+    layoutRootPaths.0 = EXT:ffpi_node_updates/Resources/Private/Layouts/
+    layoutRootPaths.1 = {$plugin.tx_ffpinodeupdates_nodeabo.view.layoutRootPath}
+  }
 }
 
 
@@ -14,15 +14,16 @@ plugin.tx_ffpinodeupdates_nodeabo {
 plugin.tx_ffpinodeupdates_freifunkapifile.persistence.storagePid = {$plugin.tx_ffpinodeupdates_freifunkapifile.persistence.storagePid}
 ff_api_file = PAGE
 ff_api_file {
-    config {
-        disableAllHeaderCode = 1
-        additionalHeaders {
-            10 {
-                header = Content-Type: application/json
-                replace = 1
-            }
-        }
+  config {
+    disableAllHeaderCode = 1
+    additionalHeaders {
+      10 {
+        header = Content-Type: application/json
+        replace = 1
+      }
     }
-    typeNum = 202001192011
-    10 < tt_content.list.20.ffpinodeupdates_freifunkapifile
+  }
+
+  typeNum = 202001192011
+  10 < tt_content.list.20.ffpinodeupdates_freifunkapifile
 }

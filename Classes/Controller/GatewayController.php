@@ -25,7 +25,8 @@ class GatewayController extends ActionController
         $this->gatewayRepository = $gatewayRepository;
     }
 
-    public function overviewAction(){
+    public function overviewAction()
+    {
         $gateways = $this->gatewayRepository->findAll();
         $this->view->assign('gateways', $gateways);
     }
