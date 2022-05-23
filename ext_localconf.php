@@ -55,24 +55,24 @@ call_user_func(
         );
 
     },
-    $_EXTKEY
+    'ffpi_node_updates'
 );
 
 // Add task
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][FFPI\FfpiNodeUpdates\Task\NotificationTask::class] = [
-    'extension' => $_EXTKEY,
+    'extension' => 'ffpi_node_updates',
     'title' => 'Node Status updates',
     'description' => 'Sends notifications',
     'additionalFields' => FFPI\FfpiNodeUpdates\Task\NotificationTaskAdditionalFieldProvider::class,
 ];
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][FFPI\FfpiNodeUpdates\Task\ImportTask::class] = [
-    'extension' => $_EXTKEY,
+    'extension' => 'ffpi_node_updates',
     'title' => 'Node Import',
     'description' => 'Imports all Nodes',
     'additionalFields' => FFPI\FfpiNodeUpdates\Task\ImportTaskAdditionalFieldProvider::class,
 ];
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][FFPI\FfpiNodeUpdates\Task\GatewayUpdateTask::class] = [
-    'extension' => $_EXTKEY,
+    'extension' => 'ffpi_node_updates',
     'title' => 'Gateway Update',
     'description' => 'Updates the gateways',
     'additionalFields' => FFPI\FfpiNodeUpdates\Task\GatewayUpdateTaskAdditionalFieldProvider::class,

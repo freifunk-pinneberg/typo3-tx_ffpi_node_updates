@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_gateway',
@@ -144,8 +145,8 @@ return [
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
+                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -157,8 +158,8 @@ return [
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
+                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -170,8 +171,8 @@ return [
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
+                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -183,8 +184,8 @@ return [
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler',  \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
+                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
                 ],
             ]
         ],

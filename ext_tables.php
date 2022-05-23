@@ -17,5 +17,5 @@ call_user_func(
         TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_ffpinodeupdates_domain_model_freifunkapifile');
 
     },
-    $_EXTKEY
+    'ffpi_node_updates'
 );

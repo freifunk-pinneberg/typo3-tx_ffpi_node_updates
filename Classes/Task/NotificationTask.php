@@ -249,7 +249,7 @@ class NotificationTask extends AbstractTask
             /** @var array $externalNode */
             $externalNode = $externalNodes[$internalNode->getNodeId()];
 
-            if($externalNode === null){
+            if ($externalNode === null) {
                 continue;
             }
 
@@ -356,7 +356,7 @@ class NotificationTask extends AbstractTask
             $this->scheduler->log('External Nodes are empty', 1);
             return [];
         } else {
-            $externalNodesNew = array();
+            $externalNodesNew = [];
             foreach ($externalNodes as $externalNode) {
                 //the node id must be the array key
                 $externalNodesNew[$externalNode['id']] = $externalNode;

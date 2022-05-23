@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
 	<file source-language="en" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
-		<header/>
+		<header />
 		<body>
-            <!-- TCA names -->
+		<!-- TCA names -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node">
 				<source>Freifunk Node</source>
 			</trans-unit>
@@ -37,27 +37,27 @@
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.node">
 				<source>Node</source>
 			</trans-unit>
-			<!-- Create a new abo -->
-            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_p1">
-                <source>Enter your e-mail address and the node ID. You will receive a notification every time the node changes from online to offline.</source>
-            </trans-unit>
-            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
-                <source>Subscribe</source>
-            </trans-unit>
+		<!-- Create a new abo -->
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_p1">
+				<source>Enter your e-mail address and the node ID. You will receive a notification every time the node changes from online to offline.</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
+				<source>Subscribe</source>
+			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.abo_created">
 				<source>You abo has been created bit os inactive. We have send a confirmation mail to you. Click on the link in the mail to confirm your abo.</source>
 			</trans-unit>
-            <!-- Remove a abo -->
-            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
-                <source>Unsubscribe</source>
-            </trans-unit>
-            <!-- Confirm a abo -->
-            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
-                <source>Your subscription has been confirmed. You will receive an alert every time your node goes offline. You can use the secret to disable the abo later.</source>
-            </trans-unit>
-            <trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
-                <source><![CDATA[Activation failed. Please check the link. If you still have problems, please contact <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></source>
-            </trans-unit>
+		<!-- Remove a abo -->
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
+				<source>Unsubscribe</source>
+			</trans-unit>
+		<!-- Confirm a abo -->
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
+				<source>Your subscription has been confirmed. You will receive an alert every time your node goes offline. You can use the secret to disable the abo later.</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
+				<source><![CDATA[Activation failed. Please check the link. If you still have problems, please contact <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></source>
+			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway">
 				<source>Freifunk Gateway</source>
 			</trans-unit>
