@@ -46,10 +46,11 @@ class MailUtility
      * @param string $subject
      * @param string $templateName
      * @param array $vars
+     * @param array $additionalHeader
      * @return int the number of recipients who were accepted for delivery
      * @throws Throwable
      */
-    public function sendMail(string $to, string $subject, string $templateName, array $vars = []): int
+    public function sendMail(string $to, string $subject, string $templateName, array $vars = [], array $additionalHeader = []): int
     {
         //Get the Fluid Template
         $template = $this->getTemplate($templateName, $vars);
@@ -62,8 +63,17 @@ class MailUtility
         $email->setSubject($subject);
         $email->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg']);
         $email->setTo($to);
-        $email->setBody($emailBody);
-        $email->setContentType('text/html');
+        if (method_exists($email, 'setContentType')) {
+            $email->setBody($emailBody);
+            $email->setContentType('text/html');
+        } else {
+            $email->setBody()->html($emailBody);
+        }
+        $headers = $email->getHeaders();
+        foreach ($additionalHeader as $key => $value) {
+            $headers->addTextHeader($key, $value);
+        }
+        $email->setHeaders($headers);
 
         //Send mail
         return $email->send();

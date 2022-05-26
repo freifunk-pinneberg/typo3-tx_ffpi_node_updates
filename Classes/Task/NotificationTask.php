@@ -218,15 +218,15 @@ class NotificationTask extends AbstractTask
     protected function sendNotificationMail(Abo $abo, Node $internalNode): bool
     {
         //build url to remove the abo
-        $url = $this->buildUnsubscribeLink($abo);
+        $unsubscribeUrl = $this->buildUnsubscribeLink($abo);
 
         $emailData = [
             'node' => $internalNode,
-            'url' => $url
+            'url' => $unsubscribeUrl
         ];
 
         $mail = new MailUtility();
-        $send = $mail->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData);
+        $send = $mail->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData, ['List-Unsubscribe' => $unsubscribeUrl]);
 
         if ($send < 1) {
             $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
