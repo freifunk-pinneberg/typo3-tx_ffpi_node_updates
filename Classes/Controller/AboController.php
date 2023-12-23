@@ -102,7 +102,8 @@ class AboController extends ActionController
     /**
      *
      */
-    protected function initializeRemoveFormAction(){
+    protected function initializeRemoveFormAction()
+    {
         /** @var \TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration $propertyMappingConfiguration */
         $propertyMappingConfiguration = $this->arguments['aboRemoveDemand']->getPropertyMappingConfiguration();
         $propertyMappingConfiguration->allowProperties('email', 'secret');
@@ -130,7 +131,7 @@ class AboController extends ActionController
     public function removeAction(AboRemoveDemand $aboRemoveDemand)
     {
         $originalAbo = $this->aboRepository->findOneBySecret($aboRemoveDemand->getSecret());
-        if (!empty($originalAbo) AND $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
+        if (!empty($originalAbo) and $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
             $this->addFlashMessage('The object was deleted.', '', AbstractMessage::ERROR);
             $this->aboRepository->remove($originalAbo);
             $this->view->assign('removed', true);
@@ -151,12 +152,12 @@ class AboController extends ActionController
         $secret = $args['secret'];
         $email = $args['email'];
 
-        if (!empty($secret) AND !empty($email)) {
+        if (!empty($secret) and !empty($email)) {
             /**
              * @var Abo $abo
              */
             $abo = $this->aboRepository->findOneBySecret($secret);
-            if (!empty($abo) AND $abo->getEmail() == $email) {
+            if (!empty($abo) and $abo->getEmail() == $email) {
                 $abo->setConfirmed(true);
                 $this->aboRepository->update($abo);
                 $this->view->assign('confirmed', true);
@@ -180,10 +181,10 @@ class AboController extends ActionController
         //Wir brauchen für die E-Mail eine Besätigungs URL
         $url = $this->getConfirmLink($newAbo->getEmail(), $secret);
 
-        $emailData = array(
+        $emailData = [
             'node' => $newAbo->getNode(),
             'url' => $url,
-        );
+        ];
 
         //send mail
         $mail = new MailUtility();
@@ -203,7 +204,7 @@ class AboController extends ActionController
     private function getConfirmLink($email, $secret)
     {
         $pid = $this->uriBuilder->getTargetPageUid();
-        $urlAttributes = array();
+        $urlAttributes = [];
         $urlAttributes['tx_ffpinodeupdates_nodeabo[action]'] = 'confirm';
         $urlAttributes['tx_ffpinodeupdates_nodeabo[controller]'] = 'Abo';
         $urlAttributes['tx_ffpinodeupdates_nodeabo[email]'] = $email;
@@ -223,7 +224,7 @@ class AboController extends ActionController
      */
     private function checkAbo($abo)
     {
-        if (empty($abo->getEmail()) OR empty($abo->getNode())) {
+        if (empty($abo->getEmail()) or empty($abo->getNode())) {
             return false;
         }
         return true;

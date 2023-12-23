@@ -1,5 +1,16 @@
 <?php
 
+/***
+ *
+ * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *  (c) 2019 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
+ *
+ ***/
+
 namespace FFPI\FfpiNodeUpdates\Controller;
 
 use FFPI\FfpiNodeUpdates\Domain\Model\FreifunkApiFile;
@@ -69,17 +80,17 @@ class FreifunkapifileController extends ActionController
         /** @var Node[] $allNodes */
         $allNodes = $this->nodeRepository->findAll();
         $activeNodes = [];
+        $now = new \DateTime();
         foreach ($allNodes as $node) {
             if ($node->isOnline()) {
-                // Node is Online. Add it to the list, an got to the next.
+                // Node is Online. Add it to the list, and got to the next.
                 $activeNodes[] = $node;
                 continue;
             }
             // Node is Offline, check if it was online in the last 2 Weeks.
             $lastChangeTime = $node->getLastChange();
-            $now = new \DateTime();
             $diff = $lastChangeTime->diff($now);
-            if ($diff->d <= 14) {
+            if ($diff->days <= 14) {
                 $activeNodes[] = $node;
             }
         }
