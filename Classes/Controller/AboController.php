@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand;
@@ -104,13 +105,13 @@ class AboController extends ActionController
      */
     protected function initializeRemoveFormAction()
     {
-        /** @var \TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration $propertyMappingConfiguration */
+        /** @var MvcPropertyMappingConfiguration $propertyMappingConfiguration */
         $propertyMappingConfiguration = $this->arguments['aboRemoveDemand']->getPropertyMappingConfiguration();
         $propertyMappingConfiguration->allowProperties('email', 'secret');
     }
 
     /**
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
+     * @param AboRemoveDemand $aboRemoveDemand
      * action removeForm
      */
     public function removeFormAction($aboRemoveDemand = null)
@@ -124,7 +125,7 @@ class AboController extends ActionController
     /**
      * action remove
      *
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
+     * @param AboRemoveDemand $aboRemoveDemand
      * @return void
      * @throws Throwable
      */

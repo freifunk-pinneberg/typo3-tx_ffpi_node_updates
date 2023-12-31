@@ -18,11 +18,8 @@ return [
         'searchFields' => 'node_id,node_name,role,online,last_change,',
         'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/wifi-router.svg',
     ],
-    'interface' => [
-        'showRecordFieldList' => 'hidden, node_id, node_name, role, online, last_change',
-    ],
     'types' => [
-        '1' => ['showitem' => 'hidden, node_id, node_name, online, role, last_change, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
+        '1' => ['showitem' => 'hidden,node_id,node_name,online,role,last_change,--div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,starttime,endtime'],
     ],
     'columns' => [
         't3ver_label' => [
@@ -40,7 +37,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
@@ -112,7 +109,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
                 'default' => 0

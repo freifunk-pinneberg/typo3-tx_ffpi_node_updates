@@ -15,7 +15,7 @@ class Gateway extends AbstractEntity
     public const STATE_ERROR = 2;
 
     /**
-     * @var \FFPI\FfpiNodeUpdates\Domain\Model\Node
+     * @var Node
      */
     protected $node;
 

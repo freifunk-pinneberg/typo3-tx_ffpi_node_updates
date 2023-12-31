@@ -2,6 +2,8 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
+use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 use FFPI\FfpiNodeUpdates\Domain\Model\Gateway;
 use FFPI\FfpiNodeUpdates\Domain\Repository\GatewayRepository;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
@@ -51,8 +53,8 @@ class GatewayUpdateTask extends AbstractTask
 
     /**
      * @return bool
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws IllegalObjectTypeException
+     * @throws UnknownObjectException
      */
     public function execute()
     {
@@ -236,7 +238,7 @@ class GatewayUpdateTask extends AbstractTask
 
         $email = GeneralUtility::makeInstance(MailMessage::class);
         $email->setSubject($subject)
-            ->setBody($bodytext)
+            ->text($bodytext)
             ->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'])
             ->setContentType('text/plain')
             ->setTo($this->notificationMail)

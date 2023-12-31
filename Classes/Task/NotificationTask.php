@@ -13,6 +13,9 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
+use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
+use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
@@ -61,7 +64,7 @@ class NotificationTask extends AbstractTask
     protected $uriBuilder;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
     protected $objectManager;
 
@@ -282,8 +285,8 @@ class NotificationTask extends AbstractTask
      * @param Node $internalNode
      * @param array $externalNode
      * @return void
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws IllegalObjectTypeException
+     * @throws UnknownObjectException
      */
     protected function updateNode(?Node $internalNode, ?array $externalNode)
     {

@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Utility;
 
+use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
 use Throwable;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -108,7 +109,7 @@ class MailUtility
 
     /**
      * @return array
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
+     * @throws InvalidConfigurationTypeException
      */
     private function getTemplatePaths(): array
     {

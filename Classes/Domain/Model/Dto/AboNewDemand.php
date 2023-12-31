@@ -2,13 +2,14 @@
 
 namespace FFPI\FfpiNodeUpdates\Domain\Model\Dto;
 
+use TYPO3\CMS\Extbase\Annotation\Validate;
 class AboNewDemand
 {
     /**
      * nodeId
      *
      * @var string
-     * @TYPO3\CMS\Extbase\Annotation\Validate("NotEmpty")
+     * @Validate("NotEmpty")
      */
     protected $nodeId = '';
 
@@ -16,7 +17,7 @@ class AboNewDemand
      * email
      *
      * @var string
-     * @TYPO3\CMS\Extbase\Annotation\Validate("NotEmpty")
+     * @Validate("NotEmpty")
      */
     protected $email = '';
 

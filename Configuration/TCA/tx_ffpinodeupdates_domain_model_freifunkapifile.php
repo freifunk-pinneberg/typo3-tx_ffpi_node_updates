@@ -18,11 +18,8 @@ return [
         'searchFields' => 'name',
         'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/json.svg',
     ],
-    'interface' => [
-        'showRecordFieldList' => 'hidden, name, json_template',
-    ],
     'types' => [
-        '1' => ['showitem' => 'hidden, name, json_template, --div--;LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:tabs.access, starttime, endtime'],
+        '1' => ['showitem' => 'hidden,name,json_template,--div--;LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:tabs.access,starttime,endtime'],
     ],
     'columns' => [
         't3ver_label' => [
@@ -40,7 +37,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
@@ -48,7 +45,7 @@ return [
         'starttime' => [
             'exclude' => 1,
             'l10n_mode' => 'exclude',
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.starttime',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
             'config' => [
                 'type' => 'input',
                 'renderType' => 'inputDateTime',
@@ -64,7 +61,7 @@ return [
         'endtime' => [
             'exclude' => 1,
             'l10n_mode' => 'exclude',
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.endtime',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
             'config' => [
                 'type' => 'input',
                 'renderType' => 'inputDateTime',

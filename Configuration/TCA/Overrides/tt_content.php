@@ -1,19 +1,19 @@
 <?php
 
 TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-    'FFPI.FfpiNodeUpdates',
+    'FfpiNodeUpdates',
     'Nodeabo',
     'Node Abo'
 );
 
 TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-    'FFPI.FfpiNodeUpdates',
+    'FfpiNodeUpdates',
     'Gatewayhealth',
     'Gateway health'
 );
 
 TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-    'FFPI.FfpiNodeUpdates',
+    'FfpiNodeUpdates',
     'Freifunkapifile',
     'Freifunk API File'
 );
