@@ -10,6 +10,9 @@
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_id">
 				<target>Node ID</target>
 			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_name">
+				<source>Node navn</source>
+			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.online">
 				<target>Online</target>
 			</trans-unit>

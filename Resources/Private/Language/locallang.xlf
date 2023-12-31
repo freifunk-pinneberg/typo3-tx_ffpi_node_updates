@@ -3,9 +3,37 @@
 	<file source-language="en" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
 		<header />
 		<body>
-		<!-- TCA names -->
+		<!-- TCA names gateway -->
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway">
+				<source>Freifunk Gateway</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.http_adress">
+				<source>Gate Chkeck File</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.node">
+				<source>Node</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.ping">
+				<source>Ping</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.open_vpn">
+				<source>Open-VPN</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.network_interface">
+				<source>Network Interface</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.firewall">
+				<source>Firewall</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.exit_vpn">
+				<source>Exit-VPN</source>
+			</trans-unit>
+		<!-- TCA names node -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node">
 				<source>Freifunk Node</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_name">
+				<source>Node name</source>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_id">
 				<source>Node Id</source>
@@ -57,9 +85,6 @@
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
 				<source><![CDATA[Activation failed. Please check the link. If you still have problems, please contact <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></source>
-			</trans-unit>
-			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway">
-				<source>Freifunk Gateway</source>
 			</trans-unit>
 
 			<trans-unit id="tx_ffpinodeupdates_domain_model_freifunkapifile">
