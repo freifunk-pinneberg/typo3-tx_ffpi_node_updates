@@ -211,7 +211,9 @@ class AboController extends ActionController
         $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $secret;
         $url = $this->uriBuilder;
         $url->reset();
-        $url->setTargetPageUid($pid);
+        if(is_int($pid)) {
+            $url->setTargetPageUid($pid);
+        }
         $url->setCreateAbsoluteUri(true);
         $url->setArguments($urlAttributes);
         $url = $url->buildFrontendUri();
