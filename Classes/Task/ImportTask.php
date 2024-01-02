@@ -59,7 +59,7 @@ class ImportTask extends AbstractTask
      */
     public $pid;
 
-    protected function inistalizeTask()
+    protected function initializeTask(): void
     {
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
@@ -80,8 +80,7 @@ class ImportTask extends AbstractTask
      */
     public function execute(): bool
     {
-        $this->inistalizeTask();
-        /** @var bool $hasError */
+        $this->initializeTask();
         $hasError = false;
 
         //Get the external nodes
@@ -100,7 +99,7 @@ class ImportTask extends AbstractTask
             if ($internalNode === null) {
                 //Node dose not exist
                 $this->scheduler->log('Node ' . $nodeId . ' dose not exist. Start import', 0);
-                //create an new object
+                //create a new object
                 $node = new Node;
                 $node->setNodeId($nodeId);
                 $node->setNodeName($externalNode['name']);
@@ -143,7 +142,7 @@ class ImportTask extends AbstractTask
      *
      * @return string
      */
-    private function getJson()
+    private function getJson(): string
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $this->path);
@@ -168,7 +167,7 @@ class ImportTask extends AbstractTask
      *
      * @return array
      */
-    private function getExternalNodes()
+    private function getExternalNodes(): array
     {
         $json = $this->getJson();
         $nodes = json_decode($json, true);

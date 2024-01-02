@@ -158,7 +158,7 @@ class AboController extends ActionController
              * @var Abo $abo
              */
             $abo = $this->aboRepository->findOneBySecret($secret);
-            if (!empty($abo) and $abo->getEmail() == $email) {
+            if (($abo instanceof Abo) && $abo->getEmail() === $email) {
                 $abo->setConfirmed(true);
                 $this->aboRepository->update($abo);
                 $this->view->assign('confirmed', true);
@@ -189,12 +189,8 @@ class AboController extends ActionController
 
         //send mail
         $mail = new MailUtility();
-        $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
-        if ($mail >= 1) {
-            return true;
-        } else {
-            return false;
-        }
+        $sendMails = $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
+        return $sendMails;
     }
 
     /**
@@ -212,7 +208,7 @@ class AboController extends ActionController
         $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $secret;
         $url = $this->uriBuilder;
         $url->reset();
-        if(is_int($pid)) {
+        if (is_int($pid)) {
             $url->setTargetPageUid($pid);
         }
         $url->setCreateAbsoluteUri(true);

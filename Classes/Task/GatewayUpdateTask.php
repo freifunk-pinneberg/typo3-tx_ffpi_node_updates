@@ -31,7 +31,7 @@ class GatewayUpdateTask extends AbstractTask
     /** @var string */
     public $notificationMail;
 
-    protected function inistalizeTask()
+    protected function initializeTask(): void
     {
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->gatewayRepository = $this->objectManager->get(GatewayRepository::class);
@@ -56,9 +56,9 @@ class GatewayUpdateTask extends AbstractTask
      * @throws IllegalObjectTypeException
      * @throws UnknownObjectException
      */
-    public function execute()
+    public function execute(): bool
     {
-        $this->inistalizeTask();
+        $this->initializeTask();
 
         /** @var Gateway[] $gateways */
         $gateways = $this->gatewayRepository->findAll();
@@ -222,7 +222,7 @@ class GatewayUpdateTask extends AbstractTask
         return $gateway;
     }
 
-    protected function sendNotification(Gateway $gateway)
+    protected function sendNotification(Gateway $gateway): bool
     {
         if (empty($this->notificationMail)) {
             return false;
@@ -237,13 +237,12 @@ class GatewayUpdateTask extends AbstractTask
         $bodytext .= "Exit VPN: " . self::stateToString($gateway->getExitVpn()) . "\n";
 
         $email = GeneralUtility::makeInstance(MailMessage::class);
-        $email->setSubject($subject)
-            ->text($bodytext)
+        $mailsSend = $email->setSubject($subject)
+            ->setBody()->text($bodytext)
             ->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'])
-            ->setContentType('text/plain')
             ->setTo($this->notificationMail)
             ->send();
-        if ($email > 0) {
+        if ($mailsSend > 0) {
             return true;
         } else {
             return false;

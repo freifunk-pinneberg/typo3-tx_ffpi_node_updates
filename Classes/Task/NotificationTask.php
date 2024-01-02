@@ -89,42 +89,42 @@ class NotificationTask extends AbstractTask
         /**
          * the default Extbase Object Manager
          *
-         * @var ObjectManager
+         * @var ObjectManager $this->objectManager
          */
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
 
         /**
          * Builds URI for Frontend or Backend
          *
-         * @var UriBuilder
+         * @var UriBuilder $this->uriBuilder
          */
         $this->uriBuilder = $this->objectManager->get(UriBuilder::class);
 
         /**
          * DataMapFacotry, not directly used by this task, but needs to be aviable for the repository
          *
-         * @var DataMapFactory
+         * @var DataMapFactory $this->dataMapFactory
          */
         $this->dataMapFactory = $this->objectManager->get(DataMapFactory::class);
 
         /**
          * Saves the Repository objects into the Database
          *
-         * @var PersistenceManager
+         * @var PersistenceManager $this->persistenceManager
          */
         $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
 
         /**
          * Our Repository for the Freifunk Nodes
          *
-         * @var NodeRepository
+         * @var NodeRepository $this->internalNodeRepository
          */
         $this->internalNodeRepository = $this->objectManager->get(NodeRepository::class);
 
         /**
          * Our Repository for the Abos
          *
-         * @var AboRepository
+         * @var AboRepository $this->aboRepository
          */
         $this->aboRepository = $this->objectManager->get(AboRepository::class);
 
@@ -220,6 +220,7 @@ class NotificationTask extends AbstractTask
 
     protected function sendNotificationMail(Abo $abo, Node $internalNode): bool
     {
+        $hasError = false;
         //build url to remove the abo
         $unsubscribeUrl = $this->buildUnsubscribeLink($abo);
 
@@ -231,7 +232,7 @@ class NotificationTask extends AbstractTask
         $mail = new MailUtility();
         $send = $mail->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData, ['List-Unsubscribe' => $unsubscribeUrl]);
 
-        if ($send < 1) {
+        if ($send) {
             $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
             $hasError = true;
         } else {
@@ -249,7 +250,7 @@ class NotificationTask extends AbstractTask
     {
         $hasError = false;
         foreach ($internalNodes as $internalNode) {
-            /** @var array $externalNode */
+            /** @var array|null $externalNode */
             $externalNode = $externalNodes[$internalNode->getNodeId()];
 
             if ($externalNode === null) {

@@ -158,7 +158,7 @@ class Gateway extends AbstractEntity
     }
 
     /**
-     * @param int
+     * @param int $openVpn
      * @return Gateway
      */
     public function setOpenVpn(int $openVpn): Gateway

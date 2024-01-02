@@ -42,7 +42,7 @@ class FreifunkapifileController extends ActionController
     /**
      * @param FreifunkApiFileRepository $freifunkApiFileRepository
      */
-    public function injectFreifunkApiFileRepository(FreifunkApiFileRepository $freifunkApiFileRepository)
+    public function injectFreifunkApiFileRepository(FreifunkApiFileRepository $freifunkApiFileRepository): void
     {
         $this->freifunkApiFileRepository = $freifunkApiFileRepository;
     }
@@ -50,17 +50,17 @@ class FreifunkapifileController extends ActionController
     /**
      * @param NodeRepository $nodeRepository
      */
-    public function injectNodeRepository(NodeRepository $nodeRepository)
+    public function injectNodeRepository(NodeRepository $nodeRepository): void
     {
         $this->nodeRepository = $nodeRepository;
     }
 
-    public function showAction()
+    public function showAction(): void
     {
         /** @var FreifunkApiFile $apiFile */
         $apiFile = $this->freifunkApiFileRepository->findAll()->getFirst();
         if (!($apiFile instanceof FreifunkApiFile)) {
-            return false;
+            trigger_error('No API-File found', E_USER_ERROR);
         }
         $activeNodeCount = count($this->getActiveNodes());
         $apiFile->setActiveNodes($activeNodeCount);

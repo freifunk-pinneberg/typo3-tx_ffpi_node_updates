@@ -24,11 +24,11 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class MailController extends ActionController
 {
-    public function confirmEmailAction()
+    public function confirmEmailAction(): void
     {
     }
 
-    public function NotificationAction()
+    public function NotificationAction(): void
     {
     }
 }

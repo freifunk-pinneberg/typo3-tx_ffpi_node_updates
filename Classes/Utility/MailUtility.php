@@ -48,10 +48,10 @@ class MailUtility
      * @param string $templateName
      * @param array $vars
      * @param array $additionalHeader
-     * @return int the number of recipients who were accepted for delivery
+     * @return bool are mails send?
      * @throws Throwable
      */
-    public function sendMail(string $to, string $subject, string $templateName, array $vars = [], array $additionalHeader = []): int
+    public function sendMail(string $to, string $subject, string $templateName, array $vars = [], array $additionalHeader = []): bool
     {
         //Get the Fluid Template
         $template = $this->getTemplate($templateName, $vars);
