@@ -66,6 +66,9 @@ class FreifunkapifileController extends ActionController
         $apiFile->setActiveNodes($activeNodeCount);
         $json['value'] = $apiFile->getJson();
         $this->view->assignMultiple($json);
+        $this->response->setHeader('Content-Type', 'application/json');
+        $this->response->setHeader('Access-Control-Allow-Origin', '*');
+        $this->response->setHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600');
     }
 
     /**
