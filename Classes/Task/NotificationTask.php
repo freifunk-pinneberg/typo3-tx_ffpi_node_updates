@@ -232,7 +232,7 @@ class NotificationTask extends AbstractTask
         $mail = new MailUtility();
         $send = $mail->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData, ['List-Unsubscribe' => $unsubscribeUrl]);
 
-        if ($send) {
+        if (!$send) {
             $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
             $hasError = true;
         } else {
