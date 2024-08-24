@@ -51,6 +51,9 @@
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
 				<target>Avslutt abonnementet</target>
 			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_remove_form.p1">
+				<target>Hvis du ikke lenger ønsker å motta varsler, kan du slette dem her. Bare skriv inn e-postadressen din og secret. Du kan når som helst abonnere på nytt. Vær oppmerksom på at hvert abonnement behandles separat og har sin egen secret. Du finner secret på slutten av hver e-postmelding.</target>
+			</trans-unit>
 		<!-- Confirm a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
 				<target>Abonnementet ditt er bekreftet. Du vil nå motta et varsel hver gang noden din går offline. Du kan bruke hemmeligheten til å si opp abonnementet ditt senere.</target>

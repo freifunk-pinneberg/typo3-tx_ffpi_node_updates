@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
@@ -29,6 +30,7 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
+use TYPO3\CMS\Extbase\Service\ExtensionService;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class NotificationTask extends AbstractTask
@@ -64,9 +66,19 @@ class NotificationTask extends AbstractTask
     protected $uriBuilder;
 
     /**
+     * @var SiteFinder
+     */
+    protected $siteFinder;
+
+    /**
      * @var ObjectManagerInterface
      */
     protected $objectManager;
+
+    /**
+     * @var ExtensionService
+     */
+    protected $extensionService;
 
     /**
      * @var PersistenceManager
@@ -127,6 +139,16 @@ class NotificationTask extends AbstractTask
          * @var AboRepository $this->aboRepository
          */
         $this->aboRepository = $this->objectManager->get(AboRepository::class);
+
+        /**
+         * @var SiteFinder $this->siteFinder
+         */
+        $this->siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+
+        /**
+         * @var ExtensionService $this->extensionService
+         */
+        $this->extensionService = $this->objectManager->get(ExtensionService::class);
 
         /**
          * @var Typo3QuerySettings $querySettings
@@ -399,33 +421,48 @@ class NotificationTask extends AbstractTask
     /**
      * @param Abo $abo
      * @return string
+     * @throws \TYPO3\CMS\Core\Exception\SiteNotFoundException
      */
     protected function buildUnsubscribeLink(Abo $abo): string
     {
         $pid = $this->unsubscribePid;
 
-        $aboRemoveDemand = new AboRemoveDemand();
-        $aboRemoveDemand->setEmail($abo->getEmail());
-        $aboRemoveDemand->setSecret($abo->getSecret());
+        //$aboRemoveDemand = new AboRemoveDemand();
+        //$aboRemoveDemand->setEmail($abo->getEmail());
+        //$aboRemoveDemand->setSecret($abo->getSecret());
 
-        $url = $this->uriBuilder;
-        $url->initializeObject();
-        $url->reset();
-        $url->uriFor(
-            'removeForm',
-            [
+        $site = $this->siteFinder->getSiteByPageId($pid);
+        $argumentsPrefix = $this->extensionService->getPluginNamespace('FfpiNodeUpdates', 'Nodeabo');
+
+        $arguments = [
+            $argumentsPrefix => [
+                'action' => 'removeForm',
                 'aboRemoveDemand' => [
                     'email' => $abo->getEmail(),
                     'secret' => $abo->getSecret()
                 ]
-            ],
-            'Abo',
-            'ffpinodeupdates',
-            'Nodeabo'
-        );
-        $url->setTargetPageUid($pid);
-        $url->setCreateAbsoluteUri(true);
-        $url = $url->buildFrontendUri();
+            ]
+        ];
+        $url = (string)$site->getRouter()->generateUri((string)$pid, $arguments);
+
+        //$url = $this->uriBuilder;
+        //$url->initializeObject();
+        //$url->reset();
+        //$url->uriFor(
+        //    'removeForm',
+        //    [
+        //        'aboRemoveDemand' => [
+        //            'email' => $abo->getEmail(),
+        //            'secret' => $abo->getSecret()
+        //        ]
+        //    ],
+        //    'Abo',
+        //    'ffpinodeupdates',
+        //   'Nodeabo'
+        //);
+        //$url->setTargetPageUid($pid);
+        //$url->setCreateAbsoluteUri(true);
+        //$url = $url->buildFrontendUri();
         return $url;
     }
 

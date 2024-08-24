@@ -79,6 +79,9 @@
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
 				<source>Unsubscribe</source>
 			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_remove_form.p1">
+				<source>If you no longer wish to receive notifications, you can delete them here. Simply enter your email address and the secret code. You can resubscribe at any time. Please note that each subscription is treated separately and has its own secret code. You can find the secret at the end of every notification email.</source>
+			</trans-unit>
 		<!-- Confirm a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
 				<source>Your subscription has been confirmed. You will receive an alert every time your node goes offline. You can use the secret to disable the abo later.</source>

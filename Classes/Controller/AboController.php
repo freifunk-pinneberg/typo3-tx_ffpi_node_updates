@@ -105,16 +105,16 @@ class AboController extends ActionController
      */
     protected function initializeRemoveFormAction()
     {
-        /** @var MvcPropertyMappingConfiguration $propertyMappingConfiguration */
-        $propertyMappingConfiguration = $this->arguments['aboRemoveDemand']->getPropertyMappingConfiguration();
-        $propertyMappingConfiguration->allowProperties('email', 'secret');
+        $this->arguments->getArgument('aboRemoveDemand')
+            ->getPropertyMappingConfiguration()
+            ->allowProperties('email', 'secret');
     }
 
     /**
-     * @param AboRemoveDemand $aboRemoveDemand
+     * @param AboRemoveDemand|null $aboRemoveDemand
      * action removeForm
      */
-    public function removeFormAction($aboRemoveDemand = null)
+    public function removeFormAction(AboRemoveDemand $aboRemoveDemand = null)
     {
         if (!($aboRemoveDemand instanceof AboRemoveDemand)) {
             $aboRemoveDemand = new AboRemoveDemand();

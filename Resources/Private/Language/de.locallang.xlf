@@ -51,6 +51,9 @@
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
 				<target>Abo beenden</target>
 			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_remove_form.p1">
+				<target>Wenn du keine Benachrichtigungen mehr erhalten möchtest, kannst du sie hier löschen. Gib dazu einfach deine E-Mail-Adresse und den Secret ein. Du kannst dich jederzeit wieder anmelden. Bitte beachte, dass jedes Abonnement separat behandelt wird und einen eigenen Secret hat. Du findest den Secret am Ende jeder Benachrichtigungs-E-Mail.</target>
+			</trans-unit>
 		<!-- Confirm a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
 				<target>Dein Abo wurde bestätigt. Du erhältst nun jedes mal eine Benachrichtigung wenn dein Knoten offline geht. Mit dem Secret kannst du das Abo später wieder abbestellen.</target>
