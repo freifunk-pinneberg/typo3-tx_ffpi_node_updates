@@ -57,6 +57,26 @@ class Node extends AbstractEntity
     protected $role = '';
 
     /**
+     * @var string
+     */
+    protected $domain = '';
+
+    /**
+     * @var string
+     */
+    protected $hardwareModel = '';
+
+    /**
+     * @var DateTime
+     */
+    protected $firstSeen = null;
+
+    /**
+     * @var DateTime
+     */
+    protected $lastSeen = null;
+
+    /**
      * Returns the nodeId
      *
      * @return string $nodeId
@@ -173,5 +193,69 @@ class Node extends AbstractEntity
             $label = $this->getNodeId();
         }
         return $label;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDomain(): string
+    {
+        return $this->domain;
+    }
+
+    /**
+     * @param string $domain
+     */
+    public function setDomain(string $domain): void
+    {
+        $this->domain = $domain;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHardwareModel(): string
+    {
+        return $this->hardwareModel;
+    }
+
+    /**
+     * @param string $hardwareModel
+     */
+    public function setHardwareModel(string $hardwareModel): void
+    {
+        $this->hardwareModel = $hardwareModel;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getFirstSeen(): ?DateTime
+    {
+        return $this->firstSeen;
+    }
+
+    /**
+     * @param DateTime $firstSeen
+     */
+    public function setFirstSeen(?DateTime $firstSeen): void
+    {
+        $this->firstSeen = $firstSeen;
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getLastSeen(): ?DateTime
+    {
+        return $this->lastSeen;
+    }
+
+    /**
+     * @param DateTime $lastSeen
+     */
+    public function setLastSeen(?DateTime $lastSeen): void
+    {
+        $this->lastSeen = $lastSeen;
     }
 }

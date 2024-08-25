@@ -33,27 +33,12 @@ use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Service\ExtensionService;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
-class NotificationTask extends AbstractTask
+class NotificationTask extends AbstractNodeTask
 {
-    /**
-     * @var string
-     */
-    public $path;
-
-    /**
-     * @var int
-     */
-    public $storagePid;
-
     /**
      * @var int
      */
     public $unsubscribePid;
-
-    /**
-     * @var NodeRepository
-     */
-    protected $internalNodeRepository;
 
     /**
      * @var AboRepository
@@ -61,19 +46,9 @@ class NotificationTask extends AbstractTask
     protected $aboRepository;
 
     /**
-     * @var UriBuilder
-     */
-    protected $uriBuilder;
-
-    /**
      * @var SiteFinder
      */
     protected $siteFinder;
-
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
 
     /**
      * @var ExtensionService
@@ -92,6 +67,7 @@ class NotificationTask extends AbstractTask
 
     public function execute()
     {
+        $this->initializeTask();
         $this->initialiseMainTask();
         return $this->mainTask();
     }
@@ -99,81 +75,36 @@ class NotificationTask extends AbstractTask
     protected function initialiseMainTask(): void
     {
         /**
-         * the default Extbase Object Manager
-         *
-         * @var ObjectManager $this->objectManager
-         */
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-        /**
-         * Builds URI for Frontend or Backend
-         *
-         * @var UriBuilder $this->uriBuilder
-         */
-        $this->uriBuilder = $this->objectManager->get(UriBuilder::class);
-
-        /**
          * DataMapFacotry, not directly used by this task, but needs to be aviable for the repository
          *
-         * @var DataMapFactory $this->dataMapFactory
+         * @var DataMapFactory $this- >dataMapFactory
          */
         $this->dataMapFactory = $this->objectManager->get(DataMapFactory::class);
 
         /**
          * Saves the Repository objects into the Database
          *
-         * @var PersistenceManager $this->persistenceManager
+         * @var PersistenceManager $this- >persistenceManager
          */
         $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
 
         /**
-         * Our Repository for the Freifunk Nodes
-         *
-         * @var NodeRepository $this->internalNodeRepository
-         */
-        $this->internalNodeRepository = $this->objectManager->get(NodeRepository::class);
-
-        /**
          * Our Repository for the Abos
          *
-         * @var AboRepository $this->aboRepository
+         * @var AboRepository $this- >aboRepository
          */
         $this->aboRepository = $this->objectManager->get(AboRepository::class);
 
         /**
-         * @var SiteFinder $this->siteFinder
+         * @var SiteFinder $this- >siteFinder
          */
         $this->siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
 
         /**
-         * @var ExtensionService $this->extensionService
+         * @var ExtensionService $this- >extensionService
          */
         $this->extensionService = $this->objectManager->get(ExtensionService::class);
 
-        /**
-         * @var Typo3QuerySettings $querySettings
-         */
-        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
-        $querySettings->setStoragePageIds([(int)$this->storagePid]);
-        $querySettings->setRespectStoragePage(FALSE);
-        $querySettings->setRespectSysLanguage(FALSE);
-        //Set the settings for our repositorys
-        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
-        $this->aboRepository->setDefaultQuerySettings($querySettings);
-    }
-
-    /**
-     * This method returns the destination pid as additional information
-     *
-     * @return string Information to display
-     */
-    public function getAdditionalInformation(): string
-    {
-        $string = 'Storage Page: ' . $this->storagePid . "\n";
-        $string .= 'Unsubscribe Page: ' . $this->unsubscribePid . "\n";
-        $string .= 'nodes.json: ' . $this->path . "\n";
-
-        return $string;
     }
 
     /**
@@ -210,6 +141,40 @@ class NotificationTask extends AbstractTask
             return false;
         }
         return true;
+    }
+
+    protected function updateAllNodes(array $externalNodes, QueryResultInterface $internalNodes): bool
+    {
+        $hasError = false;
+        foreach ($internalNodes as $internalNode) {
+            /** @var array|null $externalNode */
+            $externalNode = $externalNodes[$internalNode->getNodeId()];
+
+            if ($externalNode === null) {
+                continue;
+            }
+
+            if ($internalNode->getOnline() === true && $this->isNodeOnline($externalNode) === false) {
+                //node changed from online to offline since last check
+                $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline', 0);
+                $this->createOrUpdateNode($externalNode, true);
+                if (!$this->sendNotification($internalNode)) {
+                    //it was not possible to send a notification
+                    $this->scheduler->log('One or more Notifications for ' . $internalNode->getNodeId() . ' could not be send.', 1);
+                    $hasError = true;
+                }
+            } elseif ($this->isNodeOnline($internalNode) !== $this->isNodeOnline($externalNode)) {
+                //The status has been changed, update the object
+                $this->createOrUpdateNode($externalNode, true);
+                //Log the change
+                if ($this->isNodeOnline($externalNode)) {
+                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now online.', 0);
+                } else {
+                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline.', 0);
+                }
+            }
+        }
+        return !$hasError;
     }
 
     /**
@@ -268,156 +233,6 @@ class NotificationTask extends AbstractTask
         return true;
     }
 
-    protected function updateAllNodes(array $externalNodes, QueryResultInterface $internalNodes): bool
-    {
-        $hasError = false;
-        foreach ($internalNodes as $internalNode) {
-            /** @var array|null $externalNode */
-            $externalNode = $externalNodes[$internalNode->getNodeId()];
-
-            if ($externalNode === null) {
-                continue;
-            }
-
-            if ($internalNode->getOnline() === true && $externalNode['status']['online'] === false) {
-                //node changed from online to offline since last check
-                $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline', 0);
-                $this->updateNode($internalNode, $externalNode);
-                if (!$this->sendNotification($internalNode)) {
-                    //it was not possible to send a notification
-                    $this->scheduler->log('One or more Notifications for ' . $internalNode->getNodeId() . ' could not be send.', 1);
-                    $hasError = true;
-                }
-            } elseif ($internalNode->getOnline() !== $externalNode['status']['online']) {
-                //The status has been changed, update the object
-                $this->updateNode($internalNode, $externalNode);
-                //Log the change
-                if ($externalNode['status']['online']) {
-                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now online.', 0);
-                } else {
-                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline.', 0);
-                }
-            }
-        }
-        return !$hasError;
-    }
-
-    /**
-     * Update Node Status
-     *
-     * @param Node $internalNode
-     * @param array $externalNode
-     * @return void
-     * @throws IllegalObjectTypeException
-     * @throws UnknownObjectException
-     */
-    protected function updateNode(?Node $internalNode, ?array $externalNode)
-    {
-        if (empty($externalNode)) {
-            return;
-        }
-        if (!($internalNode instanceof Node)) {
-            $internalNode = $this->createNodeIfNotExist($externalNode);
-        }
-        if (!($internalNode instanceof Node)) {
-            return;
-        }
-        $internalNode->setOnline($externalNode['status']['online']);
-        if (!empty($externalNode['name'])) {
-            $internalNode->setNodeName($externalNode['name']);
-        }
-        if (!empty($externalNode['role'])) {
-            $internalNode->setRole($externalNode['role']);
-        }
-        if ($internalNode->_isDirty()) {
-            $internalNode->setLastChange(new \DateTime());
-            $this->internalNodeRepository->update($internalNode);
-        }
-    }
-
-    /**
-     * @param array $externalNode
-     * @return Node|null
-     */
-    protected function createNodeIfNotExist(array $externalNode): ?Node
-    {
-        if (empty($externalNode['id'])) {
-            return null;
-        }
-        $internalNode = $this->internalNodeRepository->findOneByNodeId($externalNode['id']);
-        if ($internalNode instanceof Node) {
-            return $internalNode;
-        }
-        //Node not exists
-        $node = new Node();
-        $node->setNodeId($externalNode['id']);
-        $node->setNodeName($externalNode['name']);
-        $node->setRole($externalNode['role']);
-        $node->setLastChange(new \DateTime());
-        if ($externalNode['status']['online'] == true) {
-            $node->setOnline(true);
-        } else {
-            $node->setOnline(false);
-        }
-        $this->internalNodeRepository->add($node);
-        return $node;
-    }
-
-    /**
-     * Gets External Nodes
-     *
-     * @return array
-     */
-    protected function getExternalNodes()
-    {
-        $json = $this->getJson();
-        $nodes = json_decode($json, true);
-        if ($nodes == NULL) {
-            $this->scheduler->log(json_last_error_msg(), 1);
-        }
-        $externalNodes = $nodes['nodes'];
-
-        if (empty($externalNodes) || !is_array($externalNodes)) {
-            //We can't do anything when we don't have the exernal nodes
-            $this->scheduler->log('External Nodes are empty', 1);
-            return [];
-        } else {
-            $externalNodesNew = [];
-            foreach ($externalNodes as $externalNode) {
-                //the node id must be the array key
-                $externalNodesNew[$externalNode['id']] = $externalNode;
-            }
-            $externalNodes = $externalNodesNew;
-        }
-        return $externalNodes;
-    }
-
-    /**
-     * Gets the JSON
-     *
-     * @return string
-     */
-    protected function getJson()
-    {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $this->path);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        //Useragent
-        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
-        //follow 301 and 302
-        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-
-        $response = curl_exec($curl);
-        $responseStatusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        if ($errno = curl_errno($curl)) {
-            $this->scheduler->log('Curl Error: ' . $errno . ' HTTP:' . $responseStatusCode, 1);
-        }
-        $body = $response;
-        curl_close($curl);
-
-        return $body;
-    }
-
     /**
      * @param Abo $abo
      * @return string
@@ -426,10 +241,6 @@ class NotificationTask extends AbstractTask
     protected function buildUnsubscribeLink(Abo $abo): string
     {
         $pid = $this->unsubscribePid;
-
-        //$aboRemoveDemand = new AboRemoveDemand();
-        //$aboRemoveDemand->setEmail($abo->getEmail());
-        //$aboRemoveDemand->setSecret($abo->getSecret());
 
         $site = $this->siteFinder->getSiteByPageId($pid);
         $argumentsPrefix = $this->extensionService->getPluginNamespace('FfpiNodeUpdates', 'Nodeabo');
@@ -445,25 +256,21 @@ class NotificationTask extends AbstractTask
         ];
         $url = (string)$site->getRouter()->generateUri((string)$pid, $arguments);
 
-        //$url = $this->uriBuilder;
-        //$url->initializeObject();
-        //$url->reset();
-        //$url->uriFor(
-        //    'removeForm',
-        //    [
-        //        'aboRemoveDemand' => [
-        //            'email' => $abo->getEmail(),
-        //            'secret' => $abo->getSecret()
-        //        ]
-        //    ],
-        //    'Abo',
-        //    'ffpinodeupdates',
-        //   'Nodeabo'
-        //);
-        //$url->setTargetPageUid($pid);
-        //$url->setCreateAbsoluteUri(true);
-        //$url = $url->buildFrontendUri();
         return $url;
     }
 
+
+    /**
+     * This method returns the destination pid as additional information
+     *
+     * @return string Information to display
+     */
+    public function getAdditionalInformation(): string
+    {
+        $string = 'Storage Page: ' . $this->storagePid . "\n";
+        $string .= 'Unsubscribe Page: ' . $this->unsubscribePid . "\n";
+        $string .= 'nodes.json: ' . $this->path . "\n";
+
+        return $string;
+    }
 }
