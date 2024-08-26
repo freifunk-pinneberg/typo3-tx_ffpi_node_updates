@@ -39,7 +39,7 @@
 			</trans-unit>
 		<!-- Create a new abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_p1">
-				<target>Trage hier deine E-Mail Adresse und die Knoten ID ein. Du erhälst dann jedes mal wenn der Knoten von Online auf Offline wechselt eine Benachrichtigung.</target>
+				<target>Wähle den knoten und trage deine E-Mail Adresse ein, um jedes Mal, wenn der Knoten von Online auf Offline wechselt eine Benachrichtigung zu erhalten.</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
 				<target>Abonieren</target>
@@ -49,7 +49,7 @@
 			</trans-unit>
 		<!-- Remove a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
-				<target>Abo beenden</target>
+				<target>Abo abbestellen</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_remove_form.p1">
 				<target>Wenn du keine Benachrichtigungen mehr erhalten möchtest, kannst du sie hier löschen. Gib dazu einfach deine E-Mail-Adresse und den Secret ein. Du kannst dich jederzeit wieder anmelden. Bitte beachte, dass jedes Abonnement separat behandelt wird und einen eigenen Secret hat. Du findest den Secret am Ende jeder Benachrichtigungs-E-Mail.</target>

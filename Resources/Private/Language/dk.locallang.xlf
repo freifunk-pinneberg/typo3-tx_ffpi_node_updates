@@ -39,7 +39,7 @@
 			</trans-unit>
 		<!-- Create a new abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_p1">
-				<target>Indtast din e-mailadresse og nodens ID her. Du vil derefter modtage en notifikation, hver gang noden skifter fra online til offline.</target>
+				<target>Vælg noden, og indtast din e-mailadresse for at modtage en meddelelse, hver gang noden skifter fra online til offline.</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
 				<target>Abonner</target>
