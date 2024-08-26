@@ -92,9 +92,11 @@ class FreifunkapifileController extends ActionController
             }
             // Node is Offline, check if it was online in the last 2 Weeks.
             $lastChangeTime = $node->getLastChange();
-            $diff = $lastChangeTime->diff($now);
-            if ($diff->days <= 14) {
-                $activeNodes[] = $node;
+            if($lastChangeTime instanceof \DateTime) {
+                $diff = $lastChangeTime->diff($now);
+                if ($diff->days <= 14) {
+                    $activeNodes[] = $node;
+                }
             }
         }
         return $activeNodes;
