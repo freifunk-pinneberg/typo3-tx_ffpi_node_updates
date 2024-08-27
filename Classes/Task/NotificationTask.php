@@ -14,24 +14,16 @@
 namespace FFPI\FfpiNodeUpdates\Task;
 
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
-use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
-use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
-use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
-use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Service\ExtensionService;
-use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class NotificationTask extends AbstractNodeTask
 {
@@ -104,6 +96,14 @@ class NotificationTask extends AbstractNodeTask
          * @var ExtensionService $this- >extensionService
          */
         $this->extensionService = $this->objectManager->get(ExtensionService::class);
+
+        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
+        $querySettings->setStoragePageIds([(int)$this->pid]);
+        $querySettings->setRespectStoragePage(true);
+        $querySettings->setRespectSysLanguage(false);
+        //Set the settings for our repositorys
+        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
+        $this->aboRepository->setDefaultQuerySettings($querySettings);
 
     }
 

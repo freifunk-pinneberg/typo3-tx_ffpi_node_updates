@@ -48,7 +48,8 @@ abstract class AbstractNodeTask extends AbstractTask
 
         // Set the correct PID for the storage
         $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
-        $querySettings->setRespectStoragePage(false);
+        $querySettings->setRespectStoragePage(true);
+        $querySettings->setRespectSysLanguage(false);
         $querySettings->setStoragePageIds([$this->pid]);
         $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
     }
