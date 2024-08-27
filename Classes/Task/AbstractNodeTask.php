@@ -95,6 +95,14 @@ abstract class AbstractNodeTask extends AbstractTask
             $internalNode->setLastChange(new \DateTime());
         }
 
+        $lastSeen = $externalNode['status']['lastcontact'] ?? null;
+        if($lastSeen !== null){
+            $dateTime = \DateTime::createFromFormat(\DateTime::ATOM, $lastSeen);
+            if($dateTime){
+                $internalNode->setLastSeen($dateTime);
+            }
+        }
+
         // Save the node
         if ($internalNode->_isNew()) {
             $internalNode->setPid($this->pid);
@@ -177,7 +185,7 @@ abstract class AbstractNodeTask extends AbstractTask
         if($node instanceof Node){
             return $node->isOnline();
         }
-        if(is_array($node) && ($node['status']['online'] || $node['flags']['online'])){
+        if(is_array($node) && ($node['status']['online'] === true || $node['flags']['online'] === true)){
             return true;
         }
         return false;
