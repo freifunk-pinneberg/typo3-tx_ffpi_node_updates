@@ -1,0 +1,4 @@
+services:
+  FFPI\FfpiNodeUpdates\Property\TypeConverter\AboRemoveDemandConverter:
+    tags:
+      - name: 'extbase.type_converter'

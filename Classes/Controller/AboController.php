@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand;
@@ -104,16 +105,16 @@ class AboController extends ActionController
      */
     protected function initializeRemoveFormAction()
     {
-        /** @var \TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration $propertyMappingConfiguration */
-        $propertyMappingConfiguration = $this->arguments['aboRemoveDemand']->getPropertyMappingConfiguration();
-        $propertyMappingConfiguration->allowProperties('email', 'secret');
+        $this->arguments->getArgument('aboRemoveDemand')
+            ->getPropertyMappingConfiguration()
+            ->allowProperties('email', 'secret');
     }
 
     /**
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
+     * @param AboRemoveDemand|null $aboRemoveDemand
      * action removeForm
      */
-    public function removeFormAction($aboRemoveDemand = null)
+    public function removeFormAction(AboRemoveDemand $aboRemoveDemand = null)
     {
         if (!($aboRemoveDemand instanceof AboRemoveDemand)) {
             $aboRemoveDemand = new AboRemoveDemand();
@@ -124,7 +125,7 @@ class AboController extends ActionController
     /**
      * action remove
      *
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand $aboRemoveDemand
+     * @param AboRemoveDemand $aboRemoveDemand
      * @return void
      * @throws Throwable
      */
@@ -157,7 +158,7 @@ class AboController extends ActionController
              * @var Abo $abo
              */
             $abo = $this->aboRepository->findOneBySecret($secret);
-            if (!empty($abo) and $abo->getEmail() == $email) {
+            if (($abo instanceof Abo) && $abo->getEmail() === $email) {
                 $abo->setConfirmed(true);
                 $this->aboRepository->update($abo);
                 $this->view->assign('confirmed', true);
@@ -188,12 +189,8 @@ class AboController extends ActionController
 
         //send mail
         $mail = new MailUtility();
-        $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
-        if ($mail >= 1) {
-            return true;
-        } else {
-            return false;
-        }
+        $sendMails = $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
+        return $sendMails;
     }
 
     /**
@@ -211,7 +208,9 @@ class AboController extends ActionController
         $urlAttributes['tx_ffpinodeupdates_nodeabo[secret]'] = $secret;
         $url = $this->uriBuilder;
         $url->reset();
-        $url->setTargetPageUid($pid);
+        if (is_int($pid)) {
+            $url->setTargetPageUid($pid);
+        }
         $url->setCreateAbsoluteUri(true);
         $url->setArguments($urlAttributes);
         $url = $url->buildFrontendUri();

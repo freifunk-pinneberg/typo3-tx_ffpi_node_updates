@@ -1,4 +1,5 @@
 <?php
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node',
@@ -17,11 +18,8 @@ return [
         'searchFields' => 'node_id,node_name,role,online,last_change,',
         'iconfile' => 'EXT:ffpi_node_updates/Resources/Public/Icons/wifi-router.svg',
     ],
-    'interface' => [
-        'showRecordFieldList' => 'hidden, node_id, node_name, role, online, last_change',
-    ],
     'types' => [
-        '1' => ['showitem' => 'hidden, node_id, node_name, online, role, last_change, --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, starttime, endtime'],
+        '1' => ['showitem' => 'hidden,node_id,node_name,online,role,last_change,domain,hardware_model,first_seen,last_seen,--div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access,starttime,endtime'],
     ],
     'columns' => [
         't3ver_label' => [
@@ -39,7 +37,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
@@ -104,6 +102,24 @@ return [
                 'eval' => 'trim'
             ],
         ],
+        'domain' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.domain',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
+        'hardware_model' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.hardware_model',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim'
+            ],
+        ],
         'online' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.online',
@@ -111,7 +127,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:lang/locallang_core.xlf:labels.enabled'
+                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
                 'default' => 0
@@ -120,6 +136,30 @@ return [
         'last_change' => [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.last_change',
+            'config' => [
+                'type' => 'input',
+                'renderType' => 'inputDateTime',
+                'size' => 10,
+                'eval' => 'datetime',
+                'checkbox' => 1,
+                'default' => time()
+            ],
+        ],
+        'first_seen' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.first_seen',
+            'config' => [
+                'type' => 'input',
+                'renderType' => 'inputDateTime',
+                'size' => 10,
+                'eval' => 'datetime',
+                'checkbox' => 1,
+                'default' => time()
+            ],
+        ],
+        'last_seen' => [
+            'exclude' => 1,
+            'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_node.last_seen',
             'config' => [
                 'type' => 'input',
                 'renderType' => 'inputDateTime',

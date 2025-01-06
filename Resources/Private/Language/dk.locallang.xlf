@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
+	<file source-language="en" target-language="dk" datatype="plaintext" original="messages" date="2023-12-19T12:53:37Z" product-name="ffpi_node_updates">
 		<header />
 		<body>
 		<!-- TCA names -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node">
-				<target>Freifunk Knoten</target>
+				<target>Freifunk-knudepunkt</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_id">
-				<target>Knoten ID</target>
+				<target>Node ID</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_name">
-				<source>Knoten Name</source>
+				<source>Node navn</source>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.online">
 				<target>Online</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.last_change">
-				<target>Letzte Änderung</target>
+				<target>Sidste ændring</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo">
-				<target>Benachrichtigungs-Abo</target>
+				<target>Abonnement på notifikation</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.email">
 				<target>E-Mail</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirmed">
-				<target>Bestätigt</target>
+				<target>Bekræftet</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.last_notification">
-				<target>Letzte Benachrichtigung</target>
+				<target>Sidste meddelelse</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.secret">
 				<target>Secret</target>
@@ -39,27 +39,24 @@
 			</trans-unit>
 		<!-- Create a new abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_p1">
-				<target>Wähle den knoten und trage deine E-Mail Adresse ein, um jedes Mal, wenn der Knoten von Online auf Offline wechselt eine Benachrichtigung zu erhalten.</target>
+				<target>Vælg noden, og indtast din e-mailadresse for at modtage en meddelelse, hver gang noden skifter fra online til offline.</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
-				<target>Abonieren</target>
+				<target>Abonner</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.abo_created">
-				<target>Dein Abo wurde eingetragen, ist aber noch inaktiv. Wir haben dir eine Bestätigungs E-Mail geschickt. Klicke auf den enthaltenen  Link um dein Abo zu bestätigen.</target>
+				<target>Dit abonnement er blevet oprettet, men er stadig inaktivt. Vi har sendt dig en bekræftelsesmail. Klik på linket for at bekræfte dit abonnement.</target>
 			</trans-unit>
 		<!-- Remove a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
-				<target>Abo abbestellen</target>
-			</trans-unit>
-			<trans-unit id="tx_ffpinodeupdates_remove_form.p1">
-				<target>Wenn du keine Benachrichtigungen mehr erhalten möchtest, kannst du sie hier löschen. Gib dazu einfach deine E-Mail-Adresse und den Secret ein. Du kannst dich jederzeit wieder anmelden. Bitte beachte, dass jedes Abonnement separat behandelt wird und einen eigenen Secret hat. Du findest den Secret am Ende jeder Benachrichtigungs-E-Mail.</target>
+				<target>Annuller abonnement</target>
 			</trans-unit>
 		<!-- Confirm a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
-				<target>Dein Abo wurde bestätigt. Du erhältst nun jedes mal eine Benachrichtigung wenn dein Knoten offline geht. Mit dem Secret kannst du das Abo später wieder abbestellen.</target>
+				<target>Dit abonnement er blevet bekræftet. Du vil nu modtage en notifikation, hver gang din node går offline. Du kan bruge hemmeligheden til at annullere dit abonnement senere.</target>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
-				<target><![CDATA[Aktivierung fehlgeschlagen. Bitte prüfe den Link. Solltest du weiterhin Probleme haben wende dich an <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></target>
+				<target><![CDATA[Aktivering mislykkedes! Tjek venligst linket. Hvis du stadig har problemer, bedes du kontakte <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></target>
 			</trans-unit>
 
 			<trans-unit id="tx_ffpinodeupdates_domain_model_freifunkapifile">

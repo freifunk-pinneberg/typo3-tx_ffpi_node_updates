@@ -109,7 +109,7 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
      */
     public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
-        $task->storagePid = intval($submittedData['FfpiNodeUpdates_storage_pid']);
+        $task->pid = intval($submittedData['FfpiNodeUpdates_storage_pid']);
         $task->unsubscribePid = intval($submittedData['FfpiNodeUpdates_unsubscribe_pid']);
         $task->path = trim($submittedData['FfpiNodeUpdates_url']);
     }

@@ -3,9 +3,37 @@
 	<file source-language="en" datatype="plaintext" original="messages" date="2016-12-23T20:53:37Z" product-name="ffpi_node_updates">
 		<header />
 		<body>
-		<!-- TCA names -->
+		<!-- TCA names gateway -->
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway">
+				<source>Freifunk Gateway</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.http_adress">
+				<source>Gate Chkeck File</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.node">
+				<source>Node</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.ping">
+				<source>Ping</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.open_vpn">
+				<source>Open-VPN</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.network_interface">
+				<source>Network Interface</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.firewall">
+				<source>Firewall</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway.exit_vpn">
+				<source>Exit-VPN</source>
+			</trans-unit>
+		<!-- TCA names node -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node">
 				<source>Freifunk Node</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_name">
+				<source>Node name</source>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_node.node_id">
 				<source>Node Id</source>
@@ -39,17 +67,20 @@
 			</trans-unit>
 		<!-- Create a new abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_p1">
-				<source>Enter your e-mail address and the node ID. You will receive a notification every time the node changes from online to offline.</source>
+				<source>Select the node and enter your e-mail address to receive a notification every time the node switches from online to offline.</source>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.new_submit">
 				<source>Subscribe</source>
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.abo_created">
-				<source>You abo has been created bit os inactive. We have send a confirmation mail to you. Click on the link in the mail to confirm your abo.</source>
+				<source>Your abo has been created but is inactive. We have sent a confirmation mail to you. Click on the link in the mail to confirm your abo.</source>
 			</trans-unit>
 		<!-- Remove a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.remove_link">
 				<source>Unsubscribe</source>
+			</trans-unit>
+			<trans-unit id="tx_ffpinodeupdates_remove_form.p1">
+				<source>If you no longer wish to receive notifications, you can delete them here. Simply enter your email address and the secret code. You can resubscribe at any time. Please note that each subscription is treated separately and has its own secret code. You can find the secret at the end of every notification email.</source>
 			</trans-unit>
 		<!-- Confirm a abo -->
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_true_p1">
@@ -57,9 +88,6 @@
 			</trans-unit>
 			<trans-unit id="tx_ffpinodeupdates_domain_model_abo.confirm_false_p1">
 				<source><![CDATA[Activation failed. Please check the link. If you still have problems, please contact <a href="mailto:service@pinneberg.freifunk.net">service@pinneberg.freifunk.net</a>]]></source>
-			</trans-unit>
-			<trans-unit id="tx_ffpinodeupdates_domain_model_gateway">
-				<source>Freifunk Gateway</source>
 			</trans-unit>
 
 			<trans-unit id="tx_ffpinodeupdates_domain_model_freifunkapifile">

@@ -53,7 +53,7 @@ class Abo extends AbstractEntity
     /**
      * node
      *
-     * @var \FFPI\FfpiNodeUpdates\Domain\Model\Node
+     * @var Node
      */
     protected $node;
 
@@ -164,7 +164,7 @@ class Abo extends AbstractEntity
     /**
      * Sets the node
      *
-     * @param \FFPI\FfpiNodeUpdates\Domain\Model\Node $node
+     * @param Node $node
      * @return void
      */
     public function setNode(Node $node)

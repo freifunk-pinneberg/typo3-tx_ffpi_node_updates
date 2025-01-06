@@ -15,7 +15,7 @@ class Gateway extends AbstractEntity
     public const STATE_ERROR = 2;
 
     /**
-     * @var \FFPI\FfpiNodeUpdates\Domain\Model\Node
+     * @var Node
      */
     protected $node;
 
@@ -158,7 +158,7 @@ class Gateway extends AbstractEntity
     }
 
     /**
-     * @param int
+     * @param int $openVpn
      * @return Gateway
      */
     public function setOpenVpn(int $openVpn): Gateway
@@ -220,5 +220,6 @@ class Gateway extends AbstractEntity
         $this->exitVpn = $exitVpn;
         return $this;
     }
+
 
 }

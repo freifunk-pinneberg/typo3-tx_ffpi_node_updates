@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Utility;
 
+use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
 use Throwable;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -46,10 +47,11 @@ class MailUtility
      * @param string $subject
      * @param string $templateName
      * @param array $vars
-     * @return int the number of recipients who were accepted for delivery
+     * @param array $additionalHeader
+     * @return bool are mails send?
      * @throws Throwable
      */
-    public function sendMail(string $to, string $subject, string $templateName, array $vars = []): int
+    public function sendMail(string $to, string $subject, string $templateName, array $vars = [], array $additionalHeader = []): bool
     {
         //Get the Fluid Template
         $template = $this->getTemplate($templateName, $vars);
@@ -62,8 +64,17 @@ class MailUtility
         $email->setSubject($subject);
         $email->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg']);
         $email->setTo($to);
-        $email->setBody($emailBody);
-        $email->setContentType('text/html');
+        if (method_exists($email, 'setContentType')) {
+            $email->setBody($emailBody);
+            $email->setContentType('text/html');
+        } else {
+            $email->setBody()->html($emailBody);
+        }
+        $headers = $email->getHeaders();
+        foreach ($additionalHeader as $key => $value) {
+            $headers->addTextHeader($key, $value);
+        }
+        $email->setHeaders($headers);
 
         //Send mail
         return $email->send();
@@ -98,7 +109,7 @@ class MailUtility
 
     /**
      * @return array
-     * @throws \TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException
+     * @throws InvalidConfigurationTypeException
      */
     private function getTemplatePaths(): array
     {

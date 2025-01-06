@@ -17,14 +17,10 @@ $EM_CONF[$_EXTKEY] = [
     'author' => 'Kevin Quiatkowski',
     'author_email' => 'kevin@pinneberg.freifunk.net',
     'state' => 'stable',
-    'internal' => '',
-    'uploadfolder' => '0',
-    'createDirs' => '',
-    'clearCacheOnLoad' => 0,
-    'version' => '2.0.0',
+    'version' => '2.1.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '9.5.0-10.4.99',
+            'typo3' => '10.0.0-10.4.99',
             'scheduler' => ''
         ],
         'conflicts' => [],

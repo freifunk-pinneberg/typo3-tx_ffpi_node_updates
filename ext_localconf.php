@@ -17,62 +17,62 @@ call_user_func(
     function ($extKey) {
 
         TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-            'FFPI.FfpiNodeUpdates',
+            'FfpiNodeUpdates',
             'Nodeabo',
             [
-                'Abo' => 'new, create, removeForm, confirm, remove',
-                'Node' => 'list, show'
+                \FFPI\FfpiNodeUpdates\Controller\AboController::class => 'new, create, removeForm, confirm, remove',
+                \FFPI\FfpiNodeUpdates\Controller\NodeController::class => 'list, show'
             ],
             // non-cacheable actions
             [
-                'Abo' => 'create, remove, confirm',
-                'Node' => ''
+                \FFPI\FfpiNodeUpdates\Controller\AboController::class => 'create, remove, confirm',
+                \FFPI\FfpiNodeUpdates\Controller\NodeController::class => ''
             ]
         );
 
         TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-            'FFPI.FfpiNodeUpdates',
+            'FfpiNodeUpdates',
             'Gatewayhealth',
             [
-                'Gateway' => 'overview'
+                \FFPI\FfpiNodeUpdates\Controller\GatewayController::class => 'overview'
             ],
             // non-cacheable actions
             [
-                'Gateway' => ''
+                \FFPI\FfpiNodeUpdates\Controller\GatewayController::class => ''
             ]
         );
 
         TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-            'FFPI.FfpiNodeUpdates',
+            'FfpiNodeUpdates',
             'Freifunkapifile',
             [
-                'Freifunkapifile' => 'show'
+                \FFPI\FfpiNodeUpdates\Controller\FreifunkapifileController::class => 'show'
             ],
             // non-cacheable actions
             [
-                'Freifunkapifile' => ''
+                \FFPI\FfpiNodeUpdates\Controller\FreifunkapifileController::class => ''
             ]
         );
 
     },
-    $_EXTKEY
+    'ffpi_node_updates'
 );
 
 // Add task
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][FFPI\FfpiNodeUpdates\Task\NotificationTask::class] = [
-    'extension' => $_EXTKEY,
+    'extension' => 'ffpi_node_updates',
     'title' => 'Node Status updates',
     'description' => 'Sends notifications',
     'additionalFields' => FFPI\FfpiNodeUpdates\Task\NotificationTaskAdditionalFieldProvider::class,
 ];
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][FFPI\FfpiNodeUpdates\Task\ImportTask::class] = [
-    'extension' => $_EXTKEY,
+    'extension' => 'ffpi_node_updates',
     'title' => 'Node Import',
     'description' => 'Imports all Nodes',
     'additionalFields' => FFPI\FfpiNodeUpdates\Task\ImportTaskAdditionalFieldProvider::class,
 ];
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][FFPI\FfpiNodeUpdates\Task\GatewayUpdateTask::class] = [
-    'extension' => $_EXTKEY,
+    'extension' => 'ffpi_node_updates',
     'title' => 'Gateway Update',
     'description' => 'Updates the gateways',
     'additionalFields' => FFPI\FfpiNodeUpdates\Task\GatewayUpdateTaskAdditionalFieldProvider::class,

@@ -2,6 +2,7 @@
 <f:layout name="Default"/>
 
 <f:section name="main">
+    <p><f:translate key="tx_ffpinodeupdates_remove_form.p1"/></p>
     <f:form controller="Abo" action="remove" name="removeAbo" object="{aboRemoveDemand}" objectName="aboRemoveDemand">
         <label for="email" class="control-label">
             <f:translate key="tx_ffpinodeupdates_domain_model_abo.email"/>
@@ -14,7 +15,8 @@
             <f:translate key="tx_ffpinodeupdates_domain_model_abo.secret"/>
         </label>
         <div class="input">
-            <f:form.textfield id="secret" property="secret" required="required"/>
+            <f:variable name="secret_pattern">[a-zA-Z0-9]<f:format.raw>{</f:format.raw>10}</f:variable>
+            <f:form.textfield id="secret" property="secret" pattern="{secret_pattern}"  required="required"/>
         </div>
         <br>
         <f:form.submit value="Eintrag löschen" class="btn button"/>

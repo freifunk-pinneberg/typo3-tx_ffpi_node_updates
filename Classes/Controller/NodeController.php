@@ -33,7 +33,7 @@ class NodeController extends ActionController
     /**
      * @param NodeRepository $nodeRepository
      */
-    public function injectNodeRepository(NodeRepository $nodeRepository)
+    public function injectNodeRepository(NodeRepository $nodeRepository): void
     {
         $this->nodeRepository = $nodeRepository;
     }
@@ -43,7 +43,7 @@ class NodeController extends ActionController
      *
      * @return void
      */
-    public function listAction()
+    public function listAction(): void
     {
         $nodes = $this->nodeRepository->findAll();
         $this->view->assign('nodes', $nodes);
@@ -55,7 +55,7 @@ class NodeController extends ActionController
      * @param Node $node
      * @return void
      */
-    public function showAction(Node $node)
+    public function showAction(Node $node): void
     {
         $this->view->assign('node', $node);
     }
