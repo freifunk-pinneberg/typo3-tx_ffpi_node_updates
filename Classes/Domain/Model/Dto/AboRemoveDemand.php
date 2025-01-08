@@ -41,7 +41,7 @@ class AboRemoveDemand
     /**
      * @param string $email
      */
-    public function setEmail($email)
+    public function setEmail($email): void
     {
         $this->email = $email;
     }
@@ -49,7 +49,7 @@ class AboRemoveDemand
     /**
      * @param string $secret
      */
-    public function setSecret($secret)
+    public function setSecret($secret): void
     {
         $this->secret = $secret;
     }

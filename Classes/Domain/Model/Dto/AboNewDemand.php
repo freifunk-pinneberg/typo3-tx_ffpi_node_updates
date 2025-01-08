@@ -44,7 +44,7 @@ class AboNewDemand
     /**
      * @param string $email
      */
-    public function setEmail($email)
+    public function setEmail($email): void
     {
         $this->email = $email;
     }
@@ -52,7 +52,7 @@ class AboNewDemand
     /**
      * @param string $nodeId
      */
-    public function setNodeId($nodeId)
+    public function setNodeId($nodeId): void
     {
         $this->nodeId = $nodeId;
     }

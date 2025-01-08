@@ -2,7 +2,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Domain\Repository;
 
-use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
+use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /***
@@ -18,6 +18,7 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * The repository for Nodes
+ * @extends Repository<Node>
  */
 class NodeRepository extends Repository
 {

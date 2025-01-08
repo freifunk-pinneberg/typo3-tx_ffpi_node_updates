@@ -57,7 +57,7 @@ class NotificationTask extends AbstractNodeTask
      */
     protected $dataMapFactory;
 
-    public function execute()
+    public function execute(): bool
     {
         $this->initializeTask();
         $this->initialiseMainTask();
@@ -113,11 +113,8 @@ class NotificationTask extends AbstractNodeTask
      *
      * @return bool
      */
-    protected function mainTask()
+    protected function mainTask(): bool
     {
-        /**
-         * @var boolean $hasError
-         */
         $hasError = false;
 
         // We need the External Nodes. (They come from the json file)
@@ -143,6 +140,11 @@ class NotificationTask extends AbstractNodeTask
         return true;
     }
 
+    /**
+     * @param array $externalNodes
+     * @param QueryResultInterface $internalNodes
+     * @return bool
+     */
     protected function updateAllNodes(array $externalNodes, QueryResultInterface $internalNodes): bool
     {
         $hasError = false;
@@ -183,7 +185,7 @@ class NotificationTask extends AbstractNodeTask
      * @param Node $internalNode
      * @return boolean
      */
-    protected function sendNotification(Node $internalNode)
+    protected function sendNotification(Node $internalNode): bool
     {
         $hasError = false;
 
@@ -205,6 +207,11 @@ class NotificationTask extends AbstractNodeTask
         return !$hasError;
     }
 
+    /**
+     * @param Abo $abo
+     * @param Node $internalNode
+     * @return bool
+     */
     protected function sendNotificationMail(Abo $abo, Node $internalNode): bool
     {
         $hasError = false;

@@ -27,7 +27,6 @@ class ImportTask extends AbstractNodeTask
     public function execute(): bool
     {
         $this->initializeTask();
-        $hasError = false;
 
         $externalNodes = $this->getExternalNodes();
         if (empty($externalNodes)) {
@@ -41,7 +40,7 @@ class ImportTask extends AbstractNodeTask
 
         $this->persistenceManager->persistAll();
 
-        return !$hasError;
+        return true;
     }
 
     /**

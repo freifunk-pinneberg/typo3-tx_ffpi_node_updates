@@ -81,7 +81,7 @@ class Node extends AbstractEntity
      *
      * @return string $nodeId
      */
-    public function getNodeId()
+    public function getNodeId(): string
     {
         return $this->nodeId;
     }
@@ -92,7 +92,7 @@ class Node extends AbstractEntity
      * @param string $nodeId
      * @return void
      */
-    public function setNodeId($nodeId)
+    public function setNodeId(string $nodeId): void
     {
         $this->nodeId = $nodeId;
     }
@@ -100,7 +100,7 @@ class Node extends AbstractEntity
     /**
      * @return string
      */
-    public function getNodeName()
+    public function getNodeName(): string
     {
         return $this->nodeName;
     }
@@ -108,7 +108,7 @@ class Node extends AbstractEntity
     /**
      * @param string $nodeName
      */
-    public function setNodeName($nodeName)
+    public function setNodeName(string $nodeName): void
     {
         $this->nodeName = $nodeName;
     }
@@ -118,7 +118,7 @@ class Node extends AbstractEntity
      *
      * @return bool $online
      */
-    public function getOnline()
+    public function getOnline(): bool
     {
         return $this->online;
     }
@@ -129,7 +129,7 @@ class Node extends AbstractEntity
      * @param bool $online
      * @return void
      */
-    public function setOnline($online)
+    public function setOnline(bool $online): void
     {
         $this->online = $online;
     }
@@ -139,7 +139,7 @@ class Node extends AbstractEntity
      *
      * @return bool
      */
-    public function isOnline()
+    public function isOnline(): bool
     {
         return $this->online;
     }
@@ -149,7 +149,7 @@ class Node extends AbstractEntity
      *
      * @return DateTime $lastChange
      */
-    public function getLastChange()
+    public function getLastChange(): ?DateTime
     {
         return $this->lastChange;
     }
@@ -160,7 +160,7 @@ class Node extends AbstractEntity
      * @param DateTime $lastChange
      * @return void
      */
-    public function setLastChange(DateTime $lastChange)
+    public function setLastChange(DateTime $lastChange): void
     {
         $this->lastChange = $lastChange;
     }
@@ -236,7 +236,7 @@ class Node extends AbstractEntity
     }
 
     /**
-     * @param DateTime $firstSeen
+     * @param DateTime|null $firstSeen
      */
     public function setFirstSeen(?DateTime $firstSeen): void
     {
@@ -252,7 +252,7 @@ class Node extends AbstractEntity
     }
 
     /**
-     * @param DateTime $lastSeen
+     * @param DateTime|null $lastSeen
      */
     public function setLastSeen(?DateTime $lastSeen): void
     {

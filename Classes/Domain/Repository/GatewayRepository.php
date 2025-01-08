@@ -2,6 +2,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Domain\Repository;
 
+use FFPI\FfpiNodeUpdates\Domain\Model\Gateway;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /***
@@ -17,6 +18,7 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * The repository for Nodes
+ * @extends Repository<Gateway>
  */
 class GatewayRepository extends Repository
 {

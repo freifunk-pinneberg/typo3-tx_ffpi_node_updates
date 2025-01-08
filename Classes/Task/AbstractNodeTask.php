@@ -58,9 +58,10 @@ abstract class AbstractNodeTask extends AbstractTask
      * Create or update a Node based on external data
      *
      * @param array $externalNode
+     * @param bool $updateOnline Should the new online Status be set? (default true)
      * @return Node|null
      */
-    protected function createOrUpdateNode(array $externalNode, $updateOnline = true): ?Node
+    protected function createOrUpdateNode(array $externalNode, bool $updateOnline = true): ?Node
     {
         $nodeId = $externalNode['id'] ?? $externalNode['node_id'] ?? $externalNode['nodeinfo']['node_id'] ?? null;
 
@@ -118,7 +119,7 @@ abstract class AbstractNodeTask extends AbstractTask
     /**
      * Gets External Nodes from JSON
      *
-     * @return array
+     * @return array<mixed>
      */
     protected function getExternalNodes(): array
     {
@@ -168,9 +169,11 @@ abstract class AbstractNodeTask extends AbstractTask
         curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
+        /** @var string|false $response */
         $response = curl_exec($curl);
-        if (curl_errno($curl)) {
+        if (curl_errno($curl) or $response === false) {
             $this->scheduler->log('Curl Error: ' . curl_error($curl), 1);
+            $response = '{}';
         }
         curl_close($curl);
 
@@ -178,7 +181,7 @@ abstract class AbstractNodeTask extends AbstractTask
     }
 
     /**
-     * @param $node Node|array
+     * @param $node Node|array<mixed>
      * @return bool
      */
     protected function isNodeOnline($node): bool

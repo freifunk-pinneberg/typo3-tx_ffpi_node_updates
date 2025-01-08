@@ -75,7 +75,7 @@ class FreifunkapifileController extends ActionController
      * Active Nodes
      * A node is active if it was online in the last 2 Weeks.
      *
-     * @return array
+     * @return array<mixed>
      * @throws \Exception
      */
     protected function getActiveNodes(): array

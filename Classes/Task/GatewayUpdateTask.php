@@ -119,12 +119,16 @@ class GatewayUpdateTask extends AbstractTask
     protected function getFfgateCheckData(string $url): array
     {
         $file = @file_get_contents($url);
+        $ret = [];
         if ($file === false) {
-            return [];
+            return $ret;
         }
 
+        /** @var array|false $statusArray */
         $statusArray = preg_split('/\r\n|\r|\n/', $file);
-        $ret = [];
+        if($statusArray === false){
+            return $ret;
+        }
         foreach ($statusArray as $status) {
             $status = explode(':', $status);
             $ret[trim($status[0])] = trim($status[1]);

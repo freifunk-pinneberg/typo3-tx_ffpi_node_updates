@@ -76,7 +76,7 @@ class FreifunkApiFile extends AbstractEntity
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getJson(): array
     {

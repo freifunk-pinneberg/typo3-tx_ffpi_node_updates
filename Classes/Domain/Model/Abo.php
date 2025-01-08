@@ -73,7 +73,7 @@ class Abo extends AbstractEntity
      * @param string $email
      * @return void
      */
-    public function setEmail(string $email)
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
@@ -83,7 +83,7 @@ class Abo extends AbstractEntity
      *
      * @return bool $confirmed
      */
-    public function getConfirmed()
+    public function getConfirmed(): bool
     {
         return $this->confirmed;
     }
@@ -94,7 +94,7 @@ class Abo extends AbstractEntity
      * @param bool $confirmed
      * @return void
      */
-    public function setConfirmed(bool $confirmed)
+    public function setConfirmed(bool $confirmed): void
     {
         $this->confirmed = $confirmed;
     }
@@ -125,7 +125,7 @@ class Abo extends AbstractEntity
      * @param DateTime $lastNotification
      * @return void
      */
-    public function setLastNotification(DateTime $lastNotification)
+    public function setLastNotification(DateTime $lastNotification): void
     {
         $this->lastNotification = $lastNotification;
     }
@@ -146,7 +146,7 @@ class Abo extends AbstractEntity
      * @param string $secret
      * @return void
      */
-    public function setSecret(string $secret)
+    public function setSecret(string $secret): void
     {
         $this->secret = $secret;
     }
@@ -167,7 +167,7 @@ class Abo extends AbstractEntity
      * @param Node $node
      * @return void
      */
-    public function setNode(Node $node)
+    public function setNode(Node $node): void
     {
         $this->node = $node;
     }

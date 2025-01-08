@@ -49,6 +49,7 @@ class AboController extends ActionController
 
     /**
      * @param AboRepository $aboRepository
+     * @return void
      */
     public function injectAboRepository(AboRepository $aboRepository)
     {
@@ -57,6 +58,7 @@ class AboController extends ActionController
 
     /**
      * @param NodeRepository $nodeRepository
+     * @return void
      */
     public function injectNodeRepository(NodeRepository $nodeRepository)
     {
@@ -92,7 +94,11 @@ class AboController extends ActionController
         $newAbo = GeneralUtility::makeInstance(Abo::class);
         $newAbo->setEmail($aboNewDemand->getEmail());
         $newAbo->setNode($this->nodeRepository->findOneByNodeId($aboNewDemand->getNodeId()));
-        $secret = substr(md5(openssl_random_pseudo_bytes(10)), 0, 10);
+        $randomData = openssl_random_pseudo_bytes(10);
+        if($randomData === false or empty($randomData)){
+            throw new \RuntimeException('No Random Data available. Unable to create a secret');
+        }
+        $secret = substr(md5($randomData), 0, 10);
         $newAbo->setSecret($secret);
         $this->aboRepository->add($newAbo);
 
@@ -101,7 +107,7 @@ class AboController extends ActionController
     }
 
     /**
-     *
+     * @return void
      */
     protected function initializeRemoveFormAction()
     {
@@ -112,6 +118,7 @@ class AboController extends ActionController
 
     /**
      * @param AboRemoveDemand|null $aboRemoveDemand
+     * @return void
      * action removeForm
      */
     public function removeFormAction(AboRemoveDemand $aboRemoveDemand = null)
@@ -215,17 +222,5 @@ class AboController extends ActionController
         $url->setArguments($urlAttributes);
         $url = $url->buildFrontendUri();
         return $url;
-    }
-
-    /**
-     * @param Abo $abo
-     * @return bool
-     */
-    private function checkAbo($abo)
-    {
-        if (empty($abo->getEmail()) or empty($abo->getNode())) {
-            return false;
-        }
-        return true;
     }
 }
