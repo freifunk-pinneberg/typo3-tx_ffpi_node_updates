@@ -17,10 +17,10 @@ $EM_CONF[$_EXTKEY] = [
     'author' => 'Kevin Quiatkowski',
     'author_email' => 'kevin@pinneberg.freifunk.net',
     'state' => 'stable',
-    'version' => '2.2.0',
+    'version' => '2.2.1',
     'constraints' => [
         'depends' => [
-            'typo3' => '10.0.0-10.4.99',
+            'typo3' => '10.0.0-11.4.99',
             'scheduler' => ''
         ],
         'conflicts' => [],
