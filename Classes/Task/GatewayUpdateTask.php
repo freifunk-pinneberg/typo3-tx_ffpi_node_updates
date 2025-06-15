@@ -36,7 +36,8 @@ class GatewayUpdateTask extends AbstractTask
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->gatewayRepository = $this->objectManager->get(GatewayRepository::class);
         $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
-        $querySettings = new Typo3QuerySettings();
+        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
+
         $querySettings->setStoragePageIds([(int)$this->pid]);
         $this->gatewayRepository->setDefaultQuerySettings($querySettings);
     }
@@ -130,6 +131,9 @@ class GatewayUpdateTask extends AbstractTask
             return $ret;
         }
         foreach ($statusArray as $status) {
+            if(empty($status)){
+                continue;
+            }
             $status = explode(':', $status);
             $ret[trim($status[0])] = trim($status[1]);
         }

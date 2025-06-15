@@ -274,7 +274,7 @@ class NotificationTask extends AbstractNodeTask
      */
     public function getAdditionalInformation(): string
     {
-        $string = 'Storage Page: ' . $this->storagePid . "\n";
+        $string = 'Storage Page: ' . $this->pid . "\n";
         $string .= 'Unsubscribe Page: ' . $this->unsubscribePid . "\n";
         $string .= 'nodes.json: ' . $this->path . "\n";
 
