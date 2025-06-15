@@ -53,9 +53,9 @@ class NotificationTask extends AbstractNodeTask
     protected $persistenceManager;
 
     /**
-     * @var DataMapFactory
+     * @var DataMapFactory|null
      */
-    protected $dataMapFactory;
+    protected ?DataMapFactory $dataMapFactory;
 
     public function execute(): bool
     {
@@ -69,31 +69,31 @@ class NotificationTask extends AbstractNodeTask
         /**
          * DataMapFacotry, not directly used by this task, but needs to be aviable for the repository
          *
-         * @var DataMapFactory $this- >dataMapFactory
+         * @var DataMapFactory $this->dataMapFactory
          */
         $this->dataMapFactory = $this->objectManager->get(DataMapFactory::class);
 
         /**
          * Saves the Repository objects into the Database
          *
-         * @var PersistenceManager $this- >persistenceManager
+         * @var PersistenceManager $this->persistenceManager
          */
         $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
 
         /**
          * Our Repository for the Abos
          *
-         * @var AboRepository $this- >aboRepository
+         * @var AboRepository $this->aboRepository
          */
         $this->aboRepository = $this->objectManager->get(AboRepository::class);
 
         /**
-         * @var SiteFinder $this- >siteFinder
+         * @var SiteFinder $this->siteFinder
          */
         $this->siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
 
         /**
-         * @var ExtensionService $this- >extensionService
+         * @var ExtensionService $this->extensionService
          */
         $this->extensionService = $this->objectManager->get(ExtensionService::class);
 

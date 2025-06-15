@@ -55,7 +55,11 @@ class FreifunkapifileController extends ActionController
         $this->nodeRepository = $nodeRepository;
     }
 
-    public function showAction(): void
+    /**
+     * @return \Psr\Http\Message\ResponseInterface|void
+     * @throws \Exception
+     */
+    public function showAction()
     {
         /** @var FreifunkApiFile $apiFile */
         $apiFile = $this->freifunkApiFileRepository->findAll()->getFirst();
@@ -66,9 +70,22 @@ class FreifunkapifileController extends ActionController
         $apiFile->setActiveNodes($activeNodeCount);
         $json['value'] = $apiFile->getJson();
         $this->view->assignMultiple($json);
-        $this->response->setHeader('Content-Type', 'application/json');
-        $this->response->setHeader('Access-Control-Allow-Origin', '*');
-        $this->response->setHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600');
+        if (isset($this->responseFactory) && $this->responseFactory instanceof \Psr\Http\Message\ResponseFactoryInterface) {
+            //TYPO3 11+
+            $ret = $this->responseFactory
+                ->createResponse()
+                ->withHeader('Content-Type', 'application/json')
+                ->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600')
+                ->withBody($this->streamFactory->createStream($this->view->render()));;
+            return $ret;
+        } elseif (isset($this->response)) {
+            //TYPO3 10
+            $this->response->setHeader('Content-Type', 'application/json');
+            $this->response->setHeader('Access-Control-Allow-Origin', '*');
+            $this->response->setHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600');
+        }
+
     }
 
     /**
