@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -24,11 +25,13 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class MailController extends ActionController
 {
-    public function confirmEmailAction(): void
+    public function confirmEmailAction(): ResponseInterface
     {
+        return $this->htmlResponse();
     }
 
-    public function NotificationAction(): void
+    public function notificationAction(): ResponseInterface
     {
+        return $this->htmlResponse();
     }
 }

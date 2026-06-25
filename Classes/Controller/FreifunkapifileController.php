@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Model\FreifunkApiFile;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\FreifunkApiFileRepository;
@@ -33,33 +34,21 @@ class FreifunkapifileController extends ActionController
     /** @var string */
     protected $defaultViewObjectName = JsonView::class;
 
-    /** @var FreifunkApiFileRepository */
-    protected $freifunkApiFileRepository;
+    protected FreifunkApiFileRepository $freifunkApiFileRepository;
 
-    /** @var NodeRepository */
-    protected $nodeRepository;
+    protected NodeRepository $nodeRepository;
 
-    /**
-     * @param FreifunkApiFileRepository $freifunkApiFileRepository
-     */
-    public function injectFreifunkApiFileRepository(FreifunkApiFileRepository $freifunkApiFileRepository): void
+    public function __construct(FreifunkApiFileRepository $freifunkApiFileRepository, NodeRepository $nodeRepository)
     {
         $this->freifunkApiFileRepository = $freifunkApiFileRepository;
-    }
-
-    /**
-     * @param NodeRepository $nodeRepository
-     */
-    public function injectNodeRepository(NodeRepository $nodeRepository): void
-    {
         $this->nodeRepository = $nodeRepository;
     }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface|void
+     * @return ResponseInterface
      * @throws \Exception
      */
-    public function showAction()
+    public function showAction(): ResponseInterface
     {
         /** @var FreifunkApiFile $apiFile */
         $apiFile = $this->freifunkApiFileRepository->findAll()->getFirst();
@@ -70,21 +59,12 @@ class FreifunkapifileController extends ActionController
         $apiFile->setActiveNodes($activeNodeCount);
         $json['value'] = $apiFile->getJson();
         $this->view->assignMultiple($json);
-        if (isset($this->responseFactory) && $this->responseFactory instanceof \Psr\Http\Message\ResponseFactoryInterface) {
-            //TYPO3 11+
-            $ret = $this->responseFactory
-                ->createResponse()
-                ->withHeader('Content-Type', 'application/json')
-                ->withHeader('Access-Control-Allow-Origin', '*')
-                ->withHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600')
-                ->withBody($this->streamFactory->createStream($this->view->render()));;
-            return $ret;
-        } elseif (isset($this->response)) {
-            //TYPO3 10
-            $this->response->setHeader('Content-Type', 'application/json');
-            $this->response->setHeader('Access-Control-Allow-Origin', '*');
-            $this->response->setHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600');
-        }
+        return $this->responseFactory
+            ->createResponse()
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600')
+            ->withBody($this->streamFactory->createStream($this->view->render()));
 
     }
 

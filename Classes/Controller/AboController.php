@@ -13,7 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
-use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
+use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand;
@@ -31,37 +31,13 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  */
 class AboController extends ActionController
 {
-    /**
-     * aboRepository
-     *
-     * @var AboRepository
-     *
-     */
-    protected $aboRepository;
+    protected AboRepository $aboRepository;
 
-    /**
-     * nodeRepository
-     *
-     * @var NodeRepository
-     *
-     */
-    protected $nodeRepository;
+    protected NodeRepository $nodeRepository;
 
-    /**
-     * @param AboRepository $aboRepository
-     * @return void
-     */
-    public function injectAboRepository(AboRepository $aboRepository)
+    public function __construct(AboRepository $aboRepository, NodeRepository $nodeRepository)
     {
         $this->aboRepository = $aboRepository;
-    }
-
-    /**
-     * @param NodeRepository $nodeRepository
-     * @return void
-     */
-    public function injectNodeRepository(NodeRepository $nodeRepository)
-    {
         $this->nodeRepository = $nodeRepository;
     }
 
@@ -70,7 +46,7 @@ class AboController extends ActionController
      *
      * @return void
      */
-    public function newAction()
+    public function newAction(): ResponseInterface
     {
         $aboNewDemand = GeneralUtility::makeInstance(AboNewDemand::class);
         $this->view->assign('demand', $aboNewDemand);
@@ -80,6 +56,7 @@ class AboController extends ActionController
                 'nodeId' => QueryInterface::ORDER_ASCENDING
             ]
         )->execute());
+        return $this->htmlResponse();
     }
 
     /**
@@ -89,7 +66,7 @@ class AboController extends ActionController
      * @return void
      * @throws Throwable
      */
-    public function createAction(AboNewDemand $aboNewDemand)
+    public function createAction(AboNewDemand $aboNewDemand): ResponseInterface
     {
         $newAbo = GeneralUtility::makeInstance(Abo::class);
         $newAbo->setEmail($aboNewDemand->getEmail());
@@ -104,6 +81,7 @@ class AboController extends ActionController
 
 
         $this->sendConfirmEmail($newAbo, $secret);
+        return $this->htmlResponse();
     }
 
     /**
@@ -121,12 +99,13 @@ class AboController extends ActionController
      * @return void
      * action removeForm
      */
-    public function removeFormAction(AboRemoveDemand $aboRemoveDemand = null)
+    public function removeFormAction(AboRemoveDemand $aboRemoveDemand = null): ResponseInterface
     {
         if (!($aboRemoveDemand instanceof AboRemoveDemand)) {
             $aboRemoveDemand = new AboRemoveDemand();
         }
         $this->view->assign('aboRemoveDemand', $aboRemoveDemand);
+        return $this->htmlResponse();
     }
 
     /**
@@ -136,7 +115,7 @@ class AboController extends ActionController
      * @return void
      * @throws Throwable
      */
-    public function removeAction(AboRemoveDemand $aboRemoveDemand)
+    public function removeAction(AboRemoveDemand $aboRemoveDemand): ResponseInterface
     {
         $originalAbo = $this->aboRepository->findOneBySecret($aboRemoveDemand->getSecret());
         if (!empty($originalAbo) and $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
@@ -146,6 +125,7 @@ class AboController extends ActionController
         } else {
             $this->view->assign('removed', false);
         }
+        return $this->htmlResponse();
     }
 
     /**
@@ -154,7 +134,7 @@ class AboController extends ActionController
      * @return void
      * @throws Throwable
      */
-    public function confirmAction()
+    public function confirmAction(): ResponseInterface
     {
         $args = $this->request->getArguments();
         $secret = $args['secret'];
@@ -176,6 +156,7 @@ class AboController extends ActionController
         } else {
             $this->view->assign('confirmed', false);
         }
+        return $this->htmlResponse();
     }
 
     /**
