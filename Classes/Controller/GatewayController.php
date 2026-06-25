@@ -13,30 +13,23 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Repository\GatewayRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class GatewayController extends ActionController
 {
-    /**
-     * gatewayRepository
-     *
-     * @var GatewayRepository
-     *
-     */
-    protected $gatewayRepository = null;
+    protected GatewayRepository $gatewayRepository;
 
-    /**
-     * @param GatewayRepository $gatewayRepository
-     */
-    public function injectNodeRepository(GatewayRepository $gatewayRepository): void
+    public function __construct(GatewayRepository $gatewayRepository)
     {
         $this->gatewayRepository = $gatewayRepository;
     }
 
-    public function overviewAction(): void
+    public function overviewAction(): ResponseInterface
     {
         $gateways = $this->gatewayRepository->findAll();
         $this->view->assign('gateways', $gateways);
+        return $this->htmlResponse();
     }
 }

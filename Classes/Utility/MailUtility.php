@@ -19,17 +19,10 @@ use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Frontend\ContentObject\ContentContentObject;
 
 class MailUtility
 {
-
-    /**
-     * @var ObjectManager
-     */
-    var $objectManager;
 
     /**
      * @var ConfigurationManager
@@ -38,8 +31,7 @@ class MailUtility
 
     public function __construct()
     {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurationManager = $this->objectManager->get(ConfigurationManager::class);
+        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
     }
 
     /**
@@ -89,12 +81,8 @@ class MailUtility
     private function getTemplate(string $template, array $vars): StandaloneView
     {
         /** @var StandaloneView $emailView */
-        $emailView = $this->objectManager->get(StandaloneView::class);
+        $emailView = GeneralUtility::makeInstance(StandaloneView::class);
 
-        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK, 'ffpi_node_updates', 'tx_ffpinodeupdates_nodeabo');
-
-        $emailView->getRequest()->setControllerExtensionName('ffpi_node_updates');
-        $emailView->getRequest()->setControllerName('mail');
         $view = $this->getTemplatePaths();
         $emailView->setTemplateRootPaths($view['templateRootPaths']);
         $emailView->setPartialRootPaths($view['partialRootPaths']);

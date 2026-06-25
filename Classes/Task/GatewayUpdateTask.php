@@ -9,7 +9,6 @@ use FFPI\FfpiNodeUpdates\Domain\Repository\GatewayRepository;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
@@ -18,9 +17,6 @@ class GatewayUpdateTask extends AbstractTask
 {
     /** @var GatewayRepository */
     protected $gatewayRepository;
-
-    /** @var ObjectManager */
-    protected $objectManager;
 
     /** @var PersistenceManager */
     protected $persistenceManager;
@@ -33,9 +29,8 @@ class GatewayUpdateTask extends AbstractTask
 
     protected function initializeTask(): void
     {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->gatewayRepository = $this->objectManager->get(GatewayRepository::class);
-        $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
+        $this->gatewayRepository = GeneralUtility::makeInstance(GatewayRepository::class);
+        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
         $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
 
         $querySettings->setStoragePageIds([(int)$this->pid]);

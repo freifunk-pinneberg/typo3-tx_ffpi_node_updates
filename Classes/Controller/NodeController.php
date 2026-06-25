@@ -2,6 +2,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -22,18 +23,9 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class NodeController extends ActionController
 {
-    /**
-     * nodeRepository
-     *
-     * @var NodeRepository
-     *
-     */
-    protected $nodeRepository;
+    protected NodeRepository $nodeRepository;
 
-    /**
-     * @param NodeRepository $nodeRepository
-     */
-    public function injectNodeRepository(NodeRepository $nodeRepository): void
+    public function __construct(NodeRepository $nodeRepository)
     {
         $this->nodeRepository = $nodeRepository;
     }
@@ -43,10 +35,11 @@ class NodeController extends ActionController
      *
      * @return void
      */
-    public function listAction(): void
+    public function listAction(): ResponseInterface
     {
         $nodes = $this->nodeRepository->findAll();
         $this->view->assign('nodes', $nodes);
+        return $this->htmlResponse();
     }
 
     /**
@@ -55,8 +48,9 @@ class NodeController extends ActionController
      * @param Node $node
      * @return void
      */
-    public function showAction(Node $node): void
+    public function showAction(Node $node): ResponseInterface
     {
         $this->view->assign('node', $node);
+        return $this->htmlResponse();
     }
 }

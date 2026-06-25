@@ -5,7 +5,6 @@ namespace FFPI\FfpiNodeUpdates\Task;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
@@ -17,11 +16,6 @@ abstract class AbstractNodeTask extends AbstractTask
      * @var NodeRepository
      */
     protected $internalNodeRepository;
-
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
 
     /**
      * @var PersistenceManager
@@ -42,12 +36,11 @@ abstract class AbstractNodeTask extends AbstractTask
 
     protected function initializeTask(): void
     {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
-        $this->internalNodeRepository = $this->objectManager->get(NodeRepository::class);
+        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
+        $this->internalNodeRepository = GeneralUtility::makeInstance(NodeRepository::class);
 
         // Set the correct PID for the storage
-        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
+        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         $querySettings->setRespectStoragePage(true);
         $querySettings->setRespectSysLanguage(false);
         $querySettings->setStoragePageIds([$this->pid]);
