@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use phpDocumentor\Reflection\Types\ClassString;
 use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Model\FreifunkApiFile;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
@@ -31,17 +32,16 @@ class FreifunkapifileController extends ActionController
     /** @var JsonView */
     protected $view;
 
-    /** @var string */
-    protected $defaultViewObjectName = JsonView::class;
+    /**
+     * The default view class to use. Keep this 'null' for default fluid
+     * view, or set to 'JsonView::class' or some inheriting class.
+     *
+     * @var class-string|null
+     */
+    protected ?string $defaultViewObjectName = JsonView::class;
 
-    protected FreifunkApiFileRepository $freifunkApiFileRepository;
-
-    protected NodeRepository $nodeRepository;
-
-    public function __construct(FreifunkApiFileRepository $freifunkApiFileRepository, NodeRepository $nodeRepository)
+    public function __construct(protected FreifunkApiFileRepository $freifunkApiFileRepository, protected NodeRepository $nodeRepository)
     {
-        $this->freifunkApiFileRepository = $freifunkApiFileRepository;
-        $this->nodeRepository = $nodeRepository;
     }
 
     /**
@@ -81,18 +81,18 @@ class FreifunkapifileController extends ActionController
         $allNodes = $this->nodeRepository->findAll();
         $activeNodes = [];
         $now = new \DateTime();
-        foreach ($allNodes as $node) {
-            if ($node->isOnline()) {
+        foreach ($allNodes as $allNode) {
+            if ($allNode->isOnline()) {
                 // Node is Online. Add it to the list, and got to the next.
-                $activeNodes[] = $node;
+                $activeNodes[] = $allNode;
                 continue;
             }
             // Node is Offline, check if it was online in the last 2 Weeks.
-            $lastChangeTime = $node->getLastChange();
+            $lastChangeTime = $allNode->getLastChange();
             if($lastChangeTime instanceof \DateTime) {
                 $diff = $lastChangeTime->diff($now);
                 if ($diff->days <= 14) {
-                    $activeNodes[] = $node;
+                    $activeNodes[] = $allNode;
                 }
             }
         }

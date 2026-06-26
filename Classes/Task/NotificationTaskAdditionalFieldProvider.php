@@ -2,7 +2,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
@@ -45,7 +45,7 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
             'cshLabel' => $fieldID
         ];
         $fieldID = 'FfpiNodeUpdates_storage_pid';
-        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_storage_pid]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_storage_pid']) . '" size="30">';
+        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_storage_pid]" id="' . $fieldID . '" value="' . htmlspecialchars((string) $taskInfo['FfpiNodeUpdates_storage_pid']) . '" size="30">';
         $additionalFields[$fieldID] = [
             'code' => $fieldCode,
             'label' => 'Storage pid',
@@ -53,7 +53,7 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
             'cshLabel' => $fieldID
         ];
         $fieldID = 'FfpiNodeUpdates_unsubscribe_pid';
-        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_unsubscribe_pid]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_unsubscribe_pid']) . '" size="30">';
+        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_unsubscribe_pid]" id="' . $fieldID . '" value="' . htmlspecialchars((string) $taskInfo['FfpiNodeUpdates_unsubscribe_pid']) . '" size="30">';
         $additionalFields[$fieldID] = [
             'code' => $fieldCode,
             'label' => 'Unsubscribe pid',
@@ -77,21 +77,21 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
         if (empty($submittedData['FfpiNodeUpdates_storage_pid']) || !is_numeric($submittedData['FfpiNodeUpdates_storage_pid'])) {
             $this->addMessage(
                 'Page Id must be integer, ' . gettype($submittedData['FfpiNodeUpdates_storage_pid']) . ' given',
-                FlashMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             $ret = false;
         }
         if (empty($submittedData['FfpiNodeUpdates_unsubscribe_pid']) || !is_numeric($submittedData['FfpiNodeUpdates_unsubscribe_pid'])) {
             $this->addMessage(
                 'Page Id must be integer, ' . gettype($submittedData['FfpiNodeUpdates_unsubscribe_pid']) . ' given',
-                FlashMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             $ret = false;
         }
         if (empty($submittedData['FfpiNodeUpdates_url'])) {
             $this->addMessage(
                 'URL must not be empty',
-                FlashMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             $ret = false;
         }
@@ -106,10 +106,10 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
      * @param AbstractTask $task Reference to the current task object
      * @return void
      */
-    public function saveAdditionalFields(array $submittedData, AbstractTask $task)
+    public function saveAdditionalFields(array $submittedData, AbstractTask $task): void
     {
         $task->pid = intval($submittedData['FfpiNodeUpdates_storage_pid']);
         $task->unsubscribePid = intval($submittedData['FfpiNodeUpdates_unsubscribe_pid']);
-        $task->path = trim($submittedData['FfpiNodeUpdates_url']);
+        $task->path = trim((string) $submittedData['FfpiNodeUpdates_url']);
     }
 }

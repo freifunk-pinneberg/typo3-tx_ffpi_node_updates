@@ -13,12 +13,12 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
@@ -55,7 +55,15 @@ class NotificationTask extends AbstractNodeTask
     /**
      * @var DataMapFactory|null
      */
-    protected ?DataMapFactory $dataMapFactory;
+    protected ?DataMapFactory $dataMapFactory = null;
+    /**
+     * Constructor
+     */
+    public function __construct(SiteFinder $siteFinder)
+    {
+        parent::__construct();
+        $this->siteFinder = $siteFinder;
+    }
 
     public function execute(): bool
     {
@@ -90,7 +98,7 @@ class NotificationTask extends AbstractNodeTask
         /**
          * @var SiteFinder $this->siteFinder
          */
-        $this->siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+        $this->siteFinder = $this->siteFinder;
 
         /**
          * @var ExtensionService $this->extensionService
@@ -119,7 +127,7 @@ class NotificationTask extends AbstractNodeTask
 
         // We need the External Nodes. (They come from the json file)
         $externalNodes = $this->getExternalNodes();
-        if (empty($externalNodes)) {
+        if ($externalNodes === []) {
             return false;
         }
 
@@ -133,22 +141,18 @@ class NotificationTask extends AbstractNodeTask
 
         //Last step, Save all updated nodes to the database
         $this->persistenceManager->persistAll();
-
-        if ($hasError) {
-            return false;
-        }
-        return true;
+        return !$hasError;
     }
 
     /**
      * @param array $externalNodes
-     * @param QueryResultInterface $internalNodes
+     * @param QueryResultInterface $queryResult
      * @return bool
      */
-    protected function updateAllNodes(array $externalNodes, QueryResultInterface $internalNodes): bool
+    protected function updateAllNodes(array $externalNodes, QueryResultInterface $queryResult): bool
     {
         $hasError = false;
-        foreach ($internalNodes as $internalNode) {
+        foreach ($queryResult as $internalNode) {
             /** @var array|null $externalNode */
             $externalNode = $externalNodes[$internalNode->getNodeId()];
 
@@ -191,7 +195,7 @@ class NotificationTask extends AbstractNodeTask
 
         //Get all abos for this Node
         /** @var Abo[] $abos */
-        $abos = $this->aboRepository->findByNode($internalNode)->toArray();
+        $abos = $this->aboRepository->findBy(['node' => $internalNode])->toArray();
 
         foreach ($abos as $abo) {
 
@@ -223,8 +227,8 @@ class NotificationTask extends AbstractNodeTask
             'url' => $unsubscribeUrl
         ];
 
-        $mail = new MailUtility();
-        $send = $mail->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData, ['List-Unsubscribe' => $unsubscribeUrl]);
+        $mailUtility = new MailUtility();
+        $send = $mailUtility->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData, ['List-Unsubscribe' => $unsubscribeUrl]);
 
         if (!$send) {
             $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
@@ -234,16 +238,13 @@ class NotificationTask extends AbstractNodeTask
             $abo->setLastNotification(new \DateTime());
             $this->aboRepository->update($abo);
         }
-        if ($hasError) {
-            return false;
-        }
-        return true;
+        return !$hasError;
     }
 
     /**
      * @param Abo $abo
      * @return string
-     * @throws \TYPO3\CMS\Core\Exception\SiteNotFoundException
+     * @throws SiteNotFoundException
      */
     protected function buildUnsubscribeLink(Abo $abo): string
     {

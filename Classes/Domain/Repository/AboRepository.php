@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace FFPI\FfpiNodeUpdates\Domain\Repository;
 
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;

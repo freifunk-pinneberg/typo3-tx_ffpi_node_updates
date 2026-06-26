@@ -19,11 +19,8 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class GatewayController extends ActionController
 {
-    protected GatewayRepository $gatewayRepository;
-
-    public function __construct(GatewayRepository $gatewayRepository)
+    public function __construct(protected GatewayRepository $gatewayRepository)
     {
-        $this->gatewayRepository = $gatewayRepository;
     }
 
     public function overviewAction(): ResponseInterface

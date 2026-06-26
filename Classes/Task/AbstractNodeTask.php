@@ -8,7 +8,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
-use TYPO3\CMS\Scheduler\Scheduler;
 
 abstract class AbstractNodeTask extends AbstractTask
 {
@@ -40,11 +39,11 @@ abstract class AbstractNodeTask extends AbstractTask
         $this->internalNodeRepository = GeneralUtility::makeInstance(NodeRepository::class);
 
         // Set the correct PID for the storage
-        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
-        $querySettings->setRespectStoragePage(true);
-        $querySettings->setRespectSysLanguage(false);
-        $querySettings->setStoragePageIds([$this->pid]);
-        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
+        $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
+        $typo3QuerySettings->setRespectStoragePage(true);
+        $typo3QuerySettings->setRespectSysLanguage(false);
+        $typo3QuerySettings->setStoragePageIds([$this->pid]);
+        $this->internalNodeRepository->setDefaultQuerySettings($typo3QuerySettings);
     }
 
     /**
@@ -62,7 +61,7 @@ abstract class AbstractNodeTask extends AbstractTask
             return null;
         }
 
-        $internalNode = $this->internalNodeRepository->findOneByNodeId($nodeId);
+        $internalNode = $this->internalNodeRepository->findOneBy(['nodeId' => $nodeId]);
         if ($internalNode === null) {
             // Node does not exist, create a new one
             $internalNode = new Node();
@@ -164,7 +163,7 @@ abstract class AbstractNodeTask extends AbstractTask
 
         /** @var string|false $response */
         $response = curl_exec($curl);
-        if (curl_errno($curl) or $response === false) {
+        if (curl_errno($curl) || $response === false) {
             $this->scheduler->log('Curl Error: ' . curl_error($curl), 1);
             $response = '{}';
         }
@@ -182,10 +181,7 @@ abstract class AbstractNodeTask extends AbstractTask
         if($node instanceof Node){
             return $node->isOnline();
         }
-        if(is_array($node) && ($node['status']['online'] === true || $node['flags']['online'] === true)){
-            return true;
-        }
-        return false;
+        return is_array($node) && ($node['status']['online'] === true || $node['flags']['online'] === true);
     }
 
     /**

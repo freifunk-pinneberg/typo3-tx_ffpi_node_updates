@@ -6,7 +6,6 @@ use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 use FFPI\FfpiNodeUpdates\Domain\Model\Gateway;
 use FFPI\FfpiNodeUpdates\Domain\Repository\GatewayRepository;
-use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
@@ -26,15 +25,23 @@ class GatewayUpdateTask extends AbstractTask
 
     /** @var string */
     public $notificationMail;
+    /**
+     * Constructor
+     */
+    public function __construct(PersistenceManager $persistenceManager)
+    {
+        parent::__construct();
+        $this->persistenceManager = $persistenceManager;
+    }
 
     protected function initializeTask(): void
     {
         $this->gatewayRepository = GeneralUtility::makeInstance(GatewayRepository::class);
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
-        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
+        $this->persistenceManager = $this->persistenceManager;
+        $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
 
-        $querySettings->setStoragePageIds([(int)$this->pid]);
-        $this->gatewayRepository->setDefaultQuerySettings($querySettings);
+        $typo3QuerySettings->setStoragePageIds([(int)$this->pid]);
+        $this->gatewayRepository->setDefaultQuerySettings($typo3QuerySettings);
     }
 
     /**
@@ -79,7 +86,7 @@ class GatewayUpdateTask extends AbstractTask
     protected function getGatewayData(string $url): array
     {
         $ret = [];
-        if (!empty(parse_url($url, PHP_URL_HOST))) {
+        if (!(parse_url($url, PHP_URL_HOST) === 0 || in_array(parse_url($url, PHP_URL_HOST), ['', '0'], true) || parse_url($url, PHP_URL_HOST) === [] || parse_url($url, PHP_URL_HOST) === false || parse_url($url, PHP_URL_HOST) === null)) {
             try {
                 $ret['ping'] = $this->ping(parse_url($url, PHP_URL_HOST));
             } catch (\Exception $e) {
@@ -99,7 +106,7 @@ class GatewayUpdateTask extends AbstractTask
     {
         try {
             $pingRawResult = exec('ping -q -c 2 ' . $host . ' | grep avg');
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return null;
         }
         $result = preg_replace('/rtt\smin\/avg\/max\/mdev\s=\s\d+.\d+\/(\d+.\d+)\/\d+.\d+\/\d+.\d+\sms/', '${1}',
@@ -143,24 +150,13 @@ class GatewayUpdateTask extends AbstractTask
     {
         $ret = [];
         foreach ($gatewayData as $key => $value) {
-            switch ($key) {
-                case 'OpenVPN process':
-                    $newKey = 'openVpn';
-                    break;
-                case 'Interface mullvad':
-                case 'Interface earthvpn':
-                    $newKey = 'networkInterface';
-                    break;
-                case 'Firewall-Interface':
-                    $newKey = 'firewall';
-                    break;
-                case 'Tunnel mullvad':
-                case 'Tunnel earthvpn':
-                    $newKey = 'exitVpn';
-                    break;
-                default:
-                    $newKey = null;
-            }
+            $newKey = match ($key) {
+                'OpenVPN process' => 'openVpn',
+                'Interface mullvad', 'Interface earthvpn' => 'networkInterface',
+                'Firewall-Interface' => 'firewall',
+                'Tunnel mullvad', 'Tunnel earthvpn' => 'exitVpn',
+                default => null,
+            };
             if ($newKey !== null) {
                 $ret[$newKey] = $this->translateValue($value);
             }
@@ -176,7 +172,7 @@ class GatewayUpdateTask extends AbstractTask
     {
         $value = str_replace('.', '', $value);
         $value = trim($value);
-        if (empty($value)) {
+        if ($value === '' || $value === '0') {
             return Gateway::STATE_UNKNOWN;
         }
 
@@ -239,8 +235,8 @@ class GatewayUpdateTask extends AbstractTask
         $bodytext .= "Firewall: " . self::stateToString($gateway->getExitVpn()) . "\n";
         $bodytext .= "Exit VPN: " . self::stateToString($gateway->getExitVpn()) . "\n";
 
-        $email = GeneralUtility::makeInstance(MailMessage::class);
-        $mailsSend = $email->setSubject($subject)
+        $mailMessage = GeneralUtility::makeInstance(MailMessage::class);
+        $mailsSend = $mailMessage->setSubject($subject)
             ->setBody()->text($bodytext)
             ->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'])
             ->setTo($this->notificationMail)
@@ -254,16 +250,11 @@ class GatewayUpdateTask extends AbstractTask
 
     public static function stateToString($state): string
     {
-        switch (true) {
-            case $state === Gateway::STATE_UNKNOWN:
-                return 'Unbekannt';
-            case $state === Gateway::STATE_OK:
-            case $state === true:
-                return 'OK';
-            case $state === Gateway::STATE_ERROR:
-            case $state === false:
-                return 'Error';
-        }
-        return (string)$state;
+        return match (true) {
+            $state === Gateway::STATE_UNKNOWN => 'Unbekannt',
+            $state === Gateway::STATE_OK, $state === true => 'OK',
+            $state === Gateway::STATE_ERROR, $state === false => 'Error',
+            default => (string)$state,
+        };
     }
 }

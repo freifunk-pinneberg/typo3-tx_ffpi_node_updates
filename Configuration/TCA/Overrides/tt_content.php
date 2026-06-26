@@ -1,18 +1,22 @@
 <?php
 
-TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+declare(strict_types=1);
+
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+
+ExtensionUtility::registerPlugin(
     'FfpiNodeUpdates',
     'Nodeabo',
     'Node Abo'
 );
 
-TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+ExtensionUtility::registerPlugin(
     'FfpiNodeUpdates',
     'Gatewayhealth',
     'Gateway health'
 );
 
-TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+ExtensionUtility::registerPlugin(
     'FfpiNodeUpdates',
     'Freifunkapifile',
     'Freifunk API File'

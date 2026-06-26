@@ -23,11 +23,8 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class NodeController extends ActionController
 {
-    protected NodeRepository $nodeRepository;
-
-    public function __construct(NodeRepository $nodeRepository)
+    public function __construct(protected NodeRepository $nodeRepository)
     {
-        $this->nodeRepository = $nodeRepository;
     }
 
     /**

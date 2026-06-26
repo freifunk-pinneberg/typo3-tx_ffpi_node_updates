@@ -187,11 +187,7 @@ class Node extends AbstractEntity
      */
     public function getLabel(): string
     {
-        if (!empty($this->getNodeName())) {
-            $label = $this->getNodeName() . ' - ' . $this->getNodeId();
-        } else {
-            $label = $this->getNodeId();
-        }
+        $label = in_array($this->getNodeName(), ['', '0'], true) ? $this->getNodeId() : $this->getNodeName() . ' - ' . $this->getNodeId();
         return $label;
     }
 

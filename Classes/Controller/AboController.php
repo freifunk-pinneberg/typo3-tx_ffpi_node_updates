@@ -13,6 +13,8 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
@@ -21,7 +23,6 @@ use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use Throwable;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
@@ -31,20 +32,14 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  */
 class AboController extends ActionController
 {
-    protected AboRepository $aboRepository;
-
-    protected NodeRepository $nodeRepository;
-
-    public function __construct(AboRepository $aboRepository, NodeRepository $nodeRepository)
+    public function __construct(protected AboRepository $aboRepository, protected NodeRepository $nodeRepository)
     {
-        $this->aboRepository = $aboRepository;
-        $this->nodeRepository = $nodeRepository;
     }
 
     /**
      * action new
      *
-     * @return void
+     * @return ResponseInterface
      */
     public function newAction(): ResponseInterface
     {
@@ -63,17 +58,18 @@ class AboController extends ActionController
      * action create
      *
      * @param AboNewDemand $aboNewDemand
-     * @return void
+     * @return ResponseInterface
      * @throws Throwable
+     * @throws IllegalObjectTypeException
      */
     public function createAction(AboNewDemand $aboNewDemand): ResponseInterface
     {
         $newAbo = GeneralUtility::makeInstance(Abo::class);
         $newAbo->setEmail($aboNewDemand->getEmail());
-        $newAbo->setNode($this->nodeRepository->findOneByNodeId($aboNewDemand->getNodeId()));
+        $newAbo->setNode($this->nodeRepository->findOneBy(['nodeId' => $aboNewDemand->getNodeId()]));
         $randomData = openssl_random_pseudo_bytes(10);
-        if($randomData === false or empty($randomData)){
-            throw new \RuntimeException('No Random Data available. Unable to create a secret');
+        if($randomData === false || ($randomData === '' || $randomData === '0')){
+            throw new \RuntimeException('No Random Data available. Unable to create a secret', 2558374924);
         }
         $secret = substr(md5($randomData), 0, 10);
         $newAbo->setSecret($secret);
@@ -117,9 +113,9 @@ class AboController extends ActionController
      */
     public function removeAction(AboRemoveDemand $aboRemoveDemand): ResponseInterface
     {
-        $originalAbo = $this->aboRepository->findOneBySecret($aboRemoveDemand->getSecret());
-        if (!empty($originalAbo) and $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
-            $this->addFlashMessage('The object was deleted.', '', AbstractMessage::ERROR);
+        $originalAbo = $this->aboRepository->findOneBy(['secret' => $aboRemoveDemand->getSecret()]);
+        if (!empty($originalAbo) && $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
+            $this->addFlashMessage('The object was deleted.', '', ContextualFeedbackSeverity::ERROR);
             $this->aboRepository->remove($originalAbo);
             $this->view->assign('removed', true);
         } else {
@@ -140,11 +136,11 @@ class AboController extends ActionController
         $secret = $args['secret'];
         $email = $args['email'];
 
-        if (!empty($secret) and !empty($email)) {
+        if (!empty($secret) && !empty($email)) {
             /**
              * @var Abo $abo
              */
-            $abo = $this->aboRepository->findOneBySecret($secret);
+            $abo = $this->aboRepository->findOneBy(['secret' => $secret]);
             if (($abo instanceof Abo) && $abo->getEmail() === $email) {
                 $abo->setConfirmed(true);
                 $this->aboRepository->update($abo);
@@ -176,8 +172,8 @@ class AboController extends ActionController
         ];
 
         //send mail
-        $mail = new MailUtility();
-        $sendMails = $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
+        $mailUtility = new MailUtility();
+        $sendMails = $mailUtility->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
         return $sendMails;
     }
 
