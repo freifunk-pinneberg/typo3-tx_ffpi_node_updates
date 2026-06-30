@@ -13,7 +13,6 @@
 
 namespace FFPI\FfpiNodeUpdates\Utility;
 
-use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
 use Throwable;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -27,7 +26,7 @@ class MailUtility
     /**
      * @var ConfigurationManager
      */
-    public $configurationManager;
+    public ConfigurationManager $configurationManager;
 
     public function __construct()
     {
@@ -60,7 +59,7 @@ class MailUtility
             $mailMessage->text($emailBody);
             $mailMessage->setContentType('text/html');
         } else {
-            $mailMessage->setBody()->html($emailBody);
+            $mailMessage->html($emailBody);
         }
         $headers = $mailMessage->getHeaders();
         foreach ($additionalHeader as $key => $value) {
@@ -97,7 +96,6 @@ class MailUtility
 
     /**
      * @return array
-     * @throws InvalidConfigurationTypeException
      */
     private function getTemplatePaths(): array
     {

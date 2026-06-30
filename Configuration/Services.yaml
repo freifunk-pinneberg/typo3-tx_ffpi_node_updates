@@ -17,6 +17,14 @@ services:
     resource: '../Classes/Task/*'
     public: true
 
+  FFPI\FfpiNodeUpdates\Domain\Repository\:
+    resource: '../Classes/Domain/Repository/*'
+    public: true
+
   FFPI\FfpiNodeUpdates\Property\TypeConverter\AboRemoveDemandConverter:
     tags:
-      - name: 'extbase.type_converter'
+      -
+        name: 'extbase.type_converter'
+        sources: 'array'
+        target: 'FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand'
+        priority: 1

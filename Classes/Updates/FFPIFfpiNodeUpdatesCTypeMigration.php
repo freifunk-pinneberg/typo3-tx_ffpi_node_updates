@@ -35,7 +35,9 @@ final class FFPIFfpiNodeUpdatesCTypeMigration extends AbstractListTypeToCTypeUpd
     protected function getListTypeToCTypeMapping(): array
     {
         return [
-            // TODO: Add this mapping yourself!
+            'ffpinodeupdates_nodeabo' => 'ffpinodeupdates_nodeabo',
+            'ffpinodeupdates_gatewayhealth' => 'ffpinodeupdates_gatewayhealth',
+            'ffpinodeupdates_freifunkapifile' => 'ffpinodeupdates_freifunkapifile',
         ];
     }
 }

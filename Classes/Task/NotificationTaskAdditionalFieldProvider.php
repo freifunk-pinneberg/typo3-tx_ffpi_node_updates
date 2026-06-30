@@ -5,6 +5,7 @@ namespace FFPI\FfpiNodeUpdates\Task;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
+use TYPO3\CMS\Scheduler\SchedulerManagementAction;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
@@ -18,10 +19,10 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
      * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return array Array containing all the information pertaining to the additional fields
      */
-    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject): array
     {
         if (empty($taskInfo['FfpiNodeUpdates_pid']) || empty($taskInfo['FfpiNodeUpdates_url'])) {
-            if ($parentObject->getCurrentAction()->equals('edit')) {
+            if ($parentObject->getCurrentAction() === SchedulerManagementAction::EDIT) {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
                 $taskInfo['FfpiNodeUpdates_storage_pid'] = $task->pid;
                 $taskInfo['FfpiNodeUpdates_unsubscribe_pid'] = $task->unsubscribePid;
@@ -71,7 +72,7 @@ class NotificationTaskAdditionalFieldProvider extends AbstractAdditionalFieldPro
      * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool TRUE if validation was ok (or selected class is not relevant), FALSE otherwise
      */
-    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $parentObject)
+    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $parentObject): bool
     {
         $ret = true;
         if (empty($submittedData['FfpiNodeUpdates_storage_pid']) || !is_numeric($submittedData['FfpiNodeUpdates_storage_pid'])) {

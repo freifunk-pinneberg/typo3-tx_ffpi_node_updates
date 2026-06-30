@@ -14,30 +14,25 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class GatewayUpdateTask extends AbstractTask
 {
-    /** @var GatewayRepository */
-    protected $gatewayRepository;
+    protected GatewayRepository $gatewayRepository;
 
-    /** @var PersistenceManager */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
-    /** @var int */
-    public $pid;
+    public int $pid = 0;
 
-    /** @var string */
-    public $notificationMail;
+    public string $notificationMail = '';
     /**
      * Constructor
      */
-    public function __construct(PersistenceManager $persistenceManager)
+    public function __construct(PersistenceManager $persistenceManager, GatewayRepository $gatewayRepository)
     {
         parent::__construct();
         $this->persistenceManager = $persistenceManager;
+        $this->gatewayRepository = $gatewayRepository;
     }
 
     protected function initializeTask(): void
     {
-        $this->gatewayRepository = GeneralUtility::makeInstance(GatewayRepository::class);
-        $this->persistenceManager = $this->persistenceManager;
         $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
 
         $typo3QuerySettings->setStoragePageIds([(int)$this->pid]);
@@ -223,7 +218,7 @@ class GatewayUpdateTask extends AbstractTask
 
     protected function sendNotification(Gateway $gateway): bool
     {
-        if (empty($this->notificationMail)) {
+        if ($this->notificationMail === '' || $this->notificationMail === '0') {
             return false;
         }
         $subject = "Es gibt Probleme mit dem Gateway " . $gateway->getNode()->getNodeId() . "(" . $gateway->getNode()->getNodeName() . ")!";
@@ -237,7 +232,7 @@ class GatewayUpdateTask extends AbstractTask
 
         $mailMessage = GeneralUtility::makeInstance(MailMessage::class);
         $mailsSend = $mailMessage->setSubject($subject)
-            ->setBody()->text($bodytext)
+            ->text($bodytext)
             ->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg'])
             ->setTo($this->notificationMail)
             ->send();

@@ -14,30 +14,34 @@ abstract class AbstractNodeTask extends AbstractTask
     /**
      * @var NodeRepository
      */
-    protected $internalNodeRepository;
+    protected NodeRepository $internalNodeRepository;
 
     /**
      * @var PersistenceManager
      */
-    protected $persistenceManager;
+    protected PersistenceManager $persistenceManager;
 
     /**
      * @var string
      */
-    public $path;
+    public string $path = '';
 
     /**
      * pid for the storage
      *
      * @var int
      */
-    public $pid;
+    public int $pid = 0;
+
+    public function __construct(PersistenceManager $persistenceManager, NodeRepository $internalNodeRepository)
+    {
+        parent::__construct();
+        $this->persistenceManager = $persistenceManager;
+        $this->internalNodeRepository = $internalNodeRepository;
+    }
 
     protected function initializeTask(): void
     {
-        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
-        $this->internalNodeRepository = GeneralUtility::makeInstance(NodeRepository::class);
-
         // Set the correct PID for the storage
         $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         $typo3QuerySettings->setRespectStoragePage(true);

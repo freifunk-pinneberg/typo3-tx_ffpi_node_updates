@@ -7,17 +7,23 @@ use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 ExtensionUtility::registerPlugin(
     'FfpiNodeUpdates',
     'Nodeabo',
-    'Node Abo'
+    'Node Abo',
+    null,
+    'list'
 );
 
 ExtensionUtility::registerPlugin(
     'FfpiNodeUpdates',
     'Gatewayhealth',
-    'Gateway health'
+    'Gateway health',
+    null,
+    'list'
 );
 
 ExtensionUtility::registerPlugin(
     'FfpiNodeUpdates',
     'Freifunkapifile',
-    'Freifunk API File'
+    'Freifunk API File',
+    null,
+    'list'
 );

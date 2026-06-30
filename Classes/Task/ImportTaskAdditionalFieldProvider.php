@@ -5,6 +5,7 @@ namespace FFPI\FfpiNodeUpdates\Task;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
+use TYPO3\CMS\Scheduler\SchedulerManagementAction;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
@@ -22,7 +23,7 @@ class ImportTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
     public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject): array
     {
         if (empty($taskInfo['FfpiNodeUpdates_pid']) || empty($taskInfo['FfpiNodeUpdates_url'])) {
-            if ($parentObject->getCurrentAction()->equals('edit')) {
+            if ($parentObject->getCurrentAction() === SchedulerManagementAction::EDIT) {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
                 $taskInfo['FfpiNodeUpdates_pid'] = $task->pid;
                 $taskInfo['FfpiNodeUpdates_url'] = $task->path;

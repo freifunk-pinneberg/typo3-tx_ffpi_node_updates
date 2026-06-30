@@ -13,7 +13,6 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
-use phpDocumentor\Reflection\Types\ClassString;
 use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Model\FreifunkApiFile;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
