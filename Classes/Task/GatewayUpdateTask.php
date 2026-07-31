@@ -14,26 +14,28 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class GatewayUpdateTask extends AbstractTask
 {
-    protected GatewayRepository $gatewayRepository;
-
-    protected PersistenceManager $persistenceManager;
-
     public int $pid = 0;
 
     public string $notificationMail = '';
+
+    protected ?PersistenceManager $persistenceManager = null;
+
+    protected ?GatewayRepository $gatewayRepository = null;
+
+
     /**
      * Constructor
      */
-    public function __construct(PersistenceManager $persistenceManager, GatewayRepository $gatewayRepository)
+    public function __construct()
     {
         parent::__construct();
-        $this->persistenceManager = $persistenceManager;
-        $this->gatewayRepository = $gatewayRepository;
     }
 
     protected function initializeTask(): void
     {
         $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
+        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
+        $this->gatewayRepository = GeneralUtility::makeInstance(GatewayRepository::class);
 
         $typo3QuerySettings->setStoragePageIds([(int)$this->pid]);
         $this->gatewayRepository->setDefaultQuerySettings($typo3QuerySettings);

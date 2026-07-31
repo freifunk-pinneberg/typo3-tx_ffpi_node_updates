@@ -12,16 +12,6 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 abstract class AbstractNodeTask extends AbstractTask
 {
     /**
-     * @var NodeRepository
-     */
-    protected NodeRepository $internalNodeRepository;
-
-    /**
-     * @var PersistenceManager
-     */
-    protected PersistenceManager $persistenceManager;
-
-    /**
      * @var string
      */
     public string $path = '';
@@ -33,15 +23,18 @@ abstract class AbstractNodeTask extends AbstractTask
      */
     public int $pid = 0;
 
-    public function __construct(PersistenceManager $persistenceManager, NodeRepository $internalNodeRepository)
+    protected ?PersistenceManager $persistenceManager = null;
+    protected ?NodeRepository $internalNodeRepository = null;
+
+    public function __construct()
     {
         parent::__construct();
-        $this->persistenceManager = $persistenceManager;
-        $this->internalNodeRepository = $internalNodeRepository;
     }
 
     protected function initializeTask(): void
     {
+        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
+        $this->internalNodeRepository = GeneralUtility::makeInstance(NodeRepository::class);
         // Set the correct PID for the storage
         $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
         $typo3QuerySettings->setRespectStoragePage(true);
@@ -185,7 +178,7 @@ abstract class AbstractNodeTask extends AbstractTask
         if($node instanceof Node){
             return $node->isOnline();
         }
-        return is_array($node) && ($node['status']['online'] === true || $node['flags']['online'] === true);
+        return is_array($node) && ((isset($node['status']['online']) && $node['status']['online'] === true) || (isset($node['flags']['online']) && $node['flags']['online'] === true));
     }
 
     /**

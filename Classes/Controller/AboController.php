@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use Psr\Http\Message\ResponseInterface;
@@ -83,7 +84,7 @@ class AboController extends ActionController
     /**
      * @return void
      */
-    protected function initializeRemoveFormAction()
+    protected function initializeRemoveFormAction(): void
     {
         $this->arguments->getArgument('aboRemoveDemand')
             ->getPropertyMappingConfiguration()
@@ -92,7 +93,7 @@ class AboController extends ActionController
 
     /**
      * @param AboRemoveDemand|null $aboRemoveDemand
-     * @return void
+     * @return ResponseInterface action removeForm
      * action removeForm
      */
     public function removeFormAction(AboRemoveDemand $aboRemoveDemand = null): ResponseInterface
@@ -108,8 +109,8 @@ class AboController extends ActionController
      * action remove
      *
      * @param AboRemoveDemand $aboRemoveDemand
-     * @return void
-     * @throws Throwable
+     * @return ResponseInterface
+     * @throws IllegalObjectTypeException
      */
     public function removeAction(AboRemoveDemand $aboRemoveDemand): ResponseInterface
     {
@@ -127,8 +128,9 @@ class AboController extends ActionController
     /**
      * action confirm
      *
-     * @return void
-     * @throws Throwable
+     * @return ResponseInterface
+     * @throws IllegalObjectTypeException
+     * @throws UnknownObjectException
      */
     public function confirmAction(): ResponseInterface
     {
@@ -182,7 +184,7 @@ class AboController extends ActionController
      * @param string $secret
      * @return string Link
      */
-    private function getConfirmLink($email, $secret)
+    private function getConfirmLink(string $email, string $secret): string
     {
         $pid = $this->uriBuilder->getTargetPageUid();
         $urlAttributes = [];

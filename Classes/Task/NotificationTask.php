@@ -13,7 +13,6 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
-use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
@@ -22,7 +21,6 @@ use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Service\ExtensionService;
@@ -31,34 +29,17 @@ class NotificationTask extends AbstractNodeTask
 {
     public int $unsubscribePid = 0;
 
-    /**
-     * Our Repository for the Abos
-     */
-    protected AboRepository $aboRepository;
-
-    protected SiteFinder $siteFinder;
-
-    protected ExtensionService $extensionService;
-
-    /**
-     * Saves the Repository objects into the Database
-     */
-    protected PersistenceManager $persistenceManager;
-
-    protected DataMapFactory $dataMapFactory;
+    protected ?AboRepository $aboRepository = null;
+    protected ?SiteFinder $siteFinder = null;
+    protected ?ExtensionService $extensionService = null;
+    protected ?DataMapFactory $dataMapFactory = null;
 
     /**
      * Constructor
      */
-    public function __construct(PersistenceManager $persistenceManager, NodeRepository $internalNodeRepository, AboRepository $aboRepository, SiteFinder $siteFinder, ExtensionService $extensionService, DataMapFactory $dataMapFactory)
+    public function __construct()
     {
-        parent::__construct($persistenceManager, $internalNodeRepository);
-        $this->aboRepository = $aboRepository;
-        $this->siteFinder = $siteFinder;
-        $this->extensionService = $extensionService;
-        $this->persistenceManager = $persistenceManager;
-        $this->dataMapFactory = $dataMapFactory;
-
+        parent::__construct();
     }
 
     public function execute(): bool
@@ -70,13 +51,17 @@ class NotificationTask extends AbstractNodeTask
 
     protected function initialiseMainTask(): void
     {
-        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
-        $querySettings->setStoragePageIds([$this->pid]);
-        $querySettings->setRespectStoragePage(true);
-        $querySettings->setRespectSysLanguage(false);
+        $this->aboRepository = GeneralUtility::makeInstance(AboRepository::class);
+        $this->siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+        $this->extensionService = GeneralUtility::makeInstance(ExtensionService::class);
+        $this->dataMapFactory = GeneralUtility::makeInstance(DataMapFactory::class);
+        $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
+        $typo3QuerySettings->setStoragePageIds([$this->pid]);
+        $typo3QuerySettings->setRespectStoragePage(true);
+        $typo3QuerySettings->setRespectSysLanguage(false);
         //Set the settings for our repositorys
-        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
-        $this->aboRepository->setDefaultQuerySettings($querySettings);
+        $this->internalNodeRepository->setDefaultQuerySettings($typo3QuerySettings);
+        $this->aboRepository->setDefaultQuerySettings($typo3QuerySettings);
 
     }
 
