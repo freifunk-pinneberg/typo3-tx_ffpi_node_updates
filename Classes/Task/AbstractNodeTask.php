@@ -117,7 +117,7 @@ abstract class AbstractNodeTask extends AbstractTask
         if ($nodes == NULL) {
             $this->scheduler->log(json_last_error_msg(), 1);
         }
-        $externalNodes = $nodes['nodes'];
+        $externalNodes = is_array($nodes) ? ($nodes['nodes'] ?? null) : null;
 
         if (empty($externalNodes) || !is_array($externalNodes)) {
             // Wir können nichts tun, wenn keine externen Nodes vorhanden sind
@@ -155,7 +155,7 @@ abstract class AbstractNodeTask extends AbstractTask
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $this->path);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
+        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . ($_SERVER['HTTP_HOST'] ?? gethostname()));
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
         /** @var string|false $response */

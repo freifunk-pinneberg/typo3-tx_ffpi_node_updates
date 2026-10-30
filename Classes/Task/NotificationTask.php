@@ -104,7 +104,7 @@ class NotificationTask extends AbstractNodeTask
         $hasError = false;
         foreach ($queryResult as $internalNode) {
             /** @var array|null $externalNode */
-            $externalNode = $externalNodes[$internalNode->getNodeId()];
+            $externalNode = $externalNodes[$internalNode->getNodeId()] ?? null;
 
             if ($externalNode === null) {
                 continue;
