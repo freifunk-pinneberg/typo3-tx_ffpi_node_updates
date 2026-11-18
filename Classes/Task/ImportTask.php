@@ -30,7 +30,7 @@ class ImportTask extends AbstractNodeTask
 
         $externalNodes = $this->getExternalNodes();
         if ($externalNodes === []) {
-            $this->scheduler->log('No external Nodes found!', 1);
+            $this->logger->alert('No external Nodes found!');
             return false;
         }
 

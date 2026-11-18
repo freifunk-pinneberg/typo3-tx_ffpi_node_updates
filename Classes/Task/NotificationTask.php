@@ -112,11 +112,11 @@ class NotificationTask extends AbstractNodeTask
 
             if ($internalNode->getOnline() === true && $this->isNodeOnline($externalNode) === false) {
                 //node changed from online to offline since last check
-                $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline', 0);
+                $this->logger->info('Node ' . $internalNode->getNodeId() . ' is now offline');
                 $this->createOrUpdateNode($externalNode, true);
                 if (!$this->sendNotification($internalNode)) {
                     //it was not possible to send a notification
-                    $this->scheduler->log('One or more Notifications for ' . $internalNode->getNodeId() . ' could not be send.', 1);
+                    $this->logger->error('One or more Notifications for ' . $internalNode->getNodeId() . ' could not be send.');
                     $hasError = true;
                 }
             } elseif ($this->isNodeOnline($internalNode) !== $this->isNodeOnline($externalNode)) {
@@ -124,9 +124,9 @@ class NotificationTask extends AbstractNodeTask
                 $this->createOrUpdateNode($externalNode, true);
                 //Log the change
                 if ($this->isNodeOnline($externalNode)) {
-                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now online.', 0);
+                    $this->logger->info('Node ' . $internalNode->getNodeId() . ' is now online.');
                 } else {
-                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline.', 0);
+                    $this->logger->info('Node ' . $internalNode->getNodeId() . ' is now offline.');
                 }
             }
         }
@@ -181,7 +181,7 @@ class NotificationTask extends AbstractNodeTask
         $send = $mailUtility->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData, ['List-Unsubscribe' => $unsubscribeUrl]);
 
         if (!$send) {
-            $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
+            $this->logger->warning('Mail could not be send: ' . $abo->getEmail(), 1);
             $hasError = true;
         } else {
             //Update last notification

@@ -115,13 +115,13 @@ abstract class AbstractNodeTask extends AbstractTask
         $json = $this->getJson();
         $nodes = json_decode($json, true);
         if ($nodes == NULL) {
-            $this->scheduler->log(json_last_error_msg(), 1);
+            $this->logger->error(json_last_error_msg());
         }
         $externalNodes = is_array($nodes) ? ($nodes['nodes'] ?? null) : null;
 
         if (empty($externalNodes) || !is_array($externalNodes)) {
             // Wir können nichts tun, wenn keine externen Nodes vorhanden sind
-            $this->scheduler->log('External Nodes are empty', 1);
+            $this->logger->alert('External Nodes are empty');
             return [];
         } else {
             $externalNodesNew = [];
@@ -137,7 +137,7 @@ abstract class AbstractNodeTask extends AbstractTask
                     $externalNodesNew[$nodeId] = $externalNode;
                 } else {
                     // Falls keine gültige Node ID gefunden wird, logge eine Warnung
-                    $this->scheduler->log('Node without valid ID found', 1);
+                    $this->logger->warning('Node without valid ID found');
                 }
             }
             $externalNodes = $externalNodesNew;
