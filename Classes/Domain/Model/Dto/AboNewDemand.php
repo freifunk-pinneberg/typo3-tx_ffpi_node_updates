@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace FFPI\FfpiNodeUpdates\Domain\Model\Dto;
 
 use TYPO3\CMS\Extbase\Annotation\Validate;
@@ -9,16 +11,16 @@ class AboNewDemand
      * nodeId
      *
      * @var string
-     * @Validate("NotEmpty")
      */
+    #[Validate(['validator' => 'NotEmpty'])]
     protected $nodeId = '';
 
     /**
      * email
      *
      * @var string
-     * @Validate("NotEmpty")
      */
+    #[Validate(['validator' => 'NotEmpty'])]
     protected $email = '';
 
     public function __construct()

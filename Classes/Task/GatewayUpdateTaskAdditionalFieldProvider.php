@@ -2,9 +2,10 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Scheduler\AbstractAdditionalFieldProvider;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
+use TYPO3\CMS\Scheduler\SchedulerManagementAction;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldProvider
@@ -18,10 +19,10 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
      * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return array Array containing all the information pertaining to the additional fields
      */
-    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject): array
     {
         if (empty($taskInfo['FfpiNodeUpdates_pid'])) {
-            if ($parentObject->getCurrentAction()->equals('edit')) {
+            if ($parentObject->getCurrentAction() === SchedulerManagementAction::EDIT) {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
                 $taskInfo['FfpiNodeUpdates_pid'] = $task->pid;
             } else {
@@ -30,7 +31,7 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
             }
         }
         if (empty($taskInfo['FfpiNodeUpdates_notification_mail'])) {
-            if ($parentObject->getCurrentAction()->equals('edit')) {
+            if ($parentObject->getCurrentAction() === SchedulerManagementAction::EDIT) {
                 // In case of edit, and editing a test task, set to internal value if not data was submitted already
                 $taskInfo['FfpiNodeUpdates_notification_mail'] = $task->notificationMail;
             } else {
@@ -42,7 +43,7 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
         $additionalFields = [];
 
         $fieldID = 'FfpiNodeUpdates_pid';
-        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_pid]" id="' . $fieldID . '" value="' . htmlspecialchars($taskInfo['FfpiNodeUpdates_pid']) . '" size="30">';
+        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[FfpiNodeUpdates_pid]" id="' . $fieldID . '" value="' . htmlspecialchars((string) $taskInfo['FfpiNodeUpdates_pid']) . '" size="30">';
         $additionalFields[$fieldID] = [
             'code' => $fieldCode,
             'label' => 'Page ID',
@@ -68,13 +69,13 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
      * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
      * @return bool TRUE if validation was ok (or selected class is not relevant), FALSE otherwise
      */
-    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $parentObject)
+    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $parentObject): bool
     {
         $ret = true;
         if (empty($submittedData['FfpiNodeUpdates_pid']) || !is_numeric($submittedData['FfpiNodeUpdates_pid'])) {
             $this->addMessage(
                 'Page Id must be integer, ' . gettype($submittedData['FfpiNodeUpdates_pid']) . ' given',
-                FlashMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             $ret = false;
         }
@@ -89,9 +90,9 @@ class GatewayUpdateTaskAdditionalFieldProvider extends AbstractAdditionalFieldPr
      * @param AbstractTask $task Reference to the current task object
      * @return void
      */
-    public function saveAdditionalFields(array $submittedData, AbstractTask $task)
+    public function saveAdditionalFields(array $submittedData, AbstractTask $task): void
     {
         $task->pid = intval($submittedData['FfpiNodeUpdates_pid']);
-        $task->notificationMail = trim($submittedData['FfpiNodeUpdates_notification_mail']);
+        $task->notificationMail = trim((string) $submittedData['FfpiNodeUpdates_notification_mail']);
     }
 }

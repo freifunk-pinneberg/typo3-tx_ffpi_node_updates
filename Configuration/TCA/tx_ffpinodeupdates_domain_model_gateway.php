@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
+use FFPI\FfpiNodeUpdates\Domain\Model\Gateway;
+
 return [
     'ctrl' => [
         'title' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_gateway',
         'label' => 'node',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
         'versioningWS' => false,
 
         'languageField' => 'sys_language_uid',
@@ -29,18 +32,8 @@ return [
             'exclude' => 1,
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
             'config' => [
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'special' => 'languages',
-                'items' => [
-                    [
-                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages',
-                        -1,
-                        'flags-multiple'
-                    ]
-                ],
-                'default' => 0,
-            ],
+                'type' => 'language'
+            ]
         ],
         'l10n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
@@ -49,7 +42,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['', 0],
+                    ['label' => '', 'value' => 0],
                 ],
                 'foreign_table' => 'tx_ffpinodeupdates_domain_model_gateway',
                 'foreign_table_where' => 'AND tx_ffpinodeupdates_domain_model_gateway.pid=###CURRENT_PID### AND tx_ffpinodeupdates_domain_model_gateway.sys_language_uid IN (-1,0)',
@@ -67,7 +60,7 @@ return [
                 'type' => 'check',
                 'items' => [
                     '1' => [
-                        '0' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
+                        'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled'
                     ]
                 ],
             ],
@@ -77,10 +70,8 @@ return [
             'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
             'config' => [
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
+                'type' => 'datetime',
                 'size' => 13,
-                'eval' => 'datetime',
                 'checkbox' => 0,
                 'default' => 0,
                 'range' => [
@@ -93,10 +84,8 @@ return [
             'l10n_mode' => 'exclude',
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
             'config' => [
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
+                'type' => 'datetime',
                 'size' => 13,
-                'eval' => 'datetime',
                 'checkbox' => 0,
                 'default' => 0,
                 'range' => [
@@ -108,8 +97,7 @@ return [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_gateway.http_adress',
             'config' => [
-                'type' => 'input',
-                'renderType' => 'inputLink',
+                'type' => 'link',
             ]
         ],
         'node' => [
@@ -129,8 +117,8 @@ return [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_gateway.ping',
             'config' => [
-                'type' => 'input',
-                'eval' => 'double2'
+                'type' => 'number',
+                'format' => 'decimal'
             ]
         ],
         'open_vpn' => [
@@ -140,9 +128,9 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['label' => 'Unbekannt', 'value' => Gateway::STATE_UNKNOWN],
+                    ['label' => 'OK', 'value' => Gateway::STATE_OK],
+                    ['label' => 'Fehler', 'value' => Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -153,9 +141,9 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['label' => 'Unbekannt', 'value' => Gateway::STATE_UNKNOWN],
+                    ['label' => 'OK', 'value' => Gateway::STATE_OK],
+                    ['label' => 'Fehler', 'value' => Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -166,9 +154,9 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['label' => 'Unbekannt', 'value' => Gateway::STATE_UNKNOWN],
+                    ['label' => 'OK', 'value' => Gateway::STATE_OK],
+                    ['label' => 'Fehler', 'value' => Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -179,9 +167,9 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['Unbekannt', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_UNKNOWN],
-                    ['OK', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_OK],
-                    ['Fehler', \FFPI\FfpiNodeUpdates\Domain\Model\Gateway::STATE_ERROR],
+                    ['label' => 'Unbekannt', 'value' => Gateway::STATE_UNKNOWN],
+                    ['label' => 'OK', 'value' => Gateway::STATE_OK],
+                    ['label' => 'Fehler', 'value' => Gateway::STATE_ERROR],
                 ],
             ]
         ],
@@ -189,10 +177,8 @@ return [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_gateway.last_health_check',
             'config' => [
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
+                'type' => 'datetime',
                 'size' => 10,
-                'eval' => 'datetime',
                 'checkbox' => 1,
                 'default' => time()
             ],
@@ -201,10 +187,8 @@ return [
             'exclude' => 1,
             'label' => 'LLL:EXT:ffpi_node_updates/Resources/Private/Language/locallang.xlf:tx_ffpinodeupdates_domain_model_gateway.last_health_change',
             'config' => [
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
+                'type' => 'datetime',
                 'size' => 10,
-                'eval' => 'datetime',
                 'checkbox' => 1,
                 'default' => time()
             ],

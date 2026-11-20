@@ -5,53 +5,42 @@ namespace FFPI\FfpiNodeUpdates\Task;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
-use TYPO3\CMS\Scheduler\Scheduler;
 
 abstract class AbstractNodeTask extends AbstractTask
 {
     /**
-     * @var NodeRepository
-     */
-    protected $internalNodeRepository;
-
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var PersistenceManager
-     */
-    protected $persistenceManager;
-
-    /**
      * @var string
      */
-    public $path;
+    public string $path = '';
 
     /**
      * pid for the storage
      *
      * @var int
      */
-    public $pid;
+    public int $pid = 0;
+
+    protected ?PersistenceManager $persistenceManager = null;
+    protected ?NodeRepository $internalNodeRepository = null;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     protected function initializeTask(): void
     {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
-        $this->internalNodeRepository = $this->objectManager->get(NodeRepository::class);
-
+        $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
+        $this->internalNodeRepository = GeneralUtility::makeInstance(NodeRepository::class);
         // Set the correct PID for the storage
-        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
-        $querySettings->setRespectStoragePage(true);
-        $querySettings->setRespectSysLanguage(false);
-        $querySettings->setStoragePageIds([$this->pid]);
-        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
+        $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
+        $typo3QuerySettings->setRespectStoragePage(true);
+        $typo3QuerySettings->setRespectSysLanguage(false);
+        $typo3QuerySettings->setStoragePageIds([$this->pid]);
+        $this->internalNodeRepository->setDefaultQuerySettings($typo3QuerySettings);
     }
 
     /**
@@ -69,7 +58,7 @@ abstract class AbstractNodeTask extends AbstractTask
             return null;
         }
 
-        $internalNode = $this->internalNodeRepository->findOneByNodeId($nodeId);
+        $internalNode = $this->internalNodeRepository->findOneBy(['nodeId' => $nodeId]);
         if ($internalNode === null) {
             // Node does not exist, create a new one
             $internalNode = new Node();
@@ -126,13 +115,13 @@ abstract class AbstractNodeTask extends AbstractTask
         $json = $this->getJson();
         $nodes = json_decode($json, true);
         if ($nodes == NULL) {
-            $this->scheduler->log(json_last_error_msg(), 1);
+            $this->logger->error(json_last_error_msg());
         }
-        $externalNodes = $nodes['nodes'];
+        $externalNodes = is_array($nodes) ? ($nodes['nodes'] ?? null) : null;
 
         if (empty($externalNodes) || !is_array($externalNodes)) {
             // Wir können nichts tun, wenn keine externen Nodes vorhanden sind
-            $this->scheduler->log('External Nodes are empty', 1);
+            $this->logger->alert('External Nodes are empty');
             return [];
         } else {
             $externalNodesNew = [];
@@ -148,7 +137,7 @@ abstract class AbstractNodeTask extends AbstractTask
                     $externalNodesNew[$nodeId] = $externalNode;
                 } else {
                     // Falls keine gültige Node ID gefunden wird, logge eine Warnung
-                    $this->scheduler->log('Node without valid ID found', 1);
+                    $this->logger->warning('Node without valid ID found');
                 }
             }
             $externalNodes = $externalNodesNew;
@@ -166,12 +155,12 @@ abstract class AbstractNodeTask extends AbstractTask
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $this->path);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . $_SERVER['HTTP_HOST']);
+        curl_setopt($curl, CURLOPT_USERAGENT, 'TYPO3 at ' . ($_SERVER['HTTP_HOST'] ?? gethostname()));
         curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 
         /** @var string|false $response */
         $response = curl_exec($curl);
-        if (curl_errno($curl) or $response === false) {
+        if (curl_errno($curl) || $response === false) {
             $this->scheduler->log('Curl Error: ' . curl_error($curl), 1);
             $response = '{}';
         }
@@ -189,10 +178,7 @@ abstract class AbstractNodeTask extends AbstractTask
         if($node instanceof Node){
             return $node->isOnline();
         }
-        if(is_array($node) && ($node['status']['online'] === true || $node['flags']['online'] === true)){
-            return true;
-        }
-        return false;
+        return is_array($node) && ((isset($node['status']['online']) && $node['status']['online'] === true) || (isset($node['flags']['online']) && $node['flags']['online'] === true));
     }
 
     /**

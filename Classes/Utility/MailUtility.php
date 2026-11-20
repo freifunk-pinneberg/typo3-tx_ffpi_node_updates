@@ -13,33 +13,24 @@
 
 namespace FFPI\FfpiNodeUpdates\Utility;
 
-use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
 use Throwable;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
-use TYPO3\CMS\Frontend\ContentObject\ContentContentObject;
 
 class MailUtility
 {
 
     /**
-     * @var ObjectManager
-     */
-    var $objectManager;
-
-    /**
      * @var ConfigurationManager
      */
-    var $configurationManager;
+    public ConfigurationManager $configurationManager;
 
     public function __construct()
     {
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurationManager = $this->objectManager->get(ConfigurationManager::class);
+        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
     }
 
     /**
@@ -54,30 +45,30 @@ class MailUtility
     public function sendMail(string $to, string $subject, string $templateName, array $vars = [], array $additionalHeader = []): bool
     {
         //Get the Fluid Template
-        $template = $this->getTemplate($templateName, $vars);
+        $standaloneView = $this->getTemplate($templateName, $vars);
         //Render the Template to get the mail body
-        $emailBody = $template->render();
+        $emailBody = $standaloneView->render();
         //Create the email object
-        /** @var MailMessage $email */
-        $email = GeneralUtility::makeInstance(MailMessage::class);
+        /** @var MailMessage $mailMessage */
+        $mailMessage = GeneralUtility::makeInstance(MailMessage::class);
         //Set mail data
-        $email->setSubject($subject);
-        $email->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg']);
-        $email->setTo($to);
-        if (method_exists($email, 'setContentType')) {
-            $email->setBody($emailBody);
-            $email->setContentType('text/html');
+        $mailMessage->setSubject($subject);
+        $mailMessage->setFrom(['service@pinneberg.freifunk.net' => 'Freifunk Pinneberg']);
+        $mailMessage->setTo($to);
+        if (method_exists($mailMessage, 'setContentType')) {
+            $mailMessage->text($emailBody);
+            $mailMessage->setContentType('text/html');
         } else {
-            $email->setBody()->html($emailBody);
+            $mailMessage->html($emailBody);
         }
-        $headers = $email->getHeaders();
+        $headers = $mailMessage->getHeaders();
         foreach ($additionalHeader as $key => $value) {
             $headers->addTextHeader($key, $value);
         }
-        $email->setHeaders($headers);
+        $mailMessage->setHeaders($headers);
 
         //Send mail
-        return $email->send();
+        return $mailMessage->send();
     }
 
     /**
@@ -88,28 +79,23 @@ class MailUtility
      */
     private function getTemplate(string $template, array $vars): StandaloneView
     {
-        /** @var StandaloneView $emailView */
-        $emailView = $this->objectManager->get(StandaloneView::class);
+        /** @var StandaloneView $standaloneView */
+        $standaloneView = GeneralUtility::makeInstance(StandaloneView::class);
 
-        $extbaseFrameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK, 'ffpi_node_updates', 'tx_ffpinodeupdates_nodeabo');
-
-        $emailView->getRequest()->setControllerExtensionName('ffpi_node_updates');
-        $emailView->getRequest()->setControllerName('mail');
         $view = $this->getTemplatePaths();
-        $emailView->setTemplateRootPaths($view['templateRootPaths']);
-        $emailView->setPartialRootPaths($view['partialRootPaths']);
-        $emailView->setLayoutRootPaths($view['layoutRootPaths']);
-        $emailView->setTemplate($template);
+        $standaloneView->getRenderingContext()->getTemplatePaths()->setTemplateRootPaths($view['templateRootPaths']);
+        $standaloneView->getRenderingContext()->getTemplatePaths()->setPartialRootPaths($view['partialRootPaths']);
+        $standaloneView->getRenderingContext()->getTemplatePaths()->setLayoutRootPaths($view['layoutRootPaths']);
+        $standaloneView->getRenderingContext()->setControllerAction($template);
         //$templatePathAndFilename = $templateRootPath . '/' . $template;
         //$emailView->setTemplatePathAndFilename($templatePathAndFilename);
-        $emailView->assignMultiple($vars);
+        $standaloneView->assignMultiple($vars);
 
-        return $emailView;
+        return $standaloneView;
     }
 
     /**
      * @return array
-     * @throws InvalidConfigurationTypeException
      */
     private function getTemplatePaths(): array
     {
@@ -122,11 +108,7 @@ class MailUtility
         //Try 2: Get complete TS and use a fixed xpath. Should always work as long as there is valid TS included
         $ts = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT);
         if (isset($ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']) && !empty($ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.'])) {
-            $view = [];
-            $view['templateRootPaths'] = $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['templateRootPaths.'];
-            $view['partialRootPaths'] = $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['partialRootPaths.'];
-            $view['layoutRootPaths'] = $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['layoutRootPaths.'];
-            return $view;
+            return ['templateRootPaths' => $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['templateRootPaths.'], 'partialRootPaths' => $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['partialRootPaths.'], 'layoutRootPaths' => $ts['plugin.']['tx_ffpinodeupdates_nodeabo.']['view.']['layoutRootPaths.']];
         }
 
         //Try 3: Give up and use a hardcoded path

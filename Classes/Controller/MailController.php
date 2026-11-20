@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /***
  *
  * This file is part of the "Freifunk knoten Benachrichtigung" Extension for TYPO3 CMS.
@@ -10,9 +12,9 @@
  *  (c) 2019 Kevin Quiatkowski <kevin@pinneberg.freifunk.net>
  *
  ***/
-
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -24,11 +26,13 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class MailController extends ActionController
 {
-    public function confirmEmailAction(): void
+    public function confirmEmailAction(): ResponseInterface
     {
+        return $this->htmlResponse();
     }
 
-    public function NotificationAction(): void
+    public function notificationAction(): ResponseInterface
     {
+        return $this->htmlResponse();
     }
 }

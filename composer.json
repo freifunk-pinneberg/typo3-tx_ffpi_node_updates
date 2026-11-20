@@ -2,7 +2,7 @@
   "name": "ffpi/node-updates",
   "description": "Node Updates",
   "homepage": "https://pinneberg.freifunk.net",
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-only",
   "type": "typo3-cms-extension",
   "authors": [
     {
@@ -34,17 +34,22 @@
   "config": {
     "vendor-dir": ".Build/vendor",
     "bin-dir": ".Build/bin",
-    "web-dir": ".Build/web"
+    "web-dir": ".Build/web",
+    "allow-plugins": {
+      "typo3/class-alias-loader": true,
+      "typo3/cms-composer-installers": true
+    }
   },
-  "minimum-stability": "beta",
+  "minimum-stability": "stable",
   "require": {
-    "typo3/cms-core": "10.0.0 - 11.5.99",
-    "typo3/cms-scheduler": "*",
+    "typo3/cms-core": "^12.4 || ^13.4",
+    "typo3/cms-scheduler": "^12.4 || ^13.4",
     "ext-openssl": "*",
     "ext-json": "*",
-    "ext-curl": "*"
-  },
-  "require-dev": {
+    "ext-curl": "*",
+    "typo3/cms-extbase": "^12.4 || ^13.4",
+    "typo3/cms-fluid": "^12.4 || ^13.4",
+    "typo3/cms-frontend": "^12.4 || ^13.4"
   },
   "autoload": {
     "psr-4": {

@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Task;
 
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
@@ -20,42 +21,26 @@ use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapFactory;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Service\ExtensionService;
 
 class NotificationTask extends AbstractNodeTask
 {
-    /**
-     * @var int
-     */
-    public $unsubscribePid;
+    public int $unsubscribePid = 0;
+
+    protected ?AboRepository $aboRepository = null;
+    protected ?SiteFinder $siteFinder = null;
+    protected ?ExtensionService $extensionService = null;
+    protected ?DataMapFactory $dataMapFactory = null;
 
     /**
-     * @var AboRepository
+     * Constructor
      */
-    protected $aboRepository;
-
-    /**
-     * @var SiteFinder
-     */
-    protected $siteFinder;
-
-    /**
-     * @var ExtensionService
-     */
-    protected $extensionService;
-
-    /**
-     * @var PersistenceManager
-     */
-    protected $persistenceManager;
-
-    /**
-     * @var DataMapFactory|null
-     */
-    protected ?DataMapFactory $dataMapFactory;
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
     public function execute(): bool
     {
@@ -66,44 +51,17 @@ class NotificationTask extends AbstractNodeTask
 
     protected function initialiseMainTask(): void
     {
-        /**
-         * DataMapFacotry, not directly used by this task, but needs to be aviable for the repository
-         *
-         * @var DataMapFactory $this->dataMapFactory
-         */
-        $this->dataMapFactory = $this->objectManager->get(DataMapFactory::class);
-
-        /**
-         * Saves the Repository objects into the Database
-         *
-         * @var PersistenceManager $this->persistenceManager
-         */
-        $this->persistenceManager = $this->objectManager->get(PersistenceManager::class);
-
-        /**
-         * Our Repository for the Abos
-         *
-         * @var AboRepository $this->aboRepository
-         */
-        $this->aboRepository = $this->objectManager->get(AboRepository::class);
-
-        /**
-         * @var SiteFinder $this->siteFinder
-         */
+        $this->aboRepository = GeneralUtility::makeInstance(AboRepository::class);
         $this->siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-
-        /**
-         * @var ExtensionService $this->extensionService
-         */
-        $this->extensionService = $this->objectManager->get(ExtensionService::class);
-
-        $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
-        $querySettings->setStoragePageIds([(int)$this->pid]);
-        $querySettings->setRespectStoragePage(true);
-        $querySettings->setRespectSysLanguage(false);
+        $this->extensionService = GeneralUtility::makeInstance(ExtensionService::class);
+        $this->dataMapFactory = GeneralUtility::makeInstance(DataMapFactory::class);
+        $typo3QuerySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
+        $typo3QuerySettings->setStoragePageIds([$this->pid]);
+        $typo3QuerySettings->setRespectStoragePage(true);
+        $typo3QuerySettings->setRespectSysLanguage(false);
         //Set the settings for our repositorys
-        $this->internalNodeRepository->setDefaultQuerySettings($querySettings);
-        $this->aboRepository->setDefaultQuerySettings($querySettings);
+        $this->internalNodeRepository->setDefaultQuerySettings($typo3QuerySettings);
+        $this->aboRepository->setDefaultQuerySettings($typo3QuerySettings);
 
     }
 
@@ -119,7 +77,7 @@ class NotificationTask extends AbstractNodeTask
 
         // We need the External Nodes. (They come from the json file)
         $externalNodes = $this->getExternalNodes();
-        if (empty($externalNodes)) {
+        if ($externalNodes === []) {
             return false;
         }
 
@@ -133,24 +91,20 @@ class NotificationTask extends AbstractNodeTask
 
         //Last step, Save all updated nodes to the database
         $this->persistenceManager->persistAll();
-
-        if ($hasError) {
-            return false;
-        }
-        return true;
+        return !$hasError;
     }
 
     /**
      * @param array $externalNodes
-     * @param QueryResultInterface $internalNodes
+     * @param QueryResultInterface $queryResult
      * @return bool
      */
-    protected function updateAllNodes(array $externalNodes, QueryResultInterface $internalNodes): bool
+    protected function updateAllNodes(array $externalNodes, QueryResultInterface $queryResult): bool
     {
         $hasError = false;
-        foreach ($internalNodes as $internalNode) {
+        foreach ($queryResult as $internalNode) {
             /** @var array|null $externalNode */
-            $externalNode = $externalNodes[$internalNode->getNodeId()];
+            $externalNode = $externalNodes[$internalNode->getNodeId()] ?? null;
 
             if ($externalNode === null) {
                 continue;
@@ -158,11 +112,11 @@ class NotificationTask extends AbstractNodeTask
 
             if ($internalNode->getOnline() === true && $this->isNodeOnline($externalNode) === false) {
                 //node changed from online to offline since last check
-                $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline', 0);
+                $this->logger->info('Node ' . $internalNode->getNodeId() . ' is now offline');
                 $this->createOrUpdateNode($externalNode, true);
                 if (!$this->sendNotification($internalNode)) {
                     //it was not possible to send a notification
-                    $this->scheduler->log('One or more Notifications for ' . $internalNode->getNodeId() . ' could not be send.', 1);
+                    $this->logger->error('One or more Notifications for ' . $internalNode->getNodeId() . ' could not be send.');
                     $hasError = true;
                 }
             } elseif ($this->isNodeOnline($internalNode) !== $this->isNodeOnline($externalNode)) {
@@ -170,9 +124,9 @@ class NotificationTask extends AbstractNodeTask
                 $this->createOrUpdateNode($externalNode, true);
                 //Log the change
                 if ($this->isNodeOnline($externalNode)) {
-                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now online.', 0);
+                    $this->logger->info('Node ' . $internalNode->getNodeId() . ' is now online.');
                 } else {
-                    $this->scheduler->log('Node ' . $internalNode->getNodeId() . ' is now offline.', 0);
+                    $this->logger->info('Node ' . $internalNode->getNodeId() . ' is now offline.');
                 }
             }
         }
@@ -191,7 +145,7 @@ class NotificationTask extends AbstractNodeTask
 
         //Get all abos for this Node
         /** @var Abo[] $abos */
-        $abos = $this->aboRepository->findByNode($internalNode)->toArray();
+        $abos = $this->aboRepository->findBy(['node' => $internalNode])->toArray();
 
         foreach ($abos as $abo) {
 
@@ -223,27 +177,24 @@ class NotificationTask extends AbstractNodeTask
             'url' => $unsubscribeUrl
         ];
 
-        $mail = new MailUtility();
-        $send = $mail->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData, ['List-Unsubscribe' => $unsubscribeUrl]);
+        $mailUtility = new MailUtility();
+        $send = $mailUtility->sendMail($abo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/Notification.html', $emailData, ['List-Unsubscribe' => $unsubscribeUrl]);
 
         if (!$send) {
-            $this->scheduler->log('Mail could not be send: ' . $abo->getEmail(), 1);
+            $this->logger->warning('Mail could not be send: ' . $abo->getEmail(), 1);
             $hasError = true;
         } else {
             //Update last notification
             $abo->setLastNotification(new \DateTime());
             $this->aboRepository->update($abo);
         }
-        if ($hasError) {
-            return false;
-        }
-        return true;
+        return !$hasError;
     }
 
     /**
      * @param Abo $abo
      * @return string
-     * @throws \TYPO3\CMS\Core\Exception\SiteNotFoundException
+     * @throws SiteNotFoundException
      */
     protected function buildUnsubscribeLink(Abo $abo): string
     {

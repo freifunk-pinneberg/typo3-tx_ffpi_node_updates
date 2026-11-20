@@ -13,6 +13,7 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Model\FreifunkApiFile;
 use FFPI\FfpiNodeUpdates\Domain\Model\Node;
 use FFPI\FfpiNodeUpdates\Domain\Repository\FreifunkApiFileRepository;
@@ -30,36 +31,23 @@ class FreifunkapifileController extends ActionController
     /** @var JsonView */
     protected $view;
 
-    /** @var string */
-    protected $defaultViewObjectName = JsonView::class;
-
-    /** @var FreifunkApiFileRepository */
-    protected $freifunkApiFileRepository;
-
-    /** @var NodeRepository */
-    protected $nodeRepository;
-
     /**
-     * @param FreifunkApiFileRepository $freifunkApiFileRepository
+     * The default view class to use. Keep this 'null' for default fluid
+     * view, or set to 'JsonView::class' or some inheriting class.
+     *
+     * @var class-string|null
      */
-    public function injectFreifunkApiFileRepository(FreifunkApiFileRepository $freifunkApiFileRepository): void
+    protected ?string $defaultViewObjectName = JsonView::class;
+
+    public function __construct(protected FreifunkApiFileRepository $freifunkApiFileRepository, protected NodeRepository $nodeRepository)
     {
-        $this->freifunkApiFileRepository = $freifunkApiFileRepository;
     }
 
     /**
-     * @param NodeRepository $nodeRepository
-     */
-    public function injectNodeRepository(NodeRepository $nodeRepository): void
-    {
-        $this->nodeRepository = $nodeRepository;
-    }
-
-    /**
-     * @return \Psr\Http\Message\ResponseInterface|void
+     * @return ResponseInterface
      * @throws \Exception
      */
-    public function showAction()
+    public function showAction(): ResponseInterface
     {
         /** @var FreifunkApiFile $apiFile */
         $apiFile = $this->freifunkApiFileRepository->findAll()->getFirst();
@@ -70,21 +58,12 @@ class FreifunkapifileController extends ActionController
         $apiFile->setActiveNodes($activeNodeCount);
         $json['value'] = $apiFile->getJson();
         $this->view->assignMultiple($json);
-        if (isset($this->responseFactory) && $this->responseFactory instanceof \Psr\Http\Message\ResponseFactoryInterface) {
-            //TYPO3 11+
-            $ret = $this->responseFactory
-                ->createResponse()
-                ->withHeader('Content-Type', 'application/json')
-                ->withHeader('Access-Control-Allow-Origin', '*')
-                ->withHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600')
-                ->withBody($this->streamFactory->createStream($this->view->render()));;
-            return $ret;
-        } elseif (isset($this->response)) {
-            //TYPO3 10
-            $this->response->setHeader('Content-Type', 'application/json');
-            $this->response->setHeader('Access-Control-Allow-Origin', '*');
-            $this->response->setHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600');
-        }
+        return $this->responseFactory
+            ->createResponse()
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Cache-Control', 'public, max-age=172800, stale-while-revalidate=345600')
+            ->withBody($this->streamFactory->createStream($this->view->render()));
 
     }
 
@@ -101,18 +80,18 @@ class FreifunkapifileController extends ActionController
         $allNodes = $this->nodeRepository->findAll();
         $activeNodes = [];
         $now = new \DateTime();
-        foreach ($allNodes as $node) {
-            if ($node->isOnline()) {
+        foreach ($allNodes as $allNode) {
+            if ($allNode->isOnline()) {
                 // Node is Online. Add it to the list, and got to the next.
-                $activeNodes[] = $node;
+                $activeNodes[] = $allNode;
                 continue;
             }
             // Node is Offline, check if it was online in the last 2 Weeks.
-            $lastChangeTime = $node->getLastChange();
+            $lastChangeTime = $allNode->getLastChange();
             if($lastChangeTime instanceof \DateTime) {
                 $diff = $lastChangeTime->diff($now);
                 if ($diff->days <= 14) {
-                    $activeNodes[] = $node;
+                    $activeNodes[] = $allNode;
                 }
             }
         }

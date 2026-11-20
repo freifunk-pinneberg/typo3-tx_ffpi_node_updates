@@ -13,7 +13,10 @@
 
 namespace FFPI\FfpiNodeUpdates\Controller;
 
-use TYPO3\CMS\Extbase\Mvc\Controller\MvcPropertyMappingConfiguration;
+use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
+use Psr\Http\Message\ResponseInterface;
 use FFPI\FfpiNodeUpdates\Domain\Model\Abo;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand;
 use FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboNewDemand;
@@ -21,7 +24,6 @@ use FFPI\FfpiNodeUpdates\Domain\Repository\AboRepository;
 use FFPI\FfpiNodeUpdates\Domain\Repository\NodeRepository;
 use FFPI\FfpiNodeUpdates\Utility\MailUtility;
 use Throwable;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
@@ -31,46 +33,16 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
  */
 class AboController extends ActionController
 {
-    /**
-     * aboRepository
-     *
-     * @var AboRepository
-     *
-     */
-    protected $aboRepository;
-
-    /**
-     * nodeRepository
-     *
-     * @var NodeRepository
-     *
-     */
-    protected $nodeRepository;
-
-    /**
-     * @param AboRepository $aboRepository
-     * @return void
-     */
-    public function injectAboRepository(AboRepository $aboRepository)
+    public function __construct(protected AboRepository $aboRepository, protected NodeRepository $nodeRepository)
     {
-        $this->aboRepository = $aboRepository;
-    }
-
-    /**
-     * @param NodeRepository $nodeRepository
-     * @return void
-     */
-    public function injectNodeRepository(NodeRepository $nodeRepository)
-    {
-        $this->nodeRepository = $nodeRepository;
     }
 
     /**
      * action new
      *
-     * @return void
+     * @return ResponseInterface
      */
-    public function newAction()
+    public function newAction(): ResponseInterface
     {
         $aboNewDemand = GeneralUtility::makeInstance(AboNewDemand::class);
         $this->view->assign('demand', $aboNewDemand);
@@ -80,23 +52,25 @@ class AboController extends ActionController
                 'nodeId' => QueryInterface::ORDER_ASCENDING
             ]
         )->execute());
+        return $this->htmlResponse();
     }
 
     /**
      * action create
      *
      * @param AboNewDemand $aboNewDemand
-     * @return void
+     * @return ResponseInterface
      * @throws Throwable
+     * @throws IllegalObjectTypeException
      */
-    public function createAction(AboNewDemand $aboNewDemand)
+    public function createAction(AboNewDemand $aboNewDemand): ResponseInterface
     {
         $newAbo = GeneralUtility::makeInstance(Abo::class);
         $newAbo->setEmail($aboNewDemand->getEmail());
-        $newAbo->setNode($this->nodeRepository->findOneByNodeId($aboNewDemand->getNodeId()));
+        $newAbo->setNode($this->nodeRepository->findOneBy(['nodeId' => $aboNewDemand->getNodeId()]));
         $randomData = openssl_random_pseudo_bytes(10);
-        if($randomData === false or empty($randomData)){
-            throw new \RuntimeException('No Random Data available. Unable to create a secret');
+        if($randomData === false || ($randomData === '' || $randomData === '0')){
+            throw new \RuntimeException('No Random Data available. Unable to create a secret', 2558374924);
         }
         $secret = substr(md5($randomData), 0, 10);
         $newAbo->setSecret($secret);
@@ -104,12 +78,13 @@ class AboController extends ActionController
 
 
         $this->sendConfirmEmail($newAbo, $secret);
+        return $this->htmlResponse();
     }
 
     /**
      * @return void
      */
-    protected function initializeRemoveFormAction()
+    protected function initializeRemoveFormAction(): void
     {
         $this->arguments->getArgument('aboRemoveDemand')
             ->getPropertyMappingConfiguration()
@@ -118,53 +93,56 @@ class AboController extends ActionController
 
     /**
      * @param AboRemoveDemand|null $aboRemoveDemand
-     * @return void
+     * @return ResponseInterface action removeForm
      * action removeForm
      */
-    public function removeFormAction(AboRemoveDemand $aboRemoveDemand = null)
+    public function removeFormAction(AboRemoveDemand $aboRemoveDemand = null): ResponseInterface
     {
         if (!($aboRemoveDemand instanceof AboRemoveDemand)) {
             $aboRemoveDemand = new AboRemoveDemand();
         }
         $this->view->assign('aboRemoveDemand', $aboRemoveDemand);
+        return $this->htmlResponse();
     }
 
     /**
      * action remove
      *
      * @param AboRemoveDemand $aboRemoveDemand
-     * @return void
-     * @throws Throwable
+     * @return ResponseInterface
+     * @throws IllegalObjectTypeException
      */
-    public function removeAction(AboRemoveDemand $aboRemoveDemand)
+    public function removeAction(AboRemoveDemand $aboRemoveDemand): ResponseInterface
     {
-        $originalAbo = $this->aboRepository->findOneBySecret($aboRemoveDemand->getSecret());
-        if (!empty($originalAbo) and $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
-            $this->addFlashMessage('The object was deleted.', '', AbstractMessage::ERROR);
+        $originalAbo = $this->aboRepository->findOneBy(['secret' => $aboRemoveDemand->getSecret()]);
+        if (!empty($originalAbo) && $aboRemoveDemand->getEmail() === $originalAbo->getEmail()) {
+            $this->addFlashMessage('The object was deleted.', '', ContextualFeedbackSeverity::ERROR);
             $this->aboRepository->remove($originalAbo);
             $this->view->assign('removed', true);
         } else {
             $this->view->assign('removed', false);
         }
+        return $this->htmlResponse();
     }
 
     /**
      * action confirm
      *
-     * @return void
-     * @throws Throwable
+     * @return ResponseInterface
+     * @throws IllegalObjectTypeException
+     * @throws UnknownObjectException
      */
-    public function confirmAction()
+    public function confirmAction(): ResponseInterface
     {
         $args = $this->request->getArguments();
         $secret = $args['secret'];
         $email = $args['email'];
 
-        if (!empty($secret) and !empty($email)) {
+        if (!empty($secret) && !empty($email)) {
             /**
              * @var Abo $abo
              */
-            $abo = $this->aboRepository->findOneBySecret($secret);
+            $abo = $this->aboRepository->findOneBy(['secret' => $secret]);
             if (($abo instanceof Abo) && $abo->getEmail() === $email) {
                 $abo->setConfirmed(true);
                 $this->aboRepository->update($abo);
@@ -176,6 +154,7 @@ class AboController extends ActionController
         } else {
             $this->view->assign('confirmed', false);
         }
+        return $this->htmlResponse();
     }
 
     /**
@@ -195,8 +174,8 @@ class AboController extends ActionController
         ];
 
         //send mail
-        $mail = new MailUtility();
-        $sendMails = $mail->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
+        $mailUtility = new MailUtility();
+        $sendMails = $mailUtility->sendMail($newAbo->getEmail(), 'Freifunk Pinneberg: Knoten Benachrichtigung', 'Mail/ConfirmEmail.html', $emailData);
         return $sendMails;
     }
 
@@ -205,7 +184,7 @@ class AboController extends ActionController
      * @param string $secret
      * @return string Link
      */
-    private function getConfirmLink($email, $secret)
+    private function getConfirmLink(string $email, string $secret): string
     {
         $pid = $this->uriBuilder->getTargetPageUid();
         $urlAttributes = [];

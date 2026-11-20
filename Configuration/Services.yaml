@@ -1,4 +1,30 @@
 services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  FFPI\FfpiNodeUpdates\:
+    resource: '../Classes/*'
+    exclude:
+      - '../Classes/Domain/Model/*'
+
+  FFPI\FfpiNodeUpdates\Controller\:
+    resource: '../Classes/Controller/*'
+    public: true
+
+  FFPI\FfpiNodeUpdates\Task\:
+    resource: '../Classes/Task/*'
+    public: true
+
+  FFPI\FfpiNodeUpdates\Domain\Repository\:
+    resource: '../Classes/Domain/Repository/*'
+    public: true
+
   FFPI\FfpiNodeUpdates\Property\TypeConverter\AboRemoveDemandConverter:
     tags:
-      - name: 'extbase.type_converter'
+      -
+        name: 'extbase.type_converter'
+        sources: 'array'
+        target: 'FFPI\FfpiNodeUpdates\Domain\Model\Dto\AboRemoveDemand'
+        priority: 1

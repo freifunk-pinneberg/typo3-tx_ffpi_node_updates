@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /***************************************************************
  * Extension Manager/Repository config file for ext: "ffpi_node_updates"
  *
@@ -9,7 +11,6 @@
  * Only the data in the array - anything else is removed by next write.
  * "version" and "dependencies" must not be touched!
  ***************************************************************/
-
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Freifunk knoten Benachrichtigung',
     'description' => 'Knoten Benachrichtigung bei ausfällen',
@@ -20,7 +21,7 @@ $EM_CONF[$_EXTKEY] = [
     'version' => '2.2.1',
     'constraints' => [
         'depends' => [
-            'typo3' => '10.0.0-11.5.99',
+            'typo3' => '12.4.0-13.4.99',
             'scheduler' => ''
         ],
         'conflicts' => [],
