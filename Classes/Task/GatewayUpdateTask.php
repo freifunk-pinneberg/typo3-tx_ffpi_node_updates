@@ -126,11 +126,11 @@ class GatewayUpdateTask extends AbstractTask
 
         /** @var array|false $statusArray */
         $statusArray = preg_split('/\r\n|\r|\n/', $file);
-        if($statusArray === false){
+        if ($statusArray === false) {
             return $ret;
         }
         foreach ($statusArray as $status) {
-            if(empty($status)){
+            if (empty($status)) {
                 continue;
             }
             $status = explode(':', $status);
@@ -147,11 +147,11 @@ class GatewayUpdateTask extends AbstractTask
     {
         $ret = [];
         foreach ($gatewayData as $key => $value) {
-            $newKey = match ($key) {
-                'OpenVPN process' => 'openVpn',
-                'Interface mullvad', 'Interface earthvpn' => 'networkInterface',
-                'Firewall-Interface' => 'firewall',
-                'Tunnel mullvad', 'Tunnel earthvpn' => 'exitVpn',
+            $newKey = match (true) {
+                $key === 'OpenVPN process' => 'openVpn',
+                $key === 'Firewall-Interface' => 'firewall',
+                (bool)preg_match('/^Interface\s+\S+$/', (string)$key) => 'networkInterface',
+                (bool)preg_match('/^Tunnel\s+\S+$/', (string)$key) => 'exitVpn',
                 default => null,
             };
             if ($newKey !== null) {
